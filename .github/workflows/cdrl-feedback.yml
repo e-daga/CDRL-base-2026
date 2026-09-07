@@ -23,6 +23,5 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          make setup
           make verify
           make run
