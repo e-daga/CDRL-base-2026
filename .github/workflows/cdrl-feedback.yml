@@ -19,9 +19,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Verify reproducibility contract
+      - name: Install dependencies
+        shell: bash
+        run: npm ci
+      - name: Start PostgreSQL
+        shell: bash
+        run: docker compose up -d postgres
+      - name: Apply migrations and seed
         shell: bash
         run: |
-          set -euo pipefail
-          make verify
-          make run
+          node scripts/wait-for-postgres.mjs
+          node scripts/migrate.mjs
+          node scripts/seed.mjs
+      - name: Run tests
+        shell: bash
+        run: npm test
+      - name: Write verification artifact
+        shell: bash
+        run: node scripts/verify.mjs
+      - name: Run project
+        shell: bash
+        run: make run
