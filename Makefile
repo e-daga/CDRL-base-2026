@@ -1,12 +1,23 @@
-.PHONY: setup verify run
+.PHONY: setup verify run clean
 
 setup:
-	@mkdir -p artifacts evidence docs db/migrations db/seed src tests
-	@test -f .env.example
-	@echo "CDRL starter base preparada. Configura .env localmente cuando corresponda."
+	npm ci
+	docker compose up -d postgres
+	node scripts/wait-for-postgres.mjs
+	node scripts/migrate.mjs
+	node scripts/seed.mjs
 
 verify:
-	@bash scripts/verify_base.sh
+	npm ci
+	docker compose up -d postgres
+	node scripts/wait-for-postgres.mjs
+	node scripts/migrate.mjs
+	node scripts/seed.mjs
+	npm test
+	node scripts/verify.mjs
 
 run:
-	@docker compose up
+	node scripts/run.mjs
+
+clean:
+	docker compose down --volumes

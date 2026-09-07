@@ -1,0 +1,19 @@
+{
+  "name": "cdrl-base-2026",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CDRL M01 contrato de datos y entorno reproducible.",
+  "scripts": {
+    "setup:db": "docker compose up -d postgres && node scripts/wait-for-postgres.mjs && node scripts/migrate.mjs && node scripts/seed.mjs",
+    "test": "node scripts/run-tests-if-present.mjs",
+    "verify": "npm run setup:db && npm test && node scripts/verify.mjs",
+    "run": "node scripts/run.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
