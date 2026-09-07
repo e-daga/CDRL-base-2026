@@ -1,21 +1,34 @@
 {
   "assignmentId": "m01-data-contract",
-  "commitSha": "REPLACE_AT_SUBMISSION",
+  "repository": "https://github.com/e-daga/CDRL-base-2026",
+  "commitSha": "see_classroom_submission_sha",
   "commands": [
     "make setup",
     "make verify",
     "make run"
   ],
   "results": {
-    "starterBase": "pending_team_execution"
+    "dataContract": "implemented",
+    "database": "postgresql via docker compose",
+    "migration": "db/migrations/001_create_telemetry_contract.sql",
+    "seed": "db/seed/001_synthetic_telemetry.sql",
+    "automatedTests": {
+      "normalCase": "temperature_c event accepted",
+      "boundaryCases": [
+        "battery_pct accepts 0",
+        "humidity_pct accepts 100"
+      ],
+      "declaredFailure": "battery_pct above 100 is rejected"
+    },
+    "machineReadableArtifact": "artifacts/m01-verify.json"
   },
   "assumptions": [
-    "El equipo elegirá y documentará el lenguaje de la aplicación.",
-    "AWS Academy Learner Lab se usará solo si el servicio está habilitado.",
-    "Los datos iniciales serán sintéticos."
+    "AWS Academy Learner Lab se usara solo si el servicio esta habilitado.",
+    "Docker Compose con PostgreSQL es el respaldo reproducible.",
+    "Los datos iniciales son sinteticos y no contienen datos personales."
   ],
   "limitations": [
-    "La base inicial no es una implementación completa de M01.",
-    "La imagen local de DynamoDB debe fijarse y reportarse cuando el equipo la use."
+    "El SHA exacto se reporta en Classroom porque cambia con el commit final.",
+    "No se guardan cadenas de conexion privadas ni credenciales reales."
   ]
 }

@@ -19,24 +19,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Install dependencies
+      - name: make setup
         shell: bash
-        run: npm ci
-      - name: Start PostgreSQL
+        run: make setup
+      - name: make verify
         shell: bash
-        run: docker compose up -d postgres
-      - name: Apply migrations and seed
-        shell: bash
-        run: |
-          node scripts/wait-for-postgres.mjs
-          node scripts/migrate.mjs
-          node scripts/seed.mjs
-      - name: Run tests
-        shell: bash
-        run: npm test
-      - name: Write verification artifact
-        shell: bash
-        run: node scripts/verify.mjs
-      - name: Run project
+        run: make verify
+      - name: make run
         shell: bash
         run: make run
+      - name: Upload verification artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: m01-verify
+          path: artifacts/m01-verify.json

@@ -21,6 +21,24 @@ if (missing.length > 0) {
   throw new Error(`Faltan archivos requeridos: ${missing.join(", ")}`);
 }
 
+const testsDir = path.join(rootDir, "tests");
+const testFiles = fs.readdirSync(testsDir)
+  .filter((file) => file.endsWith(".test.mjs"))
+  .sort();
+
+const testSource = testFiles
+  .map((file) => fs.readFileSync(path.join(testsDir, file), "utf8"))
+  .join("\n");
+const testCaseCount = (testSource.match(/\btest\s*\(/g) ?? []).length;
+
+if (testFiles.length === 0 || testCaseCount < 4) {
+  throw new Error("La verificacion M01 requiere al menos 4 pruebas automaticas reales.");
+}
+
+if (!/declared failure|fallo declarado/i.test(testSource)) {
+  throw new Error("La suite debe declarar explicitamente un caso de fallo.");
+}
+
 function gitValue(args, fallback) {
   try {
     return execFileSync("git", args, { cwd: rootDir, encoding: "utf8" }).trim();
@@ -45,19 +63,28 @@ const dbSummary = await withClient(async (client) => {
       (select count(*)::int from schema_migrations) as migrations
   `);
 
-  const testFiles = fs.readdirSync(path.join(rootDir, "tests"))
-    .filter((file) => file.endsWith(".test.mjs"));
-
   return {
     tables: tables.rows.map((row) => row.table_name),
     counts: counts.rows[0],
-    nodeTestFiles: testFiles
+    nodeTestFiles: testFiles,
+    nodeTestCases: testCaseCount
   };
 });
 
+const expectedTables = ["devices", "schema_migrations", "telemetry_events"];
+for (const table of expectedTables) {
+  if (!dbSummary.tables.includes(table)) {
+    throw new Error(`Falta la tabla requerida: ${table}`);
+  }
+}
+
+if (dbSummary.counts.devices < 2 || dbSummary.counts.telemetry_events < 3) {
+  throw new Error("El seed debe dejar al menos 2 dispositivos y 3 eventos de telemetria.");
+}
+
 const artifact = {
   assignmentId: "m01-data-contract",
-  status: "scripts_verified",
+  status: "passed",
   generatedAt: new Date().toISOString(),
   git: {
     commitSha: gitValue(["rev-parse", "HEAD"], "uncommitted"),
@@ -69,9 +96,14 @@ const artifact = {
     "make run"
   ],
   database: dbSummary,
-  pendingTeamSteps: dbSummary.nodeTestFiles.length === 0
-    ? ["agregar pruebas automaticas del contrato"]
-    : []
+  automatedChecks: {
+    normalCase: "temperature_c aceptado",
+    boundaryCases: [
+      "battery_pct acepta 0",
+      "humidity_pct acepta 100"
+    ],
+    declaredFailure: "battery_pct mayor a 100 se rechaza por constraint"
+  }
 };
 
 fs.mkdirSync(path.join(rootDir, "artifacts"), { recursive: true });

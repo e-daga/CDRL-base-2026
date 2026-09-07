@@ -14,15 +14,5 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-
-  dynamodb:
-    image: amazon/dynamodb-local:latest
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data"
-    ports:
-      - "${DYNAMODB_PORT:-8000}:8000"
-    volumes:
-      - dynamodb_data:/home/dynamodblocal/data
-
 volumes:
   postgres_data:
-  dynamodb_data:

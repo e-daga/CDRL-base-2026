@@ -6,7 +6,7 @@
   "description": "CDRL M01 contrato de datos y entorno reproducible.",
   "scripts": {
     "setup:db": "docker compose up -d postgres && node scripts/wait-for-postgres.mjs && node scripts/migrate.mjs && node scripts/seed.mjs",
-    "test": "node scripts/run-tests-if-present.mjs",
+    "test": "node --test tests/*.test.mjs",
     "verify": "npm run setup:db && npm test && node scripts/verify.mjs",
     "run": "node scripts/run.mjs"
   },

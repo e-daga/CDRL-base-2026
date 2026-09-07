@@ -1,11 +1,11 @@
 {
   "assignmentId": "m01-data-contract",
-  "status": "pending_team_tests",
-  "expectedGenerator": "scripts/verify.mjs",
+  "status": "generated_by_make_verify",
   "commands": [
     "make setup",
     "make verify",
     "make run"
   ],
-  "note": "make verify actualiza este archivo. Las pruebas completas se agregan en el siguiente paso del equipo."
+  "expectedGenerator": "scripts/verify.mjs",
+  "note": "make verify actualiza este archivo con status passed, conteos de base de datos, pruebas detectadas y SHA del commit."
 }
