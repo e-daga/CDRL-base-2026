@@ -52,7 +52,10 @@ const dbSummary = await withClient(async (client) => {
     select table_name
     from information_schema.tables
     where table_schema = 'public'
-      and table_name in ('devices', 'telemetry_events', 'schema_migrations')
+      and table_name in (
+        'devices', 'telemetry_events', 'schema_migrations',
+        'device_status', 'telemetry_alerts'
+      )
     order by table_name
   `);
 
@@ -60,6 +63,8 @@ const dbSummary = await withClient(async (client) => {
     select
       (select count(*)::int from devices) as devices,
       (select count(*)::int from telemetry_events) as telemetry_events,
+      (select count(*)::int from device_status) as device_status,
+      (select count(*)::int from telemetry_alerts) as telemetry_alerts,
       (select count(*)::int from schema_migrations) as migrations
   `);
 
@@ -80,6 +85,16 @@ for (const table of expectedTables) {
 
 if (dbSummary.counts.devices < 2 || dbSummary.counts.telemetry_events < 3) {
   throw new Error("El seed debe dejar al menos 2 dispositivos y 3 eventos de telemetria.");
+}
+
+for (const table of ["device_status", "telemetry_alerts"]) {
+  if (!dbSummary.tables.includes(table)) {
+    throw new Error(`Falta la tabla requerida del modelo operativo: ${table}`);
+  }
+}
+
+if (dbSummary.counts.device_status < 2 || dbSummary.counts.telemetry_alerts < 1) {
+  throw new Error("El seed operativo debe dejar estados y alertas sinteticos.");
 }
 
 const artifact = {
@@ -114,3 +129,35 @@ fs.writeFileSync(
 
 console.log("Verificacion de scripts M01 completada");
 console.log(JSON.stringify(artifact, null, 2));
+
+const operationalArtifact = {
+  assignmentId: "m02-relational-model",
+  status: "passed",
+  generatedAt: new Date().toISOString(),
+  git: {
+    commitSha: gitValue(["rev-parse", "HEAD"], "uncommitted"),
+    workingTreeStatus: gitValue(["status", "--short"], "not-a-git-repository")
+  },
+  commands: ["make setup", "make verify", "make run"],
+  database: dbSummary,
+  automatedChecks: {
+    normalCase: "consulta parametrizada devuelve telemetria de un dispositivo",
+    boundaryCases: [
+      "limit 1 devuelve como maximo una fila",
+      "device_status acepta maintenance con battery_pct 0"
+    ],
+    emptyCase: "dispositivo desconocido devuelve listas vacias",
+    declaredFailures: [
+      "device_status battery_pct mayor a 100 se rechaza por constraint",
+      "alerta resolved sin acknowledgement se rechaza por constraint"
+    ],
+    parameterizedQueries: ["findTelemetryByDevice", "findOpenAlerts"]
+  }
+};
+
+fs.writeFileSync(
+  path.join(rootDir, "artifacts", "m02-verify.json"),
+  `${JSON.stringify(operationalArtifact, null, 2)}\n`
+);
+
+console.log("Verificacion de modelo relacional M02 completada");

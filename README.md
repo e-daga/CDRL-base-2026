@@ -1,6 +1,6 @@
-# CDRL-base-2026 - M01 contrato de datos
+# CDRL-base-2026 - M02 modelo relacional operativo
 
-Entrega del hito M01 para **Cloud Data Reliability Lab (CDRL)**. El objetivo es dejar un contrato de datos de telemetria reproducible con PostgreSQL, migraciones, seed sintetico, pruebas automaticas y evidencia machine-readable.
+Entrega del hito M02 para **Cloud Data Reliability Lab (CDRL)**. El objetivo es extender el contrato de datos de telemetria con un modelo operativo reproducible, migraciones, seed sintetico, pruebas automaticas y evidencia machine-readable.
 
 ## Como ejecutarlo
 
@@ -19,9 +19,9 @@ make run
 
 `make setup` instala dependencias, levanta PostgreSQL, aplica migraciones y carga el seed.
 
-`make verify` repite la preparacion, ejecuta las pruebas automaticas y genera `artifacts/m01-verify.json`.
+`make verify` repite la preparacion, ejecuta las pruebas automaticas y genera `artifacts/m01-verify.json` y `artifacts/m02-verify.json`.
 
-`make run` imprime un resumen de dispositivos y eventos de telemetria.
+`make run` imprime un resumen de dispositivos, estados, alertas y eventos de telemetria.
 
 ## Que incluye M01
 
@@ -31,6 +31,15 @@ make run
 - ADR de la decision tecnica en `docs/ADR-001-contrato-telemetria-postgresql.md`.
 - Evidencia solicitada en `evidence/m01-data-contract.json`.
 - Resultado machine-readable en `artifacts/m01-verify.json`.
+
+## Que incluye M02
+
+- Migracion idempotente del modelo operativo en `db/migrations/002_create_operational_model.sql`.
+- Seed idempotente de estados y alertas en `db/seed/002_operational_model.sql`.
+- Consultas parametrizadas en `src/operational-queries.mjs`.
+- Pruebas de caso normal, vacio, limites y fallos declarados en `tests/operational-model.test.mjs`.
+- ADR en `docs/ADR-002-modelo-relacional-operativo.md`.
+- Evidencia en `evidence/m02-relational-model.json` y resultado en `artifacts/m02-verify.json`.
 
 ## Pruebas
 

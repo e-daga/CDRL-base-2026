@@ -1,0 +1,25 @@
+{
+  "assignmentId": "m02-relational-model",
+  "status": "implemented",
+  "model": {
+    "tables": ["devices", "telemetry_events", "device_status", "telemetry_alerts"],
+    "relations": [
+      "device_status.device_id -> devices.device_id",
+      "telemetry_alerts.event_id -> telemetry_events.event_id"
+    ]
+  },
+  "parameterizedQueries": [
+    "findTelemetryByDevice",
+    "findOpenAlerts"
+  ],
+  "cases": {
+    "normal": "findTelemetryByDevice devuelve eventos de dev_lab_alpha",
+    "empty": "device_id desconocido devuelve []",
+    "limits": ["limit 1", "battery_pct = 0"],
+    "declaredFailures": [
+      "battery_pct = 101",
+      "alert status resolved sin acknowledgement"
+    ]
+  },
+  "commands": ["make setup", "make verify", "make run"]
+}
