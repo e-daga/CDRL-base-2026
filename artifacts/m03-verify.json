@@ -1,0 +1,382 @@
+{
+  "assignmentId": "m03-roles-secrets",
+  "status": "passed",
+  "generatedAt": "2026-09-21T03:09:53.931Z",
+  "git": {
+    "commitSha": "8b138b7a84cfb0769326ddd0a56a8bb7abceca56",
+    "workingTreeStatus": "M artifacts/m01-verify.json\n M artifacts/m02-verify.json\n?? artifacts/m03-verify.json"
+  },
+  "commands": [
+    "make setup",
+    "make verify",
+    "make run"
+  ],
+  "database": {
+    "engine": "PostgreSQL",
+    "counts": {
+      "devices": 2,
+      "telemetry_events": 3,
+      "device_status": 2,
+      "telemetry_alerts": 1,
+      "migrations": 4
+    },
+    "migrations": [
+      {
+        "version": "001_create_telemetry_contract",
+        "checksum": "7964a96ed199bb2433dab27063e91b279aded60052b7f62d0fb568be8002cbad"
+      },
+      {
+        "version": "002_create_operational_model",
+        "checksum": "5ffb39f9578f24a1abe9e16d82c53d3b6d633b7adb9e2cb0cf97f6d96c78f80b"
+      },
+      {
+        "version": "003_create_roles_and_privileges",
+        "checksum": "a91f2f46ba03e0cd1cec601c60b8c9b32130c123888f47199280236189ed13dd"
+      },
+      {
+        "version": "004_enforce_role_ownership",
+        "checksum": "ff24b417c3ee59dc7210031cac9687289e25025691437ca4384e045a0a17c9fe"
+      }
+    ],
+    "owners": [
+      {
+        "tablename": "device_status",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "devices",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "schema_migrations",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "telemetry_alerts",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "telemetry_events",
+        "tableowner": "role_migrator"
+      }
+    ]
+  },
+  "tests": {
+    "total": 55,
+    "passed": 55,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cases": [
+      {
+        "name": "normal case: parameterized telemetry query returns device events",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "empty case: unknown device returns empty parameterized results",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "boundary case: telemetry limit returns at most one row",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "boundary case: device status accepts maintenance with battery 0",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "declared failure: device status rejects battery above 100",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "declared failure: resolved alert requires acknowledgement",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "[M03][normal] migrator authenticates with its own non-admin account",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] writer authenticates with its own non-admin account",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] reader authenticates with its own non-admin account",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] operator authenticates with its own non-admin account",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] writer inserts devices and telemetry",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] reader queries all four application tables",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][boundary] writer upserts device status with battery 0",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][boundary] writer upserts device status with battery 100",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][boundary] reader can query an empty result",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] operator opens acknowledges and resolves an alert",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] migrator creates alters and drops tables, including existing objects",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][boundary] future migrator tables inherit read-only access",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot read telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot insert telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot read telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot update raw telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot manage alerts (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot update device status (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot update device status (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot delete telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot delete devices (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot delete alerts (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot create application tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot alter existing tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot truncate telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot read migration metadata (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot escalate to migrator (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot create login roles (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot create temporary tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot create application tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot alter existing tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot truncate telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot read migration metadata (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot escalate to migrator (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot create login roles (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot create temporary tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot create application tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot alter existing tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot truncate telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot read migration metadata (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot escalate to migrator (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot create login roles (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot create temporary tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] complete effective table permission matrix matches the declaration",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][rotation] new credential works, old login and existing session are revoked",
+        "status": "passed",
+        "file": "tests/secret-rotation.test.mjs"
+      },
+      {
+        "name": "normal case: accepts a temperature telemetry event",
+        "status": "passed",
+        "file": "tests/telemetry-contract.test.mjs"
+      },
+      {
+        "name": "boundary case: accepts battery_pct lower bound 0",
+        "status": "passed",
+        "file": "tests/telemetry-contract.test.mjs"
+      },
+      {
+        "name": "boundary case: accepts humidity_pct upper bound 100",
+        "status": "passed",
+        "file": "tests/telemetry-contract.test.mjs"
+      },
+      {
+        "name": "declared failure: rejects battery_pct above 100",
+        "status": "passed",
+        "file": "tests/telemetry-contract.test.mjs"
+      }
+    ]
+  },
+  "accessControl": {
+    "serviceRoles": [
+      "migrator",
+      "writer",
+      "reader",
+      "operator"
+    ],
+    "separateLogins": true,
+    "nonAdminServiceAccounts": true,
+    "negativeTests": 31,
+    "expectedDenialSqlState": "42501",
+    "boundaryTests": 4,
+    "credentialRotationTested": true
+  },
+  "secrets": {
+    "status": "passed",
+    "tool": "gitleaks",
+    "version": "8.30.1",
+    "image": "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f",
+    "scope": [
+      "all Git refs and complete reachable history",
+      "tracked and non-ignored new files"
+    ],
+    "commitsScanned": 15,
+    "filesScanned": 53,
+    "findings": [],
+    "detectionSelfTest": "passed",
+    "limitations": "Pattern-based scanning cannot guarantee absence of every possible secret."
+  },
+  "environment": {
+    "mode": "local",
+    "awsValidated": false,
+    "note": "Docker Compose es el entorno validado. AWS requiere un Learner Lab habilitado y autorizacion del entorno."
+  }
+}

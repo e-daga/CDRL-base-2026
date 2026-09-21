@@ -1,10 +1,10 @@
 {
   "assignmentId": "m01-data-contract",
   "status": "passed",
-  "generatedAt": "2026-09-21T01:45:38.981Z",
+  "generatedAt": "2026-09-21T03:09:53.931Z",
   "git": {
-    "commitSha": "f27871be38487a10304b8fd5db1c8a9c232e7109",
-    "workingTreeStatus": "M .env.example\n M README.md\n M artifacts/m01-verify.json\n M artifacts/m02-verify.json\n M docker-compose.yml\n M scripts/verify.mjs\n M src/config.mjs\n?? docs/ADR-003-separacion-de-roles-y-secretos.md"
+    "commitSha": "8b138b7a84cfb0769326ddd0a56a8bb7abceca56",
+    "workingTreeStatus": "M artifacts/m01-verify.json\n M artifacts/m02-verify.json\n?? artifacts/m03-verify.json"
   },
   "commands": [
     "make setup",
@@ -12,79 +12,75 @@
     "make run"
   ],
   "database": {
-    "tables": [
-      "device_status",
-      "devices",
-      "schema_migrations",
-      "telemetry_alerts",
-      "telemetry_events"
-    ],
+    "engine": "PostgreSQL",
     "counts": {
       "devices": 2,
       "telemetry_events": 3,
       "device_status": 2,
       "telemetry_alerts": 1,
-      "migrations": 3
+      "migrations": 4
     },
-    "nodeTestFiles": [
-      "operational-model.test.mjs",
-      "telemetry-contract.test.mjs"
+    "migrations": [
+      {
+        "version": "001_create_telemetry_contract",
+        "checksum": "7964a96ed199bb2433dab27063e91b279aded60052b7f62d0fb568be8002cbad"
+      },
+      {
+        "version": "002_create_operational_model",
+        "checksum": "5ffb39f9578f24a1abe9e16d82c53d3b6d633b7adb9e2cb0cf97f6d96c78f80b"
+      },
+      {
+        "version": "003_create_roles_and_privileges",
+        "checksum": "a91f2f46ba03e0cd1cec601c60b8c9b32130c123888f47199280236189ed13dd"
+      },
+      {
+        "version": "004_enforce_role_ownership",
+        "checksum": "ff24b417c3ee59dc7210031cac9687289e25025691437ca4384e045a0a17c9fe"
+      }
     ],
-    "nodeTestCases": 10
+    "owners": [
+      {
+        "tablename": "device_status",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "devices",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "schema_migrations",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "telemetry_alerts",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "telemetry_events",
+        "tableowner": "role_migrator"
+      }
+    ]
   },
-  "automatedChecks": {
-    "normalCase": "temperature_c aceptado",
-    "boundaryCases": [
-      "battery_pct acepta 0",
-      "humidity_pct acepta 100"
-    ],
-    "declaredFailure": "battery_pct mayor a 100 se rechaza por constraint",
-    "roleSecurity": {
-      "checks": [
-        {
-          "role": "role_writer",
-          "table": "telemetry_events",
-          "privilege": "INSERT",
-          "allowed": true
-        },
-        {
-          "role": "role_writer",
-          "table": "device_status",
-          "privilege": "UPDATE",
-          "allowed": true
-        },
-        {
-          "role": "role_reader",
-          "table": "telemetry_events",
-          "privilege": "SELECT",
-          "allowed": true
-        },
-        {
-          "role": "role_operator",
-          "table": "telemetry_alerts",
-          "privilege": "UPDATE",
-          "allowed": true
-        },
-        {
-          "role": "role_writer",
-          "table": "telemetry_events",
-          "privilege": "SELECT",
-          "allowed": false
-        },
-        {
-          "role": "role_reader",
-          "table": "telemetry_events",
-          "privilege": "INSERT",
-          "allowed": false
-        },
-        {
-          "role": "role_operator",
-          "table": "telemetry_events",
-          "privilege": "SELECT",
-          "allowed": false
-        }
-      ],
-      "deniedAccessChecks": 3
+  "tests": [
+    {
+      "name": "normal case: accepts a temperature telemetry event",
+      "status": "passed",
+      "file": "tests/telemetry-contract.test.mjs"
+    },
+    {
+      "name": "boundary case: accepts battery_pct lower bound 0",
+      "status": "passed",
+      "file": "tests/telemetry-contract.test.mjs"
+    },
+    {
+      "name": "boundary case: accepts humidity_pct upper bound 100",
+      "status": "passed",
+      "file": "tests/telemetry-contract.test.mjs"
+    },
+    {
+      "name": "declared failure: rejects battery_pct above 100",
+      "status": "passed",
+      "file": "tests/telemetry-contract.test.mjs"
     }
-  }
+  ]
 }
