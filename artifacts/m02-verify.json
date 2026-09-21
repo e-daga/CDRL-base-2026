@@ -1,10 +1,10 @@
 {
   "assignmentId": "m02-relational-model",
   "status": "passed",
-  "generatedAt": "2026-09-14T03:23:23.874Z",
+  "generatedAt": "2026-09-21T01:45:39.090Z",
   "git": {
-    "commitSha": "c1ce869d107f06e4ec9dc9c67948e9c0d6706a3c",
-    "workingTreeStatus": "M README.md\n M artifacts/m01-verify.json\n M scripts/run.mjs\n M scripts/verify.mjs\n?? artifacts/m02-verify.json\n?? db/migrations/002_create_operational_model.sql\n?? db/seed/002_operational_model.sql\n?? docs/ADR-002-modelo-relacional-operativo.md\n?? evidence/m02-relational-model.json\n?? src/operational-queries.mjs\n?? tests/operational-model.test.mjs"
+    "commitSha": "f27871be38487a10304b8fd5db1c8a9c232e7109",
+    "workingTreeStatus": "M .env.example\n M README.md\n M artifacts/m01-verify.json\n M artifacts/m02-verify.json\n M docker-compose.yml\n M scripts/verify.mjs\n M src/config.mjs\n?? docs/ADR-003-separacion-de-roles-y-secretos.md"
   },
   "commands": [
     "make setup",
@@ -24,7 +24,7 @@
       "telemetry_events": 3,
       "device_status": 2,
       "telemetry_alerts": 1,
-      "migrations": 2
+      "migrations": 3
     },
     "nodeTestFiles": [
       "operational-model.test.mjs",
@@ -43,6 +43,53 @@
       "device_status battery_pct mayor a 100 se rechaza por constraint",
       "alerta resolved sin acknowledgement se rechaza por constraint"
     ],
+    "roleSecurity": {
+      "checks": [
+        {
+          "role": "role_writer",
+          "table": "telemetry_events",
+          "privilege": "INSERT",
+          "allowed": true
+        },
+        {
+          "role": "role_writer",
+          "table": "device_status",
+          "privilege": "UPDATE",
+          "allowed": true
+        },
+        {
+          "role": "role_reader",
+          "table": "telemetry_events",
+          "privilege": "SELECT",
+          "allowed": true
+        },
+        {
+          "role": "role_operator",
+          "table": "telemetry_alerts",
+          "privilege": "UPDATE",
+          "allowed": true
+        },
+        {
+          "role": "role_writer",
+          "table": "telemetry_events",
+          "privilege": "SELECT",
+          "allowed": false
+        },
+        {
+          "role": "role_reader",
+          "table": "telemetry_events",
+          "privilege": "INSERT",
+          "allowed": false
+        },
+        {
+          "role": "role_operator",
+          "table": "telemetry_events",
+          "privilege": "SELECT",
+          "allowed": false
+        }
+      ],
+      "deniedAccessChecks": 3
+    },
     "parameterizedQueries": [
       "findTelemetryByDevice",
       "findOpenAlerts"
