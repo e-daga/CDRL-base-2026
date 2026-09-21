@@ -5,6 +5,7 @@ import { withClient } from "../src/db.mjs";
 import { rootDir } from "../src/config.mjs";
 
 const migrationsDir = path.join(rootDir, "db", "migrations");
+const bootstrap = process.argv.includes("--bootstrap");
 
 await withClient(async (client) => {
   await client.query(`
@@ -17,6 +18,7 @@ await withClient(async (client) => {
 
   const files = fs.readdirSync(migrationsDir)
     .filter((file) => file.endsWith(".sql"))
+    .filter((file) => !bootstrap || Number(file.slice(0, 3)) <= 4)
     .sort();
 
   for (const file of files) {
@@ -50,4 +52,4 @@ await withClient(async (client) => {
       throw error;
     }
   }
-});
+}, bootstrap ? "bootstrap" : "migrator");

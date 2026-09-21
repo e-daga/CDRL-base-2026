@@ -1,55 +1,114 @@
-# CDRL-base-2026 - M02 modelo relacional operativo
+# CDRL-base-2026 - M03 roles y secretos
 
-Entrega del hito M02 para **Cloud Data Reliability Lab (CDRL)**. El objetivo es extender el contrato de datos de telemetria con un modelo operativo reproducible, migraciones, seed sintetico, pruebas automaticas y evidencia machine-readable.
+Proyecto de equipo Cloud Data Reliability Lab. Conserva M01 (contrato de
+telemetria), M02 (modelo operativo) y agrega M03 (roles separados y secretos).
 
-## Como ejecutarlo
+## Ejecutar la entrega
 
-Requisitos locales:
+Requisitos: Git, Node.js 20.12 o superior, npm, GNU Make y Docker con Compose.
+Docker Desktop debe estar iniciado en Windows. La primera ejecucion necesita
+Internet para npm y las imagenes de PostgreSQL y Gitleaks.
 
-- Node.js 20 o superior.
-- Docker con Docker Compose.
-
-Comandos de la entrega:
-
-```bash
-make setup
-make verify
-make run
+```sh
+make setup && make verify && make run
 ```
 
-`make setup` instala dependencias, levanta PostgreSQL, aplica migraciones y carga el seed.
+En PowerShell que no admite &&, ejecutar cada comando por separado y continuar
+solo si el anterior termino correctamente. Si no esta instalado Make:
 
-`make verify` repite la preparacion, ejecuta las pruebas automaticas y genera `artifacts/m01-verify.json` y `artifacts/m02-verify.json`.
+```sh
+npm ci
+npm run setup:db
+npm run verify
+npm run run
+```
 
-`make run` imprime un resumen de dispositivos, estados, alertas y eventos de telemetria.
+Estas alternativas ejecutan los mismos scripts de Node; GitHub Actions ejecuta
+los comandos make de la consigna.
 
-## Que incluye M01
+El setup genera .env ignorado con cinco secretos aleatorios distintos, levanta
+PostgreSQL 16, aplica migraciones con checksum, configura cuentas y carga el seed.
+Si el puerto 5432 esta ocupado, establecer POSTGRES_PORT antes del primer setup.
+No copiar contrasenas a .env.example. El ejemplo no se usa como fuente de secretos.
 
-- Migracion relacional en `db/migrations/001_create_telemetry_contract.sql`.
-- Seed sintetico idempotente en `db/seed/001_synthetic_telemetry.sql`.
-- Pruebas automaticas en `tests/telemetry-contract.test.mjs`.
-- ADR de la decision tecnica en `docs/ADR-001-contrato-telemetria-postgresql.md`.
-- Evidencia solicitada en `evidence/m01-data-contract.json`.
-- Resultado machine-readable en `artifacts/m01-verify.json`.
+El bootstrap requiere una cuenta administrativa para crear roles y transferir
+propiedad (migraciones historicas 001-003 y correccion 004). Despues, migraciones
+y seed usan la cuenta migrator. La aplicacion de demostracion usa reader.
+Repetir setup no borra datos ni cambia los checksums de migraciones anteriores.
+Para un volumen previo de M01/M02, conservar la credencial administrativa local
+e incorporar las cuatro credenciales nuevas mediante variables de entorno;
+no cambiar POSTGRES_USER/POSTGRES_PASSWORD creyendo que eso reinicializa el volumen.
 
-## Que incluye M02
+## Permisos declarados
 
-- Migracion idempotente del modelo operativo en `db/migrations/002_create_operational_model.sql`.
-- Seed idempotente de estados y alertas en `db/seed/002_operational_model.sql`.
-- Consultas parametrizadas en `src/operational-queries.mjs`.
-- Pruebas de caso normal, vacio, limites y fallos declarados en `tests/operational-model.test.mjs`.
-- ADR en `docs/ADR-002-modelo-relacional-operativo.md`.
-- Evidencia en `evidence/m02-relational-model.json` y resultado en `artifacts/m02-verify.json`.
+| Rol | Operaciones permitidas |
+| --- | --- |
+| migrator | Propietario de las tablas; crea, altera y elimina objetos; migra y carga fixtures |
+| writer | INSERT en devices/telemetry_events; SELECT, INSERT y UPDATE en device_status |
+| reader | SELECT en las cuatro tablas de aplicacion |
+| operator | SELECT, INSERT y UPDATE en telemetry_alerts |
 
-## Pruebas
+Cada rol tiene una cuenta independiente, sin SUPERUSER, CREATEDB, CREATEROLE,
+REPLICATION ni BYPASSRLS. Las cuentas de servicio no heredan privilegios de
+otras funciones. writer, reader y operator no pueden borrar datos, cambiar
+tablas, leer schema_migrations ni asumir el rol migrator.
+Las tablas futuras creadas por role_migrator dan SELECT al lector por defecto;
+el escritor y el operador necesitan un GRANT explicito para objetos nuevos.
 
-La suite cubre:
+## Verificacion
 
-- Caso normal: inserta un evento `temperature_c` valido.
-- Caso limite 1: acepta `battery_pct` en 0.
-- Caso limite 2: acepta `humidity_pct` en 100.
-- Fallo declarado: rechaza `battery_pct` mayor a 100.
+make verify prepara el entorno, ejecuta las suites reales M01/M02/M03 y exige:
+casos normales, al menos dos limites y tres accesos denegados, un fallo
+declarado y una rotacion. Un test fallido, omitido o pendiente impide aprobar.
+Las denegaciones se prueban ejecutando SQL con cuentas propias y comprobando
+SQLSTATE 42501. Los fixtures son sinteticos y las pruebas revierten sus cambios.
 
-## Seguridad
+El escaner Gitleaks 8.30.1 esta fijado por digest de imagen. Revisa el historial
+completo de todas las referencias locales y los archivos actuales. No usa
+excepciones ni baselines, y una credencial ficticia temporal comprueba que el
+detector realmente rechaza secretos. Los reportes no incluyen valores secretos.
 
-No se guardan credenciales reales, tokens, datos personales ni cadenas de conexion privadas. `.env.example` contiene valores sinteticos solo para desarrollo local.
+Resultados:
+- artifacts/m03-verify.json: resultado, SHA, pruebas, permisos, rotacion y escaneo.
+- evidence/m03-roles-secrets.json: manifiesto versionado de la entrega.
+- evidence/m03-roles-secrets-local.json: evidencia ejecutada con el SHA exacto.
+- artifacts/m01-verify.json y artifacts/m02-verify.json: regresiones de hitos anteriores.
+
+Los reportes versionados indican el commit sobre el que se ejecutaron. La
+ejecucion de Actions del tag week-03-final entrega los JSON y el log del SHA
+final como artefacto descargable. No se incrusta el SHA de un commit dentro
+de ese mismo commit.
+
+## Secretos y entorno
+
+La configuracion usa variables separadas, nunca cadenas de conexion.
+Consultar [rotacion y respuesta ante exposicion](docs/M03-rotacion-secretos.md).
+Para rotar localmente una cuenta:
+
+```sh
+npm run rotate:secret -- writer
+```
+
+Docker Compose es el entorno validado. Con un Learner Lab disponible, usar
+CDRL_DATABASE_MODE=external e inyectar las cinco cuentas y sus secretos.
+La conexion externa exige TLS con validacion de certificado. No se afirma
+haber desplegado ni validado AWS Academy.
+
+La historia M01/M02 conserva un valor publico de desarrollo. M03 lo retira
+del codigo actual y usa credenciales nuevas, manteniendo los commits originales.
+Un escaneo sin hallazgos no garantiza la ausencia de todo secreto posible.
+
+## Documentacion y entrega
+
+- [ADR M03](docs/ADR-003-roles-y-secretos.md).
+- [Rotacion](docs/M03-rotacion-secretos.md).
+- [Entrega, autoria y defensa](docs/M03-entrega-y-defensa.md).
+- [ADR M01](docs/ADR-001-contrato-telemetria-postgresql.md).
+- [ADR M02](docs/ADR-002-modelo-relacional-operativo.md).
+
+Entregar URL del repositorio, tag week-03-final, SHA exacto, salida de make verify
+y evidencia generada. git rev-parse week-03-final^{commit} devuelve el SHA.
+No usar force push ni borrar/recrear los tags finales.
+
+Para detener PostgreSQL conservando datos: docker compose down.
+make clean elimina el volumen local: usarlo solo cuando se quiera borrar esa base.

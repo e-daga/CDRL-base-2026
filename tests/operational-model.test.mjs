@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
-import { withClient } from "../src/db.mjs";
+import { withClient as withRoleClient } from "../src/db.mjs";
 import { findOpenAlerts, findTelemetryByDevice } from "../src/operational-queries.mjs";
+
+const withClient = (work) => withRoleClient(work, "migrator");
 
 const testDeviceId = "dev_test_operational";
 const testAlertId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa6";

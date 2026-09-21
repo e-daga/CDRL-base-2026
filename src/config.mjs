@@ -4,33 +4,30 @@ import { fileURLToPath } from "node:url";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-function loadEnvFile(filePath) {
-  if (!fs.existsSync(filePath)) return;
+export const envPath = path.join(rootDir, ".env");
+if (fs.existsSync(envPath)) process.loadEnvFile(envPath);
+export const serviceRoles = ["migrator", "writer", "reader", "operator"];
 
-  for (const line of fs.readFileSync(filePath, "utf8").split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-
-    const separator = trimmed.indexOf("=");
-    if (separator === -1) continue;
-
-    const key = trimmed.slice(0, separator).trim();
-    const value = trimmed.slice(separator + 1).trim();
-    if (key && process.env[key] === undefined) {
-      process.env[key] = value;
-    }
+export function databaseConfig(role = "reader") {
+  if (role !== "bootstrap" && !serviceRoles.includes(role)) throw new Error(`Rol desconocido: ${role}`);
+  const prefix = role === "bootstrap" ? "POSTGRES" : role.toUpperCase();
+  const password = process.env[`${prefix}_PASSWORD`];
+  if (!password) throw new Error(`Falta ${prefix}_PASSWORD. Ejecutar make setup o configurar el entorno.`);
+  const sslEnabled = process.env.POSTGRES_SSL === "true";
+  if (process.env.CDRL_DATABASE_MODE === "external" && !sslEnabled) {
+    throw new Error("El modo external requiere POSTGRES_SSL=true y un certificado confiable.");
   }
+  const caPath = process.env.POSTGRES_SSL_CA_FILE;
+  return {
+    host: process.env.POSTGRES_HOST || "localhost",
+    port: Number(process.env.POSTGRES_PORT || 5432),
+    database: process.env.POSTGRES_DB || "cdrl",
+    user: process.env[`${prefix}_USER`] || (role === "bootstrap" ? "cdrl_dev" : `cdrl_${role}`),
+    password,
+    ssl: sslEnabled ? { rejectUnauthorized: true, ...(caPath ? { ca: fs.readFileSync(caPath, "utf8") } : {}) } : false,
+    connectionTimeoutMillis: 5000,
+    application_name: `cdrl_${role}`
+  };
 }
-
-loadEnvFile(path.join(rootDir, ".env"));
-loadEnvFile(path.join(rootDir, ".env.example"));
-
-export const dbConfig = {
-  host: process.env.POSTGRES_HOST ?? "localhost",
-  port: Number(process.env.POSTGRES_PORT ?? 5432),
-  database: process.env.POSTGRES_DB ?? "cdrl",
-  user: process.env.POSTGRES_USER ?? "cdrl_dev",
-  password: process.env.POSTGRES_PASSWORD ?? "cdrl_dev_only"
-};
 
 export { rootDir };

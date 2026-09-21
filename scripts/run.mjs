@@ -18,5 +18,5 @@ const summary = await withClient(async (client) => {
   return { counts: counts.rows[0], events: events.rows };
 });
 
-console.log("Resumen del modelo operativo CDRL M02");
+console.log("Resumen CDRL M03 (conexion de solo lectura)");
 console.log(JSON.stringify(summary, null, 2));

@@ -1,10 +1,15 @@
 .env
+.env.*
+!.env.example
+.local/
 .venv/
 node_modules/
 __pycache__/
 .pytest_cache/
 artifacts/*.xml
 artifacts/*.log
+artifacts/*-tests.json
+artifacts/*-secrets.json
 evidence/*-local.json
 db/data/
 docker-data/

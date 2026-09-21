@@ -22,4 +22,4 @@ await withClient(async (client) => {
       throw error;
     }
   }
-});
+}, "migrator");

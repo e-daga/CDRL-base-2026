@@ -2,18 +2,10 @@
 
 setup:
 	npm ci
-	docker compose up -d postgres
-	node scripts/wait-for-postgres.mjs
-	node scripts/migrate.mjs
-	node scripts/seed.mjs
+	node scripts/setup.mjs
 
 verify:
 	npm ci
-	docker compose up -d postgres
-	node scripts/wait-for-postgres.mjs
-	node scripts/migrate.mjs
-	node scripts/seed.mjs
-	npm test
 	node scripts/verify.mjs
 
 run:

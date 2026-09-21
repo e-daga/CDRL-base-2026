@@ -4,7 +4,7 @@ import { createClient } from "../src/db.mjs";
 const maxAttempts = Number(process.env.POSTGRES_WAIT_ATTEMPTS ?? 30);
 
 for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-  const client = createClient();
+  const client = createClient("bootstrap");
   try {
     await client.connect();
     await client.query("select 1");
