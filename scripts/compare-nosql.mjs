@@ -1,16 +1,22 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { compareMatrix } from "../src/nosql-decision.mjs";
+import { buildM04Report } from "../src/m04-decision.mjs";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const matrixPath = path.join(rootDir, "docs", "m04-nosql-matrix.json");
 const outputPath = path.join(rootDir, "artifacts", "m04-comparison.json");
-const matrix = JSON.parse(fs.readFileSync(matrixPath, "utf8"));
-const comparison = compareMatrix(matrix);
-
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-fs.writeFileSync(outputPath, `${JSON.stringify(comparison, null, 2)}\n`);
+let report;
+try {
+  const matrix = JSON.parse(fs.readFileSync(matrixPath, "utf8"));
+  report = buildM04Report(matrix);
+  fs.writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`);
+} catch (error) {
+  fs.writeFileSync(outputPath, JSON.stringify({ assignmentId: "m04-nosql-decision", status: "failed", error: error.message }, null, 2) + "\n");
+  throw error;
+}
+const comparison = report.comparison;
 console.log(`Comparacion M04 generada: ${path.relative(rootDir, outputPath)}`);
 for (const item of comparison.clasificacion) {
   console.log(`${item.puesto}. ${item.nombre}: ${item.resultadoSobre100}/100`);

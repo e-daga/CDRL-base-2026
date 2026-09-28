@@ -9,6 +9,7 @@
     "test": "node scripts/test.mjs",
     "verify": "node scripts/verify.mjs",
     "scan:secrets": "node scripts/scan-secrets.mjs",
+    "compare:nosql": "node scripts/compare-nosql.mjs",
     "rotate:secret": "node scripts/rotate-secret.mjs",
     "run": "node scripts/run.mjs"
   },

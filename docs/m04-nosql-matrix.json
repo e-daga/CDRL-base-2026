@@ -1,53 +1,336 @@
 {
-  "version": 1,
+  "version": 2,
   "escala": "1-5, donde 5 = mejor adecuación",
   "criterios": {
-    "consultas":    { "peso": 30, "justificacion": "Las dos consultas centrales (eventos por dispositivo, alertas abiertas) definen si la base sirve o no." },
-    "escala":       { "peso": 20, "justificacion": "Crecimiento de eventos por dispositivo en el tiempo." },
-    "consistencia": { "peso": 20, "justificacion": "Una alerta abierta debe verse de inmediato y sin duplicados." },
-    "costo":        { "peso": 15, "justificacion": "Restricción de proyecto, pero secundaria frente a que funcione." },
-    "fallos":       { "peso": 15, "justificacion": "Recuperación y disponibilidad ante caída de nodos o región." }
+    "consultas": {
+      "peso": 30,
+      "justificacion": "Las dos consultas centrales (eventos por dispositivo, alertas abiertas) definen si la base sirve o no."
+    },
+    "escala": {
+      "peso": 20,
+      "justificacion": "Crecimiento de eventos por dispositivo en el tiempo."
+    },
+    "consistencia": {
+      "peso": 20,
+      "justificacion": "Una alerta abierta debe verse de inmediato y sin duplicados."
+    },
+    "costo": {
+      "peso": 15,
+      "justificacion": "Restricción de proyecto, pero secundaria frente a que funcione."
+    },
+    "fallos": {
+      "peso": 15,
+      "justificacion": "Recuperación y disponibilidad ante caída de nodos o región."
+    }
   },
   "alternativas": [
     {
-      "tipo": "document", "nombre": "MongoDB",
+      "tipo": "document",
+      "nombre": "MongoDB",
       "puntuaciones": {
-        "consultas":    { "score": 5, "hipotesis": { "supone": "Índice compuesto (device_id, ts) y otro en (status) resuelven ambas consultas", "comprobar": "Cargar datos sintéticos y correr explain() de ambas", "falso_si": "Alguna consulta hace COLLSCAN o pasa de 100 ms con el volumen supuesto" } },
-        "escala":       { "score": 4, "hipotesis": { "supone": "Sharding por device_id soporta el volumen", "comprobar": "Prueba de carga con volumen supuesto x10", "falso_si": "La latencia de escritura se degrada más de 2x" } },
-        "consistencia": { "score": 4, "hipotesis": { "supone": "Con writeConcern majority y lectura del primario no hay lecturas viejas", "comprobar": "Escribir alerta y leerla inmediatamente 1000 veces", "falso_si": "Alguna lectura no ve la alerta" } },
-        "costo":        { "score": 3, "hipotesis": { "supone": "Costo de Atlas en escenario Atlas M30 de 3 nodos, fecha 27/09/2026, región us-east-1", "comprobar": "Calculadora oficial con el volumen de M04-carga-y-consultas.md", "falso_si": "El costo mensual supera el presupuesto definido" } },
-        "fallos":       { "score": 4, "hipotesis": { "supone": "Replica set con failover automático", "comprobar": "Apagar el primario y medir tiempo de elección", "falso_si": "Hay pérdida de escrituras confirmadas o más de 30 s de caída" } }
+        "consultas": {
+          "score": 5,
+          "hipotesis": {
+            "supone": "Indices (device_id, observed_at DESC) en eventos y (status, device_id, severity) en alertas cubren Q1/Q2; consultas globales requieren indice con status como prefijo.",
+            "comprobar": "Cargar 77.76 millones de eventos sinteticos y 500 alertas; ejecutar explain y 1000 consultas de hasta 100 filas tras calentamiento.",
+            "falso_si": "Q1 o Q2 usa COLLSCAN o su p95 supera 100 ms."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://www.mongodb.com/docs/manual/core/indexes/index-types/index-compound/",
+            "https://www.mongodb.com/docs/manual/core/causal-consistency-read-write-concerns/",
+            "https://www.mongodb.com/pricing"
+          ]
+        },
+        "escala": {
+          "score": 4,
+          "hipotesis": {
+            "supone": "Un replica set de tres miembros puede sostener la carga base; sharding se reconsidera solo si crece 10x, verificando distribucion por dispositivo.",
+            "comprobar": "Medir 10 y 100 eventos/s durante 30 minutos por escenario, registrando recursos y p95 de escrituras.",
+            "falso_si": "A 100 eventos/s p95 supera 100 ms, duplica la base, o aparece atraso sostenido de mas de 60 s."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://www.mongodb.com/docs/manual/core/indexes/index-types/index-compound/",
+            "https://www.mongodb.com/docs/manual/core/causal-consistency-read-write-concerns/",
+            "https://www.mongodb.com/pricing"
+          ]
+        },
+        "consistencia": {
+          "score": 4,
+          "hipotesis": {
+            "supone": "Sesion causal con readConcern majority y writeConcern majority permite leer las propias escrituras confirmadas; la unicidad requiere indice por event_id, no solo leer el primario.",
+            "comprobar": "Realizar 1000 escrituras/lecturas en una sesion causal, reintentar 100 event_id y repetir durante una eleccion. Contar lecturas y duplicados.",
+            "falso_si": "Una lectura exitosa en la sesion omite su escritura confirmada o hay event_id duplicados; timeouts durante perdida de quorum se registran como indisponibilidad."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://www.mongodb.com/docs/manual/core/indexes/index-types/index-compound/",
+            "https://www.mongodb.com/docs/manual/core/causal-consistency-read-write-concerns/",
+            "https://www.mongodb.com/pricing"
+          ]
+        },
+        "costo": {
+          "score": 3,
+          "hipotesis": {
+            "supone": "Una configuracion Atlas dedicada equivalente a tres replicas cubre el workload por hasta 1000 USD/mes; score 3 es estimacion cualitativa pendiente de cotizar.",
+            "comprobar": "Cotizar en us-east-1 con fecha, 77.76 GB logicos mas indices, replicas, backup y transferencia; incluir operacion y las 25.92M inserciones/mes. Guardar la cotizacion antes de desplegar.",
+            "falso_si": "El total mensual supera 1000 USD o el dimensionamiento cotizado no soporta Q1/Q2 y la retencion."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://www.mongodb.com/docs/manual/core/indexes/index-types/index-compound/",
+            "https://www.mongodb.com/docs/manual/core/causal-consistency-read-write-concerns/",
+            "https://www.mongodb.com/pricing"
+          ]
+        },
+        "fallos": {
+          "score": 4,
+          "hipotesis": {
+            "supone": "Tres miembros en dominios de fallo distintos permiten recuperar la perdida de un nodo sin perder escrituras majority confirmadas; no se promete recuperacion regional automatica.",
+            "comprobar": "Interrumpir un miembro en 10 ensayos, medir tiempo hasta aceptar escrituras y comparar event_id confirmados antes/despues.",
+            "falso_si": "La recuperacion de un nodo supera 30 s o falta algun evento confirmado; con dos nodos perdidos se debe fallar de forma explicita."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://www.mongodb.com/docs/manual/core/indexes/index-types/index-compound/",
+            "https://www.mongodb.com/docs/manual/core/causal-consistency-read-write-concerns/",
+            "https://www.mongodb.com/pricing"
+          ]
+        }
       }
     },
     {
-      "tipo": "graph", "nombre": "Neo4j",
+      "tipo": "graph",
+      "nombre": "Neo4j",
       "puntuaciones": {
-        "consultas":    { "score": 2, "hipotesis": { "supone": "Las consultas no son de relaciones profundas, así que el grafo no aporta ventaja", "comprobar": "Modelar ambas consultas en Cypher y medir contra MongoDB", "falso_si": "Neo4j iguala o supera a MongoDB en ambas" } },
-        "escala":       { "score": 2, "hipotesis": { "supone": "Escalar escrituras masivas de series de eventos es difícil en Neo4j", "comprobar": "Ingesta del volumen supuesto y medir eventos/s", "falso_si": "Sostiene la ingesta sin degradarse" } },
-        "consistencia": { "score": 4, "hipotesis": { "supone": "Transacciones ACID en el nodo primario", "comprobar": "Mismo test de escritura-lectura inmediata", "falso_si": "Aparecen lecturas viejas" } },
-        "costo":        { "score": 2, "hipotesis": { "supone": "Costo de AuraDB en escenario AuraDB Professional 8 GB, fecha 27/09/2026, región us-east-1", "comprobar": "Cotización oficial con el volumen supuesto", "falso_si": "Resulta más barato que MongoDB" } },
-        "fallos":       { "score": 3, "hipotesis": { "supone": "Clúster con failover funciona pero es más complejo de operar", "comprobar": "Simular caída de un miembro del clúster", "falso_si": "Recupera sin intervención manual" } }
+        "consultas": {
+          "score": 2,
+          "hipotesis": {
+            "supone": "Sin recorridos de multiples saltos, representar eventos y alertas como grafo no aporta una ventaja clara para Q1/Q2.",
+            "comprobar": "Usar indices por device_id/fecha y estado; medir 1000 consultas de hasta 100 filas en el mismo workload y recursos comparables.",
+            "falso_si": "Neo4j logra p95 menor o igual al de MongoDB en ambas consultas y mantiene p95 <=100 ms."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://neo4j.com/docs/operations-manual/current/clustering/introduction/",
+            "https://neo4j.com/docs/getting-started/appendix/graphdb-concepts/"
+          ]
+        },
+        "escala": {
+          "score": 2,
+          "hipotesis": {
+            "supone": "La distribucion de escrituras para este modelo de eventos requiere mas diseno que una particion natural por dispositivo; esto es una hipotesis, no una limitacion universal.",
+            "comprobar": "Medir 10 y 100 eventos/s durante 30 min con topologia documentada y recursos equivalentes.",
+            "falso_si": "Mantiene p95 <=100 ms y atraso <=60 s a 100 eventos/s sin mayor costo operativo que el candidato document."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://neo4j.com/docs/operations-manual/current/clustering/introduction/",
+            "https://neo4j.com/docs/getting-started/appendix/graphdb-concepts/"
+          ]
+        },
+        "consistencia": {
+          "score": 4,
+          "hipotesis": {
+            "supone": "Transacciones e intercambio de bookmarks pueden satisfacer lectura de escrituras previas; se necesita restriccion unica para event_id.",
+            "comprobar": "1000 ciclos de escritura/lectura con bookmarks y 100 reintentos de event_id, incluyendo cambio de lider.",
+            "falso_si": "Alguna lectura exitosa con bookmark omite la escritura confirmada o se generan duplicados."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://neo4j.com/docs/operations-manual/current/clustering/introduction/",
+            "https://neo4j.com/docs/getting-started/appendix/graphdb-concepts/"
+          ]
+        },
+        "costo": {
+          "score": 2,
+          "hipotesis": {
+            "supone": "Un servicio o cluster con la alta disponibilidad requerida resulta mas caro que el candidato document; score 2 no es una cotizacion.",
+            "comprobar": "Cotizar una topologia HA real, no equiparar automaticamente AuraDB Professional con un cluster de tres miembros. Usar la misma retencion, region y operaciones; registrar precio y fecha.",
+            "falso_si": "El costo total es menor o igual al de document y ambos cumplen los mismos objetivos."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://neo4j.com/docs/operations-manual/current/clustering/introduction/",
+            "https://neo4j.com/docs/getting-started/appendix/graphdb-concepts/"
+          ]
+        },
+        "fallos": {
+          "score": 3,
+          "hipotesis": {
+            "supone": "Un cluster HA puede recuperarse, pero su operacion podria requerir mas intervenciones para este equipo.",
+            "comprobar": "En 10 caidas de un miembro, registrar recuperacion, escrituras confirmadas e intervenciones humanas.",
+            "falso_si": "Los 10 ensayos recuperan <=30 s, con cero perdidas y cero intervenciones; en ese caso revisar el score conservador."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://neo4j.com/docs/operations-manual/current/clustering/introduction/",
+            "https://neo4j.com/docs/getting-started/appendix/graphdb-concepts/"
+          ]
+        }
       }
     },
     {
-      "tipo": "column", "nombre": "Cassandra",
+      "tipo": "column",
+      "nombre": "Cassandra",
       "puntuaciones": {
-        "consultas":    { "score": 4, "hipotesis": { "supone": "Partición por device_id y clustering por ts resuelve eventos; alertas abiertas requieren tabla aparte", "comprobar": "Modelar ambas tablas y medir latencia", "falso_si": "Alertas abiertas exigen ALLOW FILTERING o escaneo" } },
-        "escala":       { "score": 5, "hipotesis": { "supone": "Escritura lineal al agregar nodos", "comprobar": "Prueba con 3 y 6 nodos", "falso_si": "El throughput no crece de forma proporcional" } },
-        "consistencia": { "score": 3, "hipotesis": { "supone": "Consistencia eventual por defecto; QUORUM lo mitiga a costa de latencia", "comprobar": "Test de lectura inmediata con ONE y con QUORUM", "falso_si": "QUORUM ya elimina lecturas viejas sin costo notable" } },
-        "costo":        { "score": 3, "hipotesis": { "supone": "Mínimo de 3 nodos, escenario 3 nodos EC2 m5.large, fecha 27/09/2026, región us-east-1", "comprobar": "Cotizar 3 nodos o servicio administrado", "falso_si": "Un solo nodo cubre la carga supuesta" } },
-        "fallos":       { "score": 5, "hipotesis": { "supone": "Sin punto único de falla con RF=3", "comprobar": "Apagar un nodo durante escritura continua", "falso_si": "Hay errores de escritura o pérdida de datos" } }
+        "consultas": {
+          "score": 4,
+          "hipotesis": {
+            "supone": "Tablas por consulta: eventos particionados por (device_id, dia) con observed_at como clustering y una proyeccion para alertas abiertas evitan particiones sin limite.",
+            "comprobar": "Disenar Q1/Q2 con RF=3 y limites por dia; ejecutar 1000 consultas de hasta 100 filas y registrar mantenimiento de ambas proyecciones.",
+            "falso_si": "Se requiere ALLOW FILTERING, p95 >100 ms o quedan alertas abiertas desactualizadas tras una escritura confirmada por la aplicacion."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://cassandra.apache.org/doc/latest/cassandra/developing/data-modeling/intro.html",
+            "https://cassandra.apache.org/doc/latest/cassandra/architecture/dynamo.html"
+          ]
+        },
+        "escala": {
+          "score": 5,
+          "hipotesis": {
+            "supone": "La ingesta particionada puede aprovechar nodos adicionales; no se da por hecho crecimiento exactamente lineal.",
+            "comprobar": "Comparar 3 y 6 nodos iguales, RF=3, igual consistencia, carga y distribucion, aumentando concurrencia hasta saturacion.",
+            "falso_si": "El throughput con 6 nodos es menor a 1.6x el de 3 al mismo p95 <=100 ms."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://cassandra.apache.org/doc/latest/cassandra/developing/data-modeling/intro.html",
+            "https://cassandra.apache.org/doc/latest/cassandra/architecture/dynamo.html"
+          ]
+        },
+        "consistencia": {
+          "score": 3,
+          "hipotesis": {
+            "supone": "Con RF=3 y lecturas/escrituras LOCAL_QUORUM se superponen replicas en un DC, pero no se obtiene automaticamente transaccion entre las proyecciones de eventos y alertas.",
+            "comprobar": "1000 lecturas tras escritura y 100 reintentos por evento; probar interrupcion entre actualizaciones de proyecciones, idempotencia y LWT si se requieren.",
+            "falso_si": "Se obtiene lectura y unicidad coherentes entre proyecciones, sin reconciliacion y con p95 <=100 ms; subir score si se demuestra."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://cassandra.apache.org/doc/latest/cassandra/developing/data-modeling/intro.html",
+            "https://cassandra.apache.org/doc/latest/cassandra/architecture/dynamo.html"
+          ]
+        },
+        "costo": {
+          "score": 3,
+          "hipotesis": {
+            "supone": "Tres nodos EC2 m5.large son solo un punto inicial de dimensionamiento; score 3 supone total <=1000 USD/mes con tolerancia a un nodo perdido.",
+            "comprobar": "Cotizar en us-east-1 3 nodos, discos para RF=3 e indices/proyecciones, backup, transferencia y operacion; 77.76 GB son datos logicos, no fisicos.",
+            "falso_si": "Total >1000 USD/mes o discos/recursos insuficientes. Un nodo barato no cumple el mismo objetivo de disponibilidad."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://cassandra.apache.org/doc/latest/cassandra/developing/data-modeling/intro.html",
+            "https://cassandra.apache.org/doc/latest/cassandra/architecture/dynamo.html"
+          ]
+        },
+        "fallos": {
+          "score": 5,
+          "hipotesis": {
+            "supone": "RF=3 con LOCAL_QUORUM puede tolerar un nodo no disponible en ese DC; una particion sin quorum debe rechazar peticiones.",
+            "comprobar": "Diez fallos de un nodo durante ingesta; verificar eventos confirmados y reintentos. Separar errores transitorios del estado recuperado.",
+            "falso_si": "Persisten errores despues de 30 s o se pierde algun evento confirmado; no se exige ausencia absoluta de timeouts durante el fallo."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://cassandra.apache.org/doc/latest/cassandra/developing/data-modeling/intro.html",
+            "https://cassandra.apache.org/doc/latest/cassandra/architecture/dynamo.html"
+          ]
+        }
       }
     },
     {
-      "tipo": "object", "nombre": "S3",
+      "tipo": "object",
+      "nombre": "S3",
       "puntuaciones": {
-        "consultas":    { "score": 1, "hipotesis": { "supone": "Sin motor de consulta, S3 no filtra por dispositivo ni por estado", "comprobar": "Intentar ambas consultas solo con S3 (sin Athena)", "falso_si": "Con prefijos por device_id/fecha responde en tiempo aceptable" } },
-        "escala":       { "score": 5, "hipotesis": { "supone": "Almacenamiento prácticamente ilimitado", "comprobar": "Revisar límites en documentación oficial", "falso_si": "Aparece un límite que afecte el volumen supuesto" } },
-        "consistencia": { "score": 4, "hipotesis": { "supone": "Lectura tras escritura consistente por objeto", "comprobar": "Revisar documentación oficial y probar PUT y GET inmediato", "falso_si": "Hay un GET que no ve el objeto recién escrito" } },
-        "costo":        { "score": 5, "hipotesis": { "supone": "Almacenamiento barato por GB, escenario S3 Standard 78 GB y 5M requests/mes, fecha 27/09/2026, región us-east-1", "comprobar": "Calculadora de AWS con GB totales y número de requests", "falso_si": "Los requests y el egress superan el ahorro en almacenamiento" } },
-        "fallos":       { "score": 5, "hipotesis": { "supone": "Alta durabilidad y disponibilidad administrada", "comprobar": "Revisar SLA oficial de la región elegida", "falso_si": "El SLA no cubre el objetivo de disponibilidad" } }
+        "consultas": {
+          "score": 1,
+          "hipotesis": {
+            "supone": "S3 almacena objetos y permite organizar prefijos, pero Q1/Q2 necesitan lectura y filtrado de objetos o un indice/motor adicional.",
+            "comprobar": "Medir 1000 Q1/Q2 con prefijos device_id/fecha y limite 100, incluyendo todas las peticiones/bytes de filtrado; no usar Athena en la opcion S3-solo.",
+            "falso_si": "Ambas consultas alcanzan p95 <=100 ms sin indice externo y el costo total cumple el presupuesto."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+            "https://aws.amazon.com/s3/pricing/"
+          ]
+        },
+        "escala": {
+          "score": 5,
+          "hipotesis": {
+            "supone": "La capacidad del servicio puede cubrir 77.76 GB logicos y 10 eventos/s; limites de peticiones y prefijos deben revisarse.",
+            "comprobar": "Revisar limites oficiales y probar la ingesta base y 10x durante 30 minutos por escenario.",
+            "falso_si": "No sostiene 100 eventos/s sin atraso >60 s o p95 de escritura >100 ms despues de reintentos acotados."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+            "https://aws.amazon.com/s3/pricing/"
+          ]
+        },
+        "consistencia": {
+          "score": 4,
+          "hipotesis": {
+            "supone": "S3 ofrece consistencia fuerte por objeto; eso no equivale a transaccion atomica entre evento, alerta e indice.",
+            "comprobar": "1000 PUT/GET secuenciales de un mismo objeto y pruebas interrumpidas entre escritura de evento y alerta.",
+            "falso_si": "GET exitoso no ve el ultimo PUT confirmado del objeto, o se demuestra que Q2 puede actualizarse atomicamente sin coordinacion externa (revisar score)."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+            "https://aws.amazon.com/s3/pricing/"
+          ]
+        },
+        "costo": {
+          "score": 5,
+          "hipotesis": {
+            "supone": "S3-solo puede tener menor costo de almacenamiento; score 5 es hipotesis de costo total, no justifica por si sola elegirlo como base operativa.",
+            "comprobar": "Cotizar us-east-1 S3 Standard: 77.76 GB logicos y 25.92M PUT/mes si cada evento es objeto. Sumar GET/LIST reales de 2.592M consultas/mes, transferencia y operacion. Si hay lotes, registrar tamano y recalcular PUT y latencia.",
+            "falso_si": "Costo total >= candidato document o >1000 USD/mes. No reutilizar la estimacion original de 5M requests, incompatible con un objeto por evento."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+            "https://aws.amazon.com/s3/pricing/"
+          ]
+        },
+        "fallos": {
+          "score": 5,
+          "hipotesis": {
+            "supone": "Disponibilidad administrada y durabilidad son propiedades distintas; el SLA debe ser compatible con objetivo 99.9%, sin implicar recuperacion regional automatica.",
+            "comprobar": "Revisar SLA de la clase y disenar una prueba de indisponibilidad de API con reintentos acotados, restauracion y verificacion de objetos. Proponer RTO regional de 1 hora y RPO de 24 horas para copias.",
+            "falso_si": "El compromiso de disponibilidad queda por debajo de 99.9%, se pierden objetos confirmados o una prueba de restauracion excede RTO/RPO propuestos."
+          },
+          "estado": "hipotesis_no_medida",
+          "fuentes": [
+            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+            "https://aws.amazon.com/s3/pricing/"
+          ]
+        }
       }
     }
-  ]
+  ],
+  "estado": "decision_condicionada_a_validacion",
+  "supuestos": {
+    "dispositivos": 100,
+    "eventosPorDispositivoMinuto": 6,
+    "bytesPorEvento": 1000,
+    "retencionDias": 90,
+    "diasMes": 30,
+    "consultasPorSegundo": 1,
+    "limiteConsulta": 100,
+    "p95LecturaMs": 100,
+    "p95EscrituraMs": 100,
+    "recuperacionNodoSegundos": 30,
+    "disponibilidadObjetivo": 0.999,
+    "presupuestoMensualUSD": 1000,
+    "region": "us-east-1",
+    "fechaReferencia": "2026-09-27",
+    "naturaleza": "Supuestos de evaluacion propuestos; no mediciones ni autorizacion de gasto."
+  },
+  "alcance": "Comparacion arquitectonica. Los tests comprueban contrato, calculos y sensibilidad; no ejecutan benchmarks de motores NoSQL."
 }

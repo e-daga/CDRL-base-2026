@@ -1,0 +1,63 @@
+{
+  "assignmentId": "m04-nosql-decision",
+  "repository": "https://github.com/e-daga/CDRL-base-2026",
+  "tag": "week-04-final",
+  "status": "implemented",
+  "commands": [
+    "make setup",
+    "make verify",
+    "make run"
+  ],
+  "selection": {
+    "type": "document",
+    "name": "MongoDB",
+    "status": "conditional",
+    "rejectedAlternative": "Cassandra (column)",
+    "adr": "docs/ADR-004-decision-nosql.md"
+  },
+  "results": {
+    "matrix": "docs/m04-nosql-matrix.json",
+    "comparison": "artifacts/m04-comparison.json",
+    "machineReadableArtifact": "artifacts/m04-verify.json",
+    "runtimeEvidence": "evidence/m04-nosql-decision-local.json",
+    "tests": [
+      "tests/nosql-decision.test.mjs",
+      "tests/m04-integration.test.mjs"
+    ]
+  },
+  "cases": {
+    "normal": "Ranking ponderado y volumen conocidos de antemano.",
+    "boundaries": [
+      "Empate sin ganador inventado.",
+      "Criterio con peso cero.",
+      "Cambio de ganador al priorizar escala."
+    ],
+    "declaredFailure": "Pesos que no suman 100; tambien faltas de categorias, fuentes o hipotesis."
+  },
+  "assumptions": [
+    "Las veinte puntuaciones son hipotesis de adecuacion, no benchmarks.",
+    "El presupuesto de 1000 USD/mes es un umbral supuesto, no cotizacion ni autorizacion de gasto.",
+    "Docker Compose mantiene PostgreSQL y las regresiones M01-M03."
+  ],
+  "limitations": [
+    "No se desplegaron motores NoSQL ni AWS Academy.",
+    "El resultado automatico valida el contrato y los calculos; la validacion empirica de hipotesis sigue pendiente.",
+    "Cada reporte identifica su revision; el artefacto de Actions del tag contiene el SHA final exacto."
+  ],
+  "authorship": [
+    {
+      "name": "Francesco Romero",
+      "commit": "01b774c",
+      "contribution": "Carga, criterios ponderados y matriz inicial."
+    },
+    {
+      "name": "Jonathan (Radh117)",
+      "commit": "e19cd84",
+      "contribution": "Comparador reproducible, fixtures y seis pruebas iniciales."
+    },
+    {
+      "name": "Eddi Daga",
+      "contribution": "Revision, ADR, integracion, pruebas de entrega y cierre."
+    }
+  ]
+}

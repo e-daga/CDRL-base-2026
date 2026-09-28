@@ -82,10 +82,7 @@ export function compareMatrix(matrix) {
     const scores = {};
     for (const [criterionName, criterion] of criteria) {
       const entry = alternative.puntuaciones[criterionName];
-      scores[criterionName] = {
-        score: entry.score,
-        hipotesis: { ...entry.hipotesis }
-      };
+      scores[criterionName] = structuredClone(entry);
       result += criterion.peso * entry.score / 5;
     }
     return {

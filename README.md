@@ -1,4 +1,33 @@
-# CDRL-base-2026 - M03 roles y secretos
+# CDRL-base-2026 - M04 decision arquitectonica NoSQL
+
+M04 compara document (MongoDB), graph (Neo4j), column (Cassandra) y object
+(S3) con una matriz ponderada reproducible. MongoDB obtiene 83/100 frente
+a Cassandra 80/100; la seleccion es condicional y cambia si escala recibe
+mas peso. No se afirma haber ejecutado benchmarks de esos motores.
+
+## Entrega actual M04
+
+Ejecutar `make setup && make verify && make run`. Se conservan las pruebas
+de M01-M03 y se agregan las de decision NoSQL; fallos, skips y TODOs impiden
+aprobar. `npm run compare:nosql` permite revisar solo el calculo, sin levantar
+otro motor. El comando `make run` muestra datos del respaldo PostgreSQL y
+la clasificacion M04, sus supuestos y sensibilidad.
+
+- [ADR de la seleccion y alternativa descartada](docs/ADR-004-decision-nosql.md).
+- [Carga y consultas](docs/M04-carga-y-consultas.md).
+- [Matriz con veinte hipotesis falsables y fuentes](docs/m04-nosql-matrix.json).
+- `artifacts/m04-comparison.json`: calculo y sensibilidad.
+- `artifacts/m04-verify.json`: pruebas, revision, comparacion y secretos.
+- `evidence/m04-nosql-decision.json`: manifiesto versionado.
+- `evidence/m04-nosql-decision-local.json`: evidencia ejecutada con SHA exacto.
+
+Entregar URL, tag `week-04-final`, SHA de `git rev-parse week-04-final^{commit}`,
+salida `artifacts/m04-verify.log` y evidencia ejecutada. Actions adjunta el
+paquete `m04-delivery-SHA` del tag. Los reportes versionados son instantaneas
+del commit indicado en su interior; el paquete del tag corresponde al SHA final.
+Los objetivos de rendimiento y costo son hipotesis, no resultados medidos.
+
+## Base conservada M01-M03
 
 Proyecto de equipo Cloud Data Reliability Lab. Conserva M01 (contrato de
 telemetria), M02 (modelo operativo) y agrega M03 (roles separados y secretos).
@@ -106,7 +135,7 @@ Un escaneo sin hallazgos no garantiza la ausencia de todo secreto posible.
 - [ADR M01](docs/ADR-001-contrato-telemetria-postgresql.md).
 - [ADR M02](docs/ADR-002-modelo-relacional-operativo.md).
 
-Entregar URL del repositorio, tag week-03-final, SHA exacto, salida de make verify
+La entrega historica M03 usa URL del repositorio, tag week-03-final, SHA exacto, salida de make verify
 y evidencia generada. git rev-parse week-03-final^{commit} devuelve el SHA.
 No usar force push ni borrar/recrear los tags finales.
 
