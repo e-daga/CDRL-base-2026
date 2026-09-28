@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "escala": "1-5, donde 5 = mejor adecuación",
+  "criterios": {
+    "consultas":    { "peso": 30, "justificacion": "Las dos consultas centrales (eventos por dispositivo, alertas abiertas) definen si la base sirve o no." },
+    "escala":       { "peso": 20, "justificacion": "Crecimiento de eventos por dispositivo en el tiempo." },
+    "consistencia": { "peso": 20, "justificacion": "Una alerta abierta debe verse de inmediato y sin duplicados." },
+    "costo":        { "peso": 15, "justificacion": "Restricción de proyecto, pero secundaria frente a que funcione." },
+    "fallos":       { "peso": 15, "justificacion": "Recuperación y disponibilidad ante caída de nodos o región." }
+  },
+  "alternativas": [
+    {
+      "tipo": "document", "nombre": "MongoDB",
+      "puntuaciones": {
+        "consultas":    { "score": 5, "hipotesis": { "supone": "Índice compuesto (device_id, ts) y otro en (status) resuelven ambas consultas", "comprobar": "Cargar datos sintéticos y correr explain() de ambas", "falso_si": "Alguna consulta hace COLLSCAN o pasa de 100 ms con el volumen supuesto" } },
+        "escala":       { "score": 4, "hipotesis": { "supone": "Sharding por device_id soporta el volumen", "comprobar": "Prueba de carga con volumen supuesto x10", "falso_si": "La latencia de escritura se degrada más de 2x" } },
+        "consistencia": { "score": 4, "hipotesis": { "supone": "Con writeConcern majority y lectura del primario no hay lecturas viejas", "comprobar": "Escribir alerta y leerla inmediatamente 1000 veces", "falso_si": "Alguna lectura no ve la alerta" } },
+        "costo":        { "score": 3, "hipotesis": { "supone": "Costo de Atlas en escenario Atlas M30 de 3 nodos, fecha 27/09/2026, región us-east-1", "comprobar": "Calculadora oficial con el volumen de M04-carga-y-consultas.md", "falso_si": "El costo mensual supera el presupuesto definido" } },
+        "fallos":       { "score": 4, "hipotesis": { "supone": "Replica set con failover automático", "comprobar": "Apagar el primario y medir tiempo de elección", "falso_si": "Hay pérdida de escrituras confirmadas o más de 30 s de caída" } }
+      }
+    },
+    {
+      "tipo": "graph", "nombre": "Neo4j",
+      "puntuaciones": {
+        "consultas":    { "score": 2, "hipotesis": { "supone": "Las consultas no son de relaciones profundas, así que el grafo no aporta ventaja", "comprobar": "Modelar ambas consultas en Cypher y medir contra MongoDB", "falso_si": "Neo4j iguala o supera a MongoDB en ambas" } },
+        "escala":       { "score": 2, "hipotesis": { "supone": "Escalar escrituras masivas de series de eventos es difícil en Neo4j", "comprobar": "Ingesta del volumen supuesto y medir eventos/s", "falso_si": "Sostiene la ingesta sin degradarse" } },
+        "consistencia": { "score": 4, "hipotesis": { "supone": "Transacciones ACID en el nodo primario", "comprobar": "Mismo test de escritura-lectura inmediata", "falso_si": "Aparecen lecturas viejas" } },
+        "costo":        { "score": 2, "hipotesis": { "supone": "Costo de AuraDB en escenario AuraDB Professional 8 GB, fecha 27/09/2026, región us-east-1", "comprobar": "Cotización oficial con el volumen supuesto", "falso_si": "Resulta más barato que MongoDB" } },
+        "fallos":       { "score": 3, "hipotesis": { "supone": "Clúster con failover funciona pero es más complejo de operar", "comprobar": "Simular caída de un miembro del clúster", "falso_si": "Recupera sin intervención manual" } }
+      }
+    },
+    {
+      "tipo": "column", "nombre": "Cassandra",
+      "puntuaciones": {
+        "consultas":    { "score": 4, "hipotesis": { "supone": "Partición por device_id y clustering por ts resuelve eventos; alertas abiertas requieren tabla aparte", "comprobar": "Modelar ambas tablas y medir latencia", "falso_si": "Alertas abiertas exigen ALLOW FILTERING o escaneo" } },
+        "escala":       { "score": 5, "hipotesis": { "supone": "Escritura lineal al agregar nodos", "comprobar": "Prueba con 3 y 6 nodos", "falso_si": "El throughput no crece de forma proporcional" } },
+        "consistencia": { "score": 3, "hipotesis": { "supone": "Consistencia eventual por defecto; QUORUM lo mitiga a costa de latencia", "comprobar": "Test de lectura inmediata con ONE y con QUORUM", "falso_si": "QUORUM ya elimina lecturas viejas sin costo notable" } },
+        "costo":        { "score": 3, "hipotesis": { "supone": "Mínimo de 3 nodos, escenario 3 nodos EC2 m5.large, fecha 27/09/2026, región us-east-1", "comprobar": "Cotizar 3 nodos o servicio administrado", "falso_si": "Un solo nodo cubre la carga supuesta" } },
+        "fallos":       { "score": 5, "hipotesis": { "supone": "Sin punto único de falla con RF=3", "comprobar": "Apagar un nodo durante escritura continua", "falso_si": "Hay errores de escritura o pérdida de datos" } }
+      }
+    },
+    {
+      "tipo": "object", "nombre": "S3",
+      "puntuaciones": {
+        "consultas":    { "score": 1, "hipotesis": { "supone": "Sin motor de consulta, S3 no filtra por dispositivo ni por estado", "comprobar": "Intentar ambas consultas solo con S3 (sin Athena)", "falso_si": "Con prefijos por device_id/fecha responde en tiempo aceptable" } },
+        "escala":       { "score": 5, "hipotesis": { "supone": "Almacenamiento prácticamente ilimitado", "comprobar": "Revisar límites en documentación oficial", "falso_si": "Aparece un límite que afecte el volumen supuesto" } },
+        "consistencia": { "score": 4, "hipotesis": { "supone": "Lectura tras escritura consistente por objeto", "comprobar": "Revisar documentación oficial y probar PUT y GET inmediato", "falso_si": "Hay un GET que no ve el objeto recién escrito" } },
+        "costo":        { "score": 5, "hipotesis": { "supone": "Almacenamiento barato por GB, escenario S3 Standard 78 GB y 5M requests/mes, fecha 27/09/2026, región us-east-1", "comprobar": "Calculadora de AWS con GB totales y número de requests", "falso_si": "Los requests y el egress superan el ahorro en almacenamiento" } },
+        "fallos":       { "score": 5, "hipotesis": { "supone": "Alta durabilidad y disponibilidad administrada", "comprobar": "Revisar SLA oficial de la región elegida", "falso_si": "El SLA no cubre el objetivo de disponibilidad" } }
+      }
+    }
+  ]
+}
