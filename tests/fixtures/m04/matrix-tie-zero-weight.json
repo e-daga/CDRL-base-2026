@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "escala": "1-5, 5 es mejor",
+  "criterios": {
+    "consulta": { "peso": 100, "justificacion": "Solo importa la consulta sintetica declarada." },
+    "criterio_inactivo": { "peso": 0, "justificacion": "Criterio neutral para probar peso cero." }
+  },
+  "alternativas": [
+    {
+      "tipo": "document",
+      "nombre": "Empate A",
+      "puntuaciones": {
+        "consulta": { "score": 4, "hipotesis": { "supone": "Consulta indexada", "comprobar": "Calcular fixture", "falso_si": "Resultado distinto al esperado" } },
+        "criterio_inactivo": { "score": 1, "hipotesis": { "supone": "Valor sin peso", "comprobar": "Cambiar score y recalcular", "falso_si": "El resultado cambia" } }
+      }
+    },
+    {
+      "tipo": "graph",
+      "nombre": "Empate B",
+      "puntuaciones": {
+        "consulta": { "score": 4, "hipotesis": { "supone": "Consulta equivalente", "comprobar": "Calcular fixture", "falso_si": "Resultado distinto al esperado" } },
+        "criterio_inactivo": { "score": 5, "hipotesis": { "supone": "Valor sin peso", "comprobar": "Cambiar score y recalcular", "falso_si": "El resultado cambia" } }
+      }
+    }
+  ]
+}

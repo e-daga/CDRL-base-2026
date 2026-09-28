@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "escala": "1-5, 5 es mejor",
+  "criterios": {
+    "consulta": { "peso": 80, "justificacion": "Peso deliberadamente incompleto para el caso negativo." }
+  },
+  "alternativas": [
+    {
+      "tipo": "document",
+      "nombre": "Invalida A",
+      "puntuaciones": {
+        "consulta": { "score": 4, "hipotesis": { "supone": "Fixture invalido", "comprobar": "Invocar validador", "falso_si": "Se acepta" } }
+      }
+    },
+    {
+      "tipo": "column",
+      "nombre": "Invalida B",
+      "puntuaciones": {
+        "consulta": { "score": 3, "hipotesis": { "supone": "Fixture invalido", "comprobar": "Invocar validador", "falso_si": "Se acepta" } }
+      }
+    }
+  ]
+}

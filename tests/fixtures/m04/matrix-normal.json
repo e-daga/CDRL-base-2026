@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "escala": "1-5, 5 es mejor",
+  "criterios": {
+    "lectura": { "peso": 60, "justificacion": "El workload sintetico consulta lecturas por entidad." },
+    "retencion": { "peso": 40, "justificacion": "Se compara la conservacion de eventos sinteticos." }
+  },
+  "alternativas": [
+    {
+      "tipo": "document",
+      "nombre": "Store A",
+      "puntuaciones": {
+        "lectura": { "score": 4, "hipotesis": { "supone": "Indice por entidad", "comprobar": "Cargar fixture sintetico", "falso_si": "La consulta supera el umbral" } },
+        "retencion": { "score": 3, "hipotesis": { "supone": "Retencion particionada", "comprobar": "Revisar almacenamiento", "falso_si": "No conserva el periodo" } }
+      }
+    },
+    {
+      "tipo": "column",
+      "nombre": "Store B",
+      "puntuaciones": {
+        "lectura": { "score": 3, "hipotesis": { "supone": "Lectura por particion", "comprobar": "Cargar fixture sintetico", "falso_si": "La consulta requiere escaneo completo" } },
+        "retencion": { "score": 5, "hipotesis": { "supone": "Compresion de eventos", "comprobar": "Medir bytes del fixture", "falso_si": "El tamano no disminuye" } }
+      }
+    }
+  ]
+}
