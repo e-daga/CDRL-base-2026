@@ -14,6 +14,7 @@
     "run": "node scripts/run.mjs"
   },
   "dependencies": {
+    "mongodb": "^7.7.0",
     "pg": "^8.13.1"
   },
   "engines": {
