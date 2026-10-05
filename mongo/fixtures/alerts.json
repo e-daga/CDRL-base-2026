@@ -1,0 +1,5 @@
+[
+ {"alert_id":"b1b2c3d4-0001-4000-8000-000000000001","event_id":"a1b2c3d4-0002-4000-8000-000000000002","device_id":"dev_sensor_01","alert_type":"threshold","status":"open","severity":"critical","opened_at":{"$date":"2026-09-20T11:00:05Z"},"acknowledged_at":null,"resolved_at":null},
+ {"alert_id":"b1b2c3d4-0002-4000-8000-000000000002","event_id":"a1b2c3d4-0003-4000-8000-000000000003","device_id":"dev_sensor_02","alert_type":"threshold","status":"acknowledged","severity":"warning","opened_at":{"$date":"2026-09-21T08:31:00Z"},"acknowledged_at":{"$date":"2026-09-21T08:40:00Z"},"resolved_at":null},
+ {"alert_id":"b1b2c3d4-0003-4000-8000-000000000003","event_id":"a1b2c3d4-0005-4000-8000-000000000005","device_id":"dev_sensor_03","alert_type":"connectivity","status":"open","severity":"warning","opened_at":{"$date":"2026-09-22T07:16:00Z"},"acknowledged_at":null,"resolved_at":null}
+]

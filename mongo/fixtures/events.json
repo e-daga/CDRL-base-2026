@@ -1,0 +1,8 @@
+[
+ {"event_id":"a1b2c3d4-0001-4000-8000-000000000001","device_id":"dev_sensor_01","event_type":"temperature_c","observed_at":{"$date":"2026-09-20T10:00:00Z"},"ingested_at":{"$date":"2026-09-20T10:00:02Z"},"metric_value":22.5,"unit":"C","severity":"info","source":"synthetic-seed","payload":{}},
+ {"event_id":"a1b2c3d4-0002-4000-8000-000000000002","device_id":"dev_sensor_01","event_type":"temperature_c","observed_at":{"$date":"2026-09-20T11:00:00Z"},"ingested_at":{"$date":"2026-09-20T11:00:02Z"},"metric_value":41.0,"unit":"C","severity":"critical","source":"synthetic-seed","payload":{"threshold":40}},
+ {"event_id":"a1b2c3d4-0003-4000-8000-000000000003","device_id":"dev_sensor_02","event_type":"battery_pct","observed_at":{"$date":"2026-09-21T08:30:00Z"},"ingested_at":{"$date":"2026-09-21T08:30:02Z"},"metric_value":12,"unit":"%","severity":"warning","source":"synthetic-seed","payload":{}},
+ {"event_id":"a1b2c3d4-0004-4000-8000-000000000004","device_id":"dev_sensor_02","event_type":"humidity_pct","observed_at":{"$date":"2026-09-21T09:00:00Z"},"ingested_at":{"$date":"2026-09-21T09:00:02Z"},"metric_value":55.2,"unit":"%","severity":"info","source":"synthetic-seed","payload":{}},
+ {"event_id":"a1b2c3d4-0005-4000-8000-000000000005","device_id":"dev_sensor_03","event_type":"signal_dbm","observed_at":{"$date":"2026-09-22T07:15:00Z"},"ingested_at":{"$date":"2026-09-22T07:15:02Z"},"metric_value":-97,"unit":"dBm","severity":"warning","source":"synthetic-seed","payload":{}},
+ {"event_id":"a1b2c3d4-0006-4000-8000-000000000006","device_id":"dev_sensor_01","event_type":"battery_pct","observed_at":{"$date":"2026-09-22T12:00:00Z"},"ingested_at":{"$date":"2026-09-22T12:00:02Z"},"metric_value":100,"unit":"%","severity":"info","source":"synthetic-seed","payload":{}}
+]
