@@ -15,11 +15,13 @@ services:
       timeout: 5s
       retries: 10
   mongo:
-    image: mongo:7
+    image: mongo:7@sha256:1f995ad6fdb93244a1addab1b58f934a0bc2f5643c38e02f5e9d7f0c7d227a7b
     profiles: ["mongo"]
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-cdrl_mongo}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-}
+      MONGO_APP_USER: ${MONGO_APP_USER:-cdrl_app}
+      MONGO_APP_PASSWORD: ${MONGO_APP_PASSWORD:-}
     ports:
       - "127.0.0.1:${MONGO_PORT:-27017}:27017"
     volumes:

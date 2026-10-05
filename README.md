@@ -1,11 +1,40 @@
-# CDRL-base-2026 - M04 decision arquitectonica NoSQL
+# CDRL-base-2026 - M05 almacen documental
+
+## Entrega actual M05
+
+MongoDB implementa eventos y alertas con validacion del servidor, indices,
+CRUD y reintentos idempotentes. PostgreSQL y las pruebas M01-M04 se conservan.
+Requisitos: Docker Compose, Node.js 20.19 o superior y GNU Make.
+
+Ejecutar `make setup && make verify && make run`. En PowerShell, ejecutar
+cada comando en una linea y comprobar que termine sin errores.
+El setup genera secretos locales en `.env` ignorado, inicializa ambos motores
+y carga fixtures sinteticos. No compartir ese archivo ni cadenas de conexion.
+Los clientes MongoDB usan una cuenta de aplicacion separada del administrador.
+Las suites se ejecutan en serie, sin omitir ni desactivar pruebas.
+
+- [Reporte, alcance y limitaciones M05](docs/ADR-005-almacen-documental.md).
+- [Modelo documental de Francesco](docs/M05-modelo-documental.md).
+- [CRUD y consultas de Jonathan](docs/M05-crud-consultas.md).
+- [Manifiesto de evidencia](evidence/m05-document-store.json).
+- Reportes ejecutados: `artifacts/m05-verify.json`, `artifacts/m05-queries.json`
+  y `evidence/m05-document-store-local.json`.
+- Entrega: URL del repo, `week-05-final`, SHA del commit, salida de
+  `make verify` y evidencia ejecutada. Actions publica los JSON y el log
+  del SHA exacto; el manifiesto no inventa un SHA antes de crear el commit.
+
+Q1 y cuatro variantes Q2 se verifican con planes ganadores reales, sin hint.
+Es una implementacion local con datos pequenos, no una prueba de escala,
+alta disponibilidad o despliegue AWS.
+
+## Antecedente M04
 
 M04 compara document (MongoDB), graph (Neo4j), column (Cassandra) y object
 (S3) con una matriz ponderada reproducible. MongoDB obtiene 83/100 frente
 a Cassandra 80/100; la seleccion es condicional y cambia si escala recibe
 mas peso. No se afirma haber ejecutado benchmarks de esos motores.
 
-## Entrega actual M04
+## Entrega anterior M04
 
 Ejecutar `make setup && make verify && make run`. Se conservan las pruebas
 de M01-M03 y se agregan las de decision NoSQL; fallos, skips y TODOs impiden

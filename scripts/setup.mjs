@@ -13,3 +13,4 @@ node("scripts/migrate.mjs", "--bootstrap");
 node("scripts/create_service_users.mjs");
 node("scripts/migrate.mjs");
 node("scripts/seed.mjs");
+node("scripts/mongo.mjs", "up");

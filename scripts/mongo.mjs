@@ -12,13 +12,20 @@ const script = (file) => compose("exec", "-T", "mongo", "sh", "-c", `${shell} ${
 
 function ensureEnv() {
   if (!fs.existsSync(".env")) run("node", ["scripts/prepare-env.mjs"]);
-  const text = fs.readFileSync(".env", "utf8");
+  let text = fs.readFileSync(".env", "utf8");
   const add = [];
   if (!/^MONGO_USER=/m.test(text)) add.push("MONGO_USER=cdrl_mongo");
   if (!/^MONGO_PORT=/m.test(text)) add.push("MONGO_PORT=27017");
-  if (!/^MONGO_PASSWORD=./m.test(text)) add.push(`MONGO_PASSWORD=${crypto.randomBytes(32).toString("hex")}`);
+  if (!/^MONGO_APP_USER=/m.test(text)) add.push("MONGO_APP_USER=cdrl_app");
+  for (const name of ["MONGO_PASSWORD", "MONGO_APP_PASSWORD"]) {
+    const pattern = new RegExp(`^${name}=.*$`, "m");
+    if (!process.env[name] && !text.match(pattern)?.[0].split("=")[1]?.trim()) {
+      text = text.replace(pattern, "");
+      add.push(`${name}=${crypto.randomBytes(32).toString("hex")}`);
+    }
+  }
   if (add.length) {
-    fs.appendFileSync(".env", (text.endsWith("\n") ? "" : "\n") + add.join("\n") + "\n");
+    fs.writeFileSync(".env", text + (text.endsWith("\n") ? "" : "\n") + add.join("\n") + "\n");
     console.log("Variables MONGO_* agregadas a .env (secretos no impresos).");
   }
 }

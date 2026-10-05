@@ -1,0 +1,52 @@
+{
+  "assignmentId": "m05-document-store",
+  "repository": "https://github.com/e-daga/CDRL-base-2026",
+  "tag": "week-05-final",
+  "status": "implemented",
+  "commands": [
+    "make setup",
+    "make verify",
+    "make run"
+  ],
+  "results": {
+    "machineReadableArtifact": "artifacts/m05-verify.json",
+    "queries": "artifacts/m05-queries.json",
+    "runtimeEvidence": "evidence/m05-document-store-local.json",
+    "report": "docs/ADR-005-almacen-documental.md"
+  },
+  "cases": {
+    "normal": "CRUD y consultas Q1/Q2 reales",
+    "boundaries": [
+      "Porcentaje 0 y 100",
+      "Ausencia y borrado repetido",
+      "Reintentos concurrentes y duplicado"
+    ],
+    "declaredFailure": "MongoDB rechaza documentos y actualizaciones invalidas con codigo 121"
+  },
+  "environment": {
+    "engine": "MongoDB",
+    "mode": "Docker Compose local",
+    "awsValidated": false
+  },
+  "limitations": [
+    "Standalone sin prueba de failover ni transacciones entre colecciones",
+    "Fixtures sinteticos pequenos; no benchmark de escala M04",
+    "Referencias entre evento y alerta sin clave foranea"
+  ],
+  "authorship": [
+    {
+      "name": "Francesco Romero",
+      "contribution": "Esquema, indices, seed, Compose y validacion directa",
+      "commit": "e830e9e"
+    },
+    {
+      "name": "Jonathan (Radh117)",
+      "contribution": "CRUD, consultas y pruebas",
+      "commit": "c6c141f"
+    },
+    {
+      "name": "Eddi Daga",
+      "contribution": "Integracion, correcciones, evidencia y cierre"
+    }
+  ]
+}

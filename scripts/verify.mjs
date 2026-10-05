@@ -6,6 +6,8 @@ import { withClient } from "../src/db.mjs";
 import { rootDir, envPath } from "../src/config.mjs";
 import { scanSecrets } from "./scan-secrets.mjs";
 import { buildM04Report } from "../src/m04-decision.mjs";
+import { withMongo } from "../src/mongo.mjs";
+import { collectM05 } from "../src/m05-report.mjs";
 
 const write = (file, data) => fs.writeFileSync(path.join(rootDir, file), JSON.stringify(data, null, 2) + "\n");
 const git = (...args) => execFileSync("git", args, { cwd: rootDir, encoding: "utf8" }).trim();
@@ -27,7 +29,10 @@ try {
     "docs/ADR-003-roles-y-secretos.md", "docs/M03-rotacion-secretos.md", ".github/workflows/cdrl-feedback.yml",
     "docs/ADR-004-decision-nosql.md", "docs/M04-carga-y-consultas.md", "docs/m04-nosql-matrix.json",
     "evidence/m04-nosql-decision.json", "tests/nosql-decision.test.mjs", "tests/m04-integration.test.mjs",
-    "scripts/compare-nosql.mjs"
+    "scripts/compare-nosql.mjs", "mongo/init.js", "mongo/seed.js",
+    "src/mongo.mjs", "src/m05-report.mjs", "tests/mongo-validation.test.mjs",
+    "tests/m05-crud-consultas.test.mjs", "tests/m05-integration.test.mjs",
+    "docs/ADR-005-almacen-documental.md", "evidence/m05-document-store.json"
   ];
   for (const file of required) assert.ok(fs.existsSync(path.join(rootDir, file)), `Falta ${file}`);
   const evidence = JSON.parse(fs.readFileSync(path.join(rootDir, "evidence/m03-roles-secrets.json"), "utf8"));
@@ -37,21 +42,22 @@ try {
   const evidence04 = JSON.parse(fs.readFileSync(path.join(rootDir, "evidence/m04-nosql-decision.json"), "utf8"));
   assert.equal(evidence04.assignmentId, "m04-nosql-decision");
   assert.equal(evidence04.tag, "week-04-final");
+  const evidence05 = JSON.parse(fs.readFileSync(path.join(rootDir, "evidence/m05-document-store.json"), "utf8"));
+  assert.equal(evidence05.assignmentId, "m05-document-store");
+  assert.equal(evidence05.tag, "week-05-final");
 
   stage = "setup";
   run("scripts/setup.mjs");
   if (fs.existsSync(envPath)) process.loadEnvFile(envPath);
-  stage = "mongo";
-  run("scripts/mongo.mjs", "up");
 
   stage = "tests";
-  const testReportPath = path.join(rootDir, "artifacts/m04-tests.json");
+  const testReportPath = path.join(rootDir, "artifacts/m05-tests.json");
   if (fs.existsSync(testReportPath)) fs.unlinkSync(testReportPath);
   run("scripts/test.mjs", "--report");
   const tests = JSON.parse(fs.readFileSync(testReportPath, "utf8"));
   assert.ok(tests.total > 0 && tests.passed === tests.total, "Todas las pruebas deben pasar.");
   assert.equal(tests.failed + tests.skipped + tests.todo, 0, "No se admiten pruebas fallidas, omitidas ni pendientes.");
-  for (const file of ["telemetry-contract", "operational-model", "roles-access", "secret-rotation", "nosql-decision", "m04-integration"]) {
+  for (const file of ["telemetry-contract", "operational-model", "roles-access", "secret-rotation", "nosql-decision", "m04-integration", "mongo-validation", "m05-crud-consultas", "m05-integration"]) {
     assert.ok(tests.cases.some((item) => item.file === `tests/${file}.test.mjs`), `Suite sin ejecutar: ${file}`);
   }
   const m03 = tests.cases.filter((item) => item.name.startsWith("[M03]"));
@@ -66,6 +72,13 @@ try {
   assert.ok(m04.length >= 6 && m04.some((item) => item.name.includes("[normal]")));
   assert.ok(m04.filter((item) => item.name.includes("[boundary]")).length >= 2);
   assert.ok(m04.some((item) => item.name.includes("[declared failure]")));
+  const m05 = tests.cases.filter((item) => ["tests/mongo-validation.test.mjs", "tests/m05-crud-consultas.test.mjs", "tests/m05-integration.test.mjs"].includes(item.file));
+  assert.ok(m05.some((item) => item.name.includes("[normal]")));
+  assert.ok(m05.filter((item) => item.name.includes("[boundary]")).length >= 2);
+  assert.ok(m05.some((item) => item.name.includes("[declared failure]")));
+  stage = "m05-document-store";
+  const documentStore = await withMongo(collectM05);
+  write("artifacts/m05-queries.json", documentStore);
 
   stage = "m04-decision";
   const matrix = JSON.parse(fs.readFileSync(path.join(rootDir, "docs/m04-nosql-matrix.json"), "utf8"));
@@ -129,6 +142,11 @@ try {
   const artifact04 = { ...decision, ...base, tests, m04Tests: m04.length, secrets, environment: artifact.environment };
   write("artifacts/m04-verify.json", artifact04);
   write("evidence/m04-nosql-decision-local.json", { ...evidence04, status: "passed", commitSha: base.git.commitSha, generatedAt: base.generatedAt, verification: artifact04 });
+  const artifact05 = { assignmentId: "m05-document-store", ...base, documentStore, tests, m05Tests: m05.length, secrets, environment: artifact.environment };
+  write("artifacts/m05-verify.json", artifact05);
+  write("evidence/m05-document-store-local.json", { ...evidence05, status: "passed", commitSha: base.git.commitSha, generatedAt: base.generatedAt, verification: artifact05 });
+  console.log(`M05 PASSED: ${m05.length} pruebas M05; ${tests.passed} totales; cinco consultas con indices ejecutados sin hint.`);
+  console.log("Evidencia M05: evidence/m05-document-store-local.json");
   console.log(`M03 PASSED: ${tests.passed} pruebas, ${denied.length} accesos denegados, ${secrets.findings.length} secretos detectados.`);
   console.log(`SHA verificado: ${base.git.commitSha}`);
   console.log("Artefacto: artifacts/m03-verify.json");
@@ -143,6 +161,9 @@ try {
   write("artifacts/m04-verify.json", { ...failure, assignmentId: "m04-nosql-decision" });
   write("artifacts/m04-comparison.json", { ...failure, assignmentId: "m04-nosql-decision" });
   write("evidence/m04-nosql-decision-local.json", { ...failure, assignmentId: "m04-nosql-decision" });
+  for (const file of ["artifacts/m05-verify.json", "artifacts/m05-queries.json", "evidence/m05-document-store-local.json"]) {
+    write(file, { ...failure, assignmentId: "m05-document-store" });
+  }
   console.error(`M03 FAILED (${stage}): ${error.message}`);
   process.exitCode = 1;
 }

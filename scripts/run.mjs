@@ -1,6 +1,7 @@
 import { withClient } from "../src/db.mjs";
 import fs from "node:fs";
 import { buildM04Report } from "../src/m04-decision.mjs";
+import { withMongo, findEventsByDevice, findOpenAlerts } from "../src/mongo.mjs";
 
 const summary = await withClient(async (client) => {
   const counts = await client.query(`
@@ -26,3 +27,9 @@ const matrix = JSON.parse(fs.readFileSync(new URL("../docs/m04-nosql-matrix.json
 const report = buildM04Report(matrix);
 console.log("M04: decision arquitectonica condicional; no es un benchmark de motores.");
 console.log(JSON.stringify({ ranking: report.comparison.clasificacion, workload: report.workload, decision: report.decision, sensitivity: report.sensitivity }, null, 2));
+const documents = await withMongo(async (db) => ({
+  events: await findEventsByDevice(db, { deviceId: "dev_sensor_01", from: "2026-09-20", to: "2026-09-23", limit: 100 }),
+  openAlerts: await findOpenAlerts(db, { limit: 100 })
+}));
+console.log("M05: consultas reales MongoDB con cuenta de aplicacion, fixtures sinteticos.");
+console.log(JSON.stringify(documents, null, 2));

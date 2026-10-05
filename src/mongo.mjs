@@ -1,4 +1,6 @@
 import { MongoClient } from "mongodb";
+import { isDeepStrictEqual } from "node:util";
+import "./config.mjs";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DEVICE_RE = /^dev_[a-z0-9_]+$/;
@@ -11,13 +13,11 @@ export function mongoUri(options = {}) {
   const host = options.host ?? process.env.MONGO_HOST ?? "127.0.0.1";
   const port = options.port ?? process.env.MONGO_PORT ?? 27017;
   const db = options.db ?? process.env.MONGO_DB ?? "cdrl";
-  const user = options.user ?? process.env.MONGO_USER;
-  const password = options.password ?? process.env.MONGO_PASSWORD;
-  const authSource = options.authSource ?? process.env.MONGO_AUTH_SOURCE ?? "admin";
+  const user = options.user ?? process.env.MONGO_APP_USER;
+  const password = options.password ?? process.env.MONGO_APP_PASSWORD;
+  const authSource = options.authSource ?? process.env.MONGO_AUTH_SOURCE ?? "cdrl";
 
-  if (!user || !password) {
-    return `mongodb://${host}:${port}/${db}`;
-  }
+  if (!user || !password) throw new Error("Faltan credenciales MongoDB. Ejecutar make setup.");
 
   const encodedUser = encodeURIComponent(user);
   const encodedPass = encodeURIComponent(password);
@@ -55,13 +55,13 @@ function assertValidEvent(event) {
   if (!EVENT_TYPES.includes(event.event_type)) {
     throw new Error(`Evento inválido: event_type no permitido (${EVENT_TYPES.join(", ")}).`);
   }
-  if (!(event.observed_at instanceof Date)) {
+  if (!(event.observed_at instanceof Date) || !Number.isFinite(event.observed_at.getTime())) {
     throw new Error("Evento inválido: observed_at debe ser un Date.");
   }
-  if (!(event.ingested_at instanceof Date)) {
+  if (!(event.ingested_at instanceof Date) || !Number.isFinite(event.ingested_at.getTime())) {
     throw new Error("Evento inválido: ingested_at debe ser un Date.");
   }
-  if (typeof event.metric_value !== "number" || Number.isNaN(event.metric_value)) {
+  if (typeof event.metric_value !== "number" || !Number.isFinite(event.metric_value)) {
     throw new Error("Evento inválido: metric_value debe ser un número.");
   }
   if (!event.unit || typeof event.unit !== "string" || !event.unit.trim()) {
@@ -153,6 +153,11 @@ export function normalizeAlertDocument(alert) {
   if (normalized.resolved_at && typeof normalized.resolved_at === "string") normalized.resolved_at = new Date(normalized.resolved_at);
   if (normalized.acknowledged_at === undefined || normalized.acknowledged_at === null) normalized.acknowledged_at = null;
   if (normalized.resolved_at === undefined || normalized.resolved_at === null) normalized.resolved_at = null;
+  for (const key of ["opened_at", "acknowledged_at", "resolved_at"]) {
+    if (normalized[key] instanceof Date && !Number.isFinite(normalized[key].getTime())) {
+      throw new Error(`Alerta invalida: ${key} debe ser una fecha valida.`);
+    }
+  }
   assertValidAlert(normalized);
   return normalized;
 }
@@ -166,12 +171,14 @@ export async function createEvent(doc, options = {}) {
 }
 
 export async function readEvent(eventId, options = {}) {
+  if (typeof eventId !== "string" || !UUID_RE.test(eventId)) throw new Error("Identificador invalido.");
   const db = options.db ?? (options.client ? options.client.db(options.dbName ?? "cdrl") : null);
   if (!db) throw new Error("Se requiere una base de datos MongoDB para leer el evento.");
   return db.collection("events").findOne({ event_id: eventId });
 }
 
 export async function updateEvent(eventId, changes, options = {}) {
+  if (typeof eventId !== "string" || !UUID_RE.test(eventId)) throw new Error("Identificador invalido.");
   const db = options.db ?? (options.client ? options.client.db(options.dbName ?? "cdrl") : null);
   if (!db) throw new Error("Se requiere una base de datos MongoDB para actualizar el evento.");
   const current = await readEvent(eventId, { db });
@@ -189,6 +196,7 @@ export async function updateEvent(eventId, changes, options = {}) {
 }
 
 export async function deleteEvent(eventId, options = {}) {
+  if (typeof eventId !== "string" || !UUID_RE.test(eventId)) throw new Error("Identificador invalido.");
   const db = options.db ?? (options.client ? options.client.db(options.dbName ?? "cdrl") : null);
   if (!db) throw new Error("Se requiere una base de datos MongoDB para borrar el evento.");
   const result = await db.collection("events").deleteOne({ event_id: eventId });
@@ -199,16 +207,16 @@ export async function upsertEvent(doc, options = {}) {
   const db = options.db ?? (options.client ? options.client.db(options.dbName ?? "cdrl") : null);
   if (!db) throw new Error("Se requiere una base de datos MongoDB para upsert del evento.");
   const event = normalizeEventDocument(doc);
-  const existing = await db.collection("events").findOne({ event_id: event.event_id });
-
-  if (!existing) {
+  try {
     const result = await db.collection("events").insertOne(event);
     return { action: "created", created: true, acknowledged: result.acknowledged, event_id: event.event_id, insertedId: result.insertedId };
+  } catch (error) {
+    if (error.code !== 11000) throw error;
   }
-
-  const existingCanonical = JSON.stringify(existing);
-  const incomingCanonical = JSON.stringify({ ...existing, ...cloneWithoutObjectId(event) });
-  if (existingCanonical === incomingCanonical) {
+  // The unique index arbitrates concurrent retries; compare the stored winner.
+  const existing = await db.collection("events").findOne({ event_id: event.event_id });
+  if (!existing) throw new Error("El evento cambio durante el reintento; repetir la operacion.");
+  if (isDeepStrictEqual(cloneWithoutObjectId(existing), cloneWithoutObjectId(event))) {
     return { action: "duplicate", created: false, updated: false, event_id: event.event_id, matchedExisting: true };
   }
 
@@ -233,12 +241,14 @@ export async function createAlert(doc, options = {}) {
 }
 
 export async function readAlert(alertId, options = {}) {
+  if (typeof alertId !== "string" || !UUID_RE.test(alertId)) throw new Error("Identificador invalido.");
   const db = options.db ?? (options.client ? options.client.db(options.dbName ?? "cdrl") : null);
   if (!db) throw new Error("Se requiere una base de datos MongoDB para leer la alerta.");
   return db.collection("alerts").findOne({ alert_id: alertId });
 }
 
 export async function updateAlert(alertId, changes, options = {}) {
+  if (typeof alertId !== "string" || !UUID_RE.test(alertId)) throw new Error("Identificador invalido.");
   const db = options.db ?? (options.client ? options.client.db(options.dbName ?? "cdrl") : null);
   if (!db) throw new Error("Se requiere una base de datos MongoDB para actualizar la alerta.");
   const updateDoc = { ...changes };
@@ -254,6 +264,7 @@ export async function updateAlert(alertId, changes, options = {}) {
 }
 
 export async function deleteAlert(alertId, options = {}) {
+  if (typeof alertId !== "string" || !UUID_RE.test(alertId)) throw new Error("Identificador invalido.");
   const db = options.db ?? (options.client ? options.client.db(options.dbName ?? "cdrl") : null);
   if (!db) throw new Error("Se requiere una base de datos MongoDB para borrar la alerta.");
   const result = await db.collection("alerts").deleteOne({ alert_id: alertId });
@@ -262,17 +273,26 @@ export async function deleteAlert(alertId, options = {}) {
 
 export async function findEventsByDevice(db, { deviceId, from, to, limit = 50 } = {}) {
   if (!db) throw new Error("Se requiere una base de datos MongoDB para consultar eventos.");
+  validateLimit(limit);
+  if (typeof deviceId !== "string" || !DEVICE_RE.test(deviceId)) throw new Error("deviceId invalido.");
   const filter = { device_id: deviceId };
   if (from || to) {
     filter.observed_at = {};
     if (from) filter.observed_at.$gte = new Date(from);
     if (to) filter.observed_at.$lte = new Date(to);
+    for (const date of Object.values(filter.observed_at)) {
+      if (!Number.isFinite(date.getTime())) throw new Error("Rango temporal invalido.");
+    }
+    if (from && to && filter.observed_at.$gte > filter.observed_at.$lte) throw new Error("Rango temporal invertido.");
   }
   return db.collection("events").find(filter).sort({ observed_at: -1 }).limit(limit).toArray();
 }
 
 export async function findOpenAlerts(db, { deviceId, severity, limit = 50 } = {}) {
   if (!db) throw new Error("Se requiere una base de datos MongoDB para consultar alertas.");
+  validateLimit(limit);
+  if (deviceId !== undefined && (typeof deviceId !== "string" || !DEVICE_RE.test(deviceId))) throw new Error("deviceId invalido.");
+  if (severity !== undefined && !SEVERITIES.includes(severity)) throw new Error("severity invalida.");
   const filter = { status: "open" };
   if (deviceId) filter.device_id = deviceId;
   if (severity) filter.severity = severity;
@@ -284,4 +304,8 @@ export async function explainQuery(db, collectionName, query, sort = {}, limit =
   const collection = db.collection(collectionName);
   const cursor = collection.find(query).sort(sort).limit(limit);
   return cursor.explain("executionStats");
+}
+
+function validateLimit(limit) {
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100) throw new Error("limit debe ser entero entre 1 y 100.");
 }

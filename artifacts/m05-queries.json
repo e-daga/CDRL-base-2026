@@ -1,0 +1,232 @@
+{
+  "engine": "MongoDB",
+  "collections": {
+    "events": {
+      "count": 6,
+      "indexes": [
+        {
+          "v": 2,
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_"
+        },
+        {
+          "v": 2,
+          "key": {
+            "event_id": 1
+          },
+          "name": "uq_events_event_id",
+          "unique": true
+        },
+        {
+          "v": 2,
+          "key": {
+            "device_id": 1,
+            "observed_at": -1
+          },
+          "name": "idx_events_device_observed"
+        },
+        {
+          "v": 2,
+          "key": {
+            "event_type": 1,
+            "observed_at": -1
+          },
+          "name": "idx_events_type_observed"
+        }
+      ]
+    },
+    "alerts": {
+      "count": 3,
+      "indexes": [
+        {
+          "v": 2,
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_"
+        },
+        {
+          "v": 2,
+          "key": {
+            "alert_id": 1
+          },
+          "name": "uq_alerts_alert_id",
+          "unique": true
+        },
+        {
+          "v": 2,
+          "key": {
+            "event_id": 1
+          },
+          "name": "uq_alerts_event_id",
+          "unique": true
+        },
+        {
+          "v": 2,
+          "key": {
+            "status": 1,
+            "device_id": 1,
+            "severity": 1
+          },
+          "name": "idx_alerts_status_device_severity"
+        },
+        {
+          "v": 2,
+          "key": {
+            "status": 1,
+            "opened_at": -1
+          },
+          "name": "idx_alerts_status_opened"
+        }
+      ]
+    }
+  },
+  "queries": [
+    {
+      "name": "Q1",
+      "collection": "events",
+      "filter": {
+        "device_id": "dev_sensor_01",
+        "observed_at": {
+          "$gte": "2026-09-20T00:00:00.000Z",
+          "$lte": "2026-09-23T00:00:00.000Z"
+        }
+      },
+      "sort": {
+        "observed_at": -1
+      },
+      "limit": 100,
+      "hinted": false,
+      "stages": [
+        "LIMIT",
+        "FETCH",
+        "IXSCAN"
+      ],
+      "indexes": [
+        "idx_events_device_observed"
+      ],
+      "executionSuccess": true,
+      "nReturned": 3,
+      "totalKeysExamined": 3,
+      "totalDocsExamined": 3,
+      "executionTimeMillis": 0
+    },
+    {
+      "name": "Q2-global",
+      "collection": "alerts",
+      "filter": {
+        "status": "open"
+      },
+      "sort": {
+        "opened_at": -1
+      },
+      "limit": 100,
+      "hinted": false,
+      "stages": [
+        "LIMIT",
+        "FETCH",
+        "IXSCAN"
+      ],
+      "indexes": [
+        "idx_alerts_status_opened"
+      ],
+      "executionSuccess": true,
+      "nReturned": 2,
+      "totalKeysExamined": 2,
+      "totalDocsExamined": 2,
+      "executionTimeMillis": 0
+    },
+    {
+      "name": "Q2-device",
+      "collection": "alerts",
+      "filter": {
+        "status": "open",
+        "device_id": "dev_sensor_01"
+      },
+      "sort": {
+        "opened_at": -1
+      },
+      "limit": 100,
+      "hinted": false,
+      "stages": [
+        "LIMIT",
+        "FETCH",
+        "IXSCAN"
+      ],
+      "indexes": [
+        "idx_alerts_status_opened"
+      ],
+      "executionSuccess": true,
+      "nReturned": 1,
+      "totalKeysExamined": 2,
+      "totalDocsExamined": 2,
+      "executionTimeMillis": 0
+    },
+    {
+      "name": "Q2-severity",
+      "collection": "alerts",
+      "filter": {
+        "status": "open",
+        "severity": "critical"
+      },
+      "sort": {
+        "opened_at": -1
+      },
+      "limit": 100,
+      "hinted": false,
+      "stages": [
+        "LIMIT",
+        "FETCH",
+        "IXSCAN"
+      ],
+      "indexes": [
+        "idx_alerts_status_opened"
+      ],
+      "executionSuccess": true,
+      "nReturned": 1,
+      "totalKeysExamined": 2,
+      "totalDocsExamined": 2,
+      "executionTimeMillis": 0
+    },
+    {
+      "name": "Q2-device-severity",
+      "collection": "alerts",
+      "filter": {
+        "status": "open",
+        "device_id": "dev_sensor_01",
+        "severity": "critical"
+      },
+      "sort": {
+        "opened_at": -1
+      },
+      "limit": 100,
+      "hinted": false,
+      "stages": [
+        "LIMIT",
+        "FETCH",
+        "IXSCAN"
+      ],
+      "indexes": [
+        "idx_alerts_status_opened"
+      ],
+      "executionSuccess": true,
+      "nReturned": 1,
+      "totalKeysExamined": 2,
+      "totalDocsExamined": 2,
+      "executionTimeMillis": 0
+    }
+  ],
+  "applicationRoles": [
+    {
+      "role": "readWrite",
+      "db": "cdrl"
+    }
+  ],
+  "limitations": [
+    "Local standalone; no replica-set failover or cross-document transactions measured.",
+    "Small synthetic fixtures; not a production latency or scale benchmark.",
+    "Event/alert references are not foreign keys; independent CRUD may leave orphan alerts."
+  ]
+}

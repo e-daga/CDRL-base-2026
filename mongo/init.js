@@ -6,7 +6,10 @@ const isDate = (f) => ({ $eq: [{ $type: "$" + f }, "date"] });
 
 const ensure = (name, validator) => {
   const opts = { validator, validationLevel: "strict", validationAction: "error" };
-  if (dbc.getCollectionNames().includes(name)) dbc.runCommand({ collMod: name, ...opts });
+  if (dbc.getCollectionNames().includes(name)) {
+    const result = dbc.runCommand({ collMod: name, ...opts });
+    if (result.ok !== 1) throw new Error("No se pudo actualizar el validador de " + name);
+  }
   else dbc.createCollection(name, opts);
 };
 
@@ -22,7 +25,7 @@ ensure("events", {
       event_type: { enum: ["temperature_c", "humidity_pct", "battery_pct", "signal_dbm"] },
       observed_at: { bsonType: "date" },
       ingested_at: { bsonType: "date" },
-      metric_value: { bsonType: "number" },
+      metric_value: { bsonType: "number", minimum: -Number.MAX_VALUE, maximum: Number.MAX_VALUE },
       unit: { bsonType: "string", minLength: 1 },
       severity: { enum: SEVERITY },
       source: { bsonType: "string", minLength: 1 },
@@ -71,4 +74,10 @@ dbc.alerts.createIndex({ alert_id: 1 }, { unique: true, name: "uq_alerts_alert_i
 dbc.alerts.createIndex({ event_id: 1 }, { unique: true, name: "uq_alerts_event_id" });
 dbc.alerts.createIndex({ status: 1, device_id: 1, severity: 1 }, { name: "idx_alerts_status_device_severity" });
 dbc.alerts.createIndex({ status: 1, opened_at: -1 }, { name: "idx_alerts_status_opened" });
+const appUser = process.env.MONGO_APP_USER;
+const appPassword = process.env.MONGO_APP_PASSWORD;
+if (!appUser || !appPassword) throw new Error("Falta configurar cuenta MongoDB de aplicacion.");
+const userOptions = { pwd: appPassword, roles: [{ role: "readWrite", db: "cdrl" }] };
+if (dbc.getUser(appUser)) dbc.updateUser(appUser, userOptions);
+else dbc.createUser({ user: appUser, ...userOptions });
 print("init OK");
