@@ -41,6 +41,8 @@ try {
   stage = "setup";
   run("scripts/setup.mjs");
   if (fs.existsSync(envPath)) process.loadEnvFile(envPath);
+  stage = "mongo";
+  run("scripts/mongo.mjs", "up");
 
   stage = "tests";
   const testReportPath = path.join(rootDir, "artifacts/m04-tests.json");
