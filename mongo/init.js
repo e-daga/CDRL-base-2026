@@ -2,6 +2,7 @@ const dbc = db.getSiblingDB("cdrl");
 const UUID = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$";
 const DEVICE = "^dev_[a-z0-9_]+$";
 const SEVERITY = ["info", "warning", "critical"];
+const FIRMWARE = "^[0-9]+\\.[0-9]+\\.[0-9]+$";
 const isDate = (f) => ({ $eq: [{ $type: "$" + f }, "date"] });
 
 const ensure = (name, validator) => {
@@ -29,8 +30,15 @@ ensure("events", {
       unit: { bsonType: "string", minLength: 1 },
       severity: { enum: SEVERITY },
       source: { bsonType: "string", minLength: 1 },
-      payload: { bsonType: "object" }
-    }
+      payload: { bsonType: "object" },
+      // M06: sin schema_version el documento es v1; v2 exige firmware_version.
+      schema_version: { enum: [2] },
+      firmware_version: { bsonType: "string", pattern: FIRMWARE }
+    },
+    anyOf: [
+      { not: { anyOf: [{ required: ["schema_version"] }, { required: ["firmware_version"] }] } },
+      { required: ["schema_version", "firmware_version"] }
+    ]
   },
   $expr: { $and: [
     { $lte: ["$observed_at", { $dateAdd: { startDate: "$$NOW", unit: "minute", amount: 5 } }] },

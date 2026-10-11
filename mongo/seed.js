@@ -7,3 +7,5 @@ const load = (file, coll, key) => {
 };
 load("/mongo/fixtures/events.json", "events", "event_id");
 load("/mongo/fixtures/alerts.json", "alerts", "alert_id");
+// M06: eventos v1 y v2 adicionales; los fixtures de M05 no se tocan.
+load("/mongo/fixtures/events-m06.json", "events", "event_id");
