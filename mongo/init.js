@@ -57,6 +57,7 @@ ensure("alerts", {
     properties: {
       _id: {},
       alert_id: { bsonType: "string", pattern: UUID },
+      audit_operation_id: { bsonType: "string", pattern: UUID },
       event_id: { bsonType: "string", pattern: UUID },
       device_id: { bsonType: "string", pattern: DEVICE },
       alert_type: { enum: ["threshold", "connectivity", "data_quality"] },

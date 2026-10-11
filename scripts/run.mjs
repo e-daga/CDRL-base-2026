@@ -33,3 +33,4 @@ const documents = await withMongo(async (db) => ({
 }));
 console.log("M05: consultas reales MongoDB con cuenta de aplicacion, fixtures sinteticos.");
 console.log(JSON.stringify(documents, null, 2));
+await import("./m06-demo.mjs");

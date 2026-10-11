@@ -8,6 +8,7 @@ import { scanSecrets } from "./scan-secrets.mjs";
 import { buildM04Report } from "../src/m04-decision.mjs";
 import { withMongo } from "../src/mongo.mjs";
 import { collectM05 } from "../src/m05-report.mjs";
+import { collectM06 } from "../src/m06-recovery.mjs";
 
 const write = (file, data) => fs.writeFileSync(path.join(rootDir, file), JSON.stringify(data, null, 2) + "\n");
 const git = (...args) => execFileSync("git", args, { cwd: rootDir, encoding: "utf8" }).trim();
@@ -32,7 +33,11 @@ try {
     "scripts/compare-nosql.mjs", "mongo/init.js", "mongo/seed.js",
     "src/mongo.mjs", "src/m05-report.mjs", "tests/mongo-validation.test.mjs",
     "tests/m05-crud-consultas.test.mjs", "tests/m05-integration.test.mjs",
-    "docs/ADR-005-almacen-documental.md", "evidence/m05-document-store.json"
+    "docs/ADR-005-almacen-documental.md", "evidence/m05-document-store.json",
+    "src/m06-recovery.mjs", "tests/m06-recovery.test.mjs",
+    "tests/m06-evolucion-documental.test.mjs", "tests/m06-auditoria.test.mjs",
+    "tests/m06-audit-safety.test.mjs", "docs/ADR-006-evolucion-auditoria-recuperacion.md",
+    "evidence/m06-evolution-audit-recovery.json"
   ];
   for (const file of required) assert.ok(fs.existsSync(path.join(rootDir, file)), `Falta ${file}`);
   const evidence = JSON.parse(fs.readFileSync(path.join(rootDir, "evidence/m03-roles-secrets.json"), "utf8"));
@@ -45,13 +50,16 @@ try {
   const evidence05 = JSON.parse(fs.readFileSync(path.join(rootDir, "evidence/m05-document-store.json"), "utf8"));
   assert.equal(evidence05.assignmentId, "m05-document-store");
   assert.equal(evidence05.tag, "week-05-final");
+  const evidence06 = JSON.parse(fs.readFileSync(path.join(rootDir, "evidence/m06-evolution-audit-recovery.json"), "utf8"));
+  assert.equal(evidence06.assignmentId, "m06-evolution-audit-recovery");
+  assert.equal(evidence06.tag, "week-06-final");
 
   stage = "setup";
   run("scripts/setup.mjs");
   if (fs.existsSync(envPath)) process.loadEnvFile(envPath);
 
   stage = "tests";
-  const testReportPath = path.join(rootDir, "artifacts/m05-tests.json");
+  const testReportPath = path.join(rootDir, "artifacts/m06-tests.json");
   if (fs.existsSync(testReportPath)) fs.unlinkSync(testReportPath);
   run("scripts/test.mjs", "--report");
   const tests = JSON.parse(fs.readFileSync(testReportPath, "utf8"));
@@ -61,6 +69,19 @@ try {
     assert.ok(tests.cases.some((item) => item.file === `tests/${file}.test.mjs`), `Suite sin ejecutar: ${file}`);
   }
   const m03 = tests.cases.filter((item) => item.name.startsWith("[M03]"));
+  for (const name of ["m06-evolucion-documental", "m06-auditoria", "m06-recovery", "m06-audit-safety"]) {
+    assert.ok(tests.cases.some((item) => item.file === `tests/${name}.test.mjs`), "Suite M06 sin ejecutar: " + name);
+  }
+  const m06 = tests.cases.filter((item) => item.name.startsWith("[M06]"));
+  assert.ok(m06.some((item) => item.name.includes("[normal]")));
+  assert.ok(m06.filter((item) => item.name.includes("[boundary]")).length >= 2);
+  assert.ok(m06.some((item) => item.name.includes("[declared failure]")));
+  stage = "m06-recovery";
+  const evolutionAuditRecovery = await withMongo((db) => collectM06(db, async (backup) => {
+    write("artifacts/m06-fixture-backup.json", backup);
+    return JSON.parse(fs.readFileSync(path.join(rootDir, "artifacts/m06-fixture-backup.json"), "utf8"));
+  }));
+  write("artifacts/m06-recovery.json", evolutionAuditRecovery);
   const denied = m03.filter((item) => item.name.includes("[denied]"));
   const boundaries = m03.filter((item) => item.name.includes("[boundary]"));
   assert.ok(denied.length >= 3, "Se requieren al menos tres rechazos reales.");
@@ -147,6 +168,10 @@ try {
   write("evidence/m05-document-store-local.json", { ...evidence05, status: "passed", commitSha: base.git.commitSha, generatedAt: base.generatedAt, verification: artifact05 });
   console.log(`M05 PASSED: ${m05.length} pruebas M05; ${tests.passed} totales; cinco consultas con indices ejecutados sin hint.`);
   console.log("Evidencia M05: evidence/m05-document-store-local.json");
+  const artifact06 = { assignmentId: evidence06.assignmentId, ...base, tests, m06Tests: m06.length, evolutionAuditRecovery, secrets, environment: artifact.environment };
+  write("artifacts/m06-verify.json", artifact06);
+  write("evidence/m06-evolution-audit-recovery-local.json", { ...evidence06, status: "passed", commitSha: base.git.commitSha, verification: artifact06 });
+  console.log(`M06 PASSED: ${m06.length} pruebas M06; ${tests.passed} totales; recuperado 1/1 fixture sin diferencias.`);
   console.log(`M03 PASSED: ${tests.passed} pruebas, ${denied.length} accesos denegados, ${secrets.findings.length} secretos detectados.`);
   console.log(`SHA verificado: ${base.git.commitSha}`);
   console.log("Artefacto: artifacts/m03-verify.json");
@@ -165,5 +190,8 @@ try {
     write(file, { ...failure, assignmentId: "m05-document-store" });
   }
   console.error(`M03 FAILED (${stage}): ${error.message}`);
+  for (const file of ["artifacts/m06-verify.json", "artifacts/m06-recovery.json", "evidence/m06-evolution-audit-recovery-local.json"]) {
+    write(file, { ...failure, assignmentId: "m06-evolution-audit-recovery" });
+  }
   process.exitCode = 1;
 }

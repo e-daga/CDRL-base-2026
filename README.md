@@ -1,6 +1,25 @@
-# CDRL-base-2026 - M05 almacen documental
+# CDRL-base-2026 - M06 evolucion, auditoria y recuperacion
 
-## Entrega actual M05
+## Entrega actual M06
+
+Ejecutar `make setup && make verify && make run`. Se conservan las pruebas
+anteriores. MongoDB admite eventos v1/v2 y audita operaciones identificables.
+La recuperacion usa exclusivamente un fixture sintetico en la coleccion
+`m06_recovery_fixture`; no borra eventos ni alertas de la aplicacion.
+
+- [Reporte y procedimiento M06](docs/ADR-006-evolucion-auditoria-recuperacion.md).
+- [Evolucion de Francesco](docs/M06-evolucion-documental.md).
+- [Auditoria de Jonathan](docs/M06-auditoria.md).
+- [Manifiesto](evidence/m06-evolution-audit-recovery.json).
+- Resultados: `artifacts/m06-verify.json`, `artifacts/m06-recovery.json`
+  y `artifacts/m06-fixture-backup.json`.
+- Evidencia ejecutada: `evidence/m06-evolution-audit-recovery-local.json`.
+- Tag semanal: `week-06-final`. Actions adjunta log y JSON del SHA exacto.
+
+El tiempo medido es de un fixture, no de toda la base. No se afirma AWS,
+alta disponibilidad ni un historial de auditoria inmutable.
+
+## Entrega anterior M05
 
 MongoDB implementa eventos y alertas con validacion del servidor, indices,
 CRUD y reintentos idempotentes. PostgreSQL y las pruebas M01-M04 se conservan.

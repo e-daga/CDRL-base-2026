@@ -1,7 +1,7 @@
 import { MongoClient } from "mongodb";
 import { isDeepStrictEqual } from "node:util";
 import "./config.mjs";
-import { toEventView } from "./event-versions.mjs";
+import { toEventView, assertEventVersion } from "./event-versions.mjs";
 export { AuditPendingError, acknowledgeAlertWithAudit } from "./alert-audit.mjs";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -140,6 +140,7 @@ function cloneWithoutObjectId(doc) {
 export function normalizeEventDocument(event) {
   if (!event) return event;
   const normalized = { ...event };
+  assertEventVersion(normalized);
   if (normalized.observed_at && typeof normalized.observed_at === "string") normalized.observed_at = new Date(normalized.observed_at);
   if (normalized.ingested_at && typeof normalized.ingested_at === "string") normalized.ingested_at = new Date(normalized.ingested_at);
   if (normalized.payload === undefined) normalized.payload = {};

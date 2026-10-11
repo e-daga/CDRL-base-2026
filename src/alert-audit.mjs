@@ -46,7 +46,7 @@ export class AuditPendingError extends Error {
   }
 }
 
-async function ensureAuditCollection(db) {
+export async function ensureAuditCollection(db) {
   let collections = await db.listCollections({ name: AUDIT_COLLECTION }).toArray();
   if (collections.length === 0) {
     try {
@@ -110,6 +110,12 @@ export async function acknowledgeAlertWithAudit(alertId, { db, operationId, acto
     const current = await db.collection("alerts").findOne({ alert_id: alertId });
     if (!current) return { status: "not_found", operation_id: operationId, alert_id: alertId };
     if (current.status !== "open") {
+      // Another retry may have inserted the intention since our first lookup.
+      const concurrent = await audit.findOne({ operation_id: operationId });
+      if (concurrent) {
+        assertSameOperation(concurrent, alertId, actor);
+        return acknowledgeAlertWithAudit(alertId, { db, operationId, actor });
+      }
       return { status: "conflict", operation_id: operationId, alert_id: alertId, current_status: current.status };
     }
 
@@ -142,12 +148,13 @@ export async function acknowledgeAlertWithAudit(alertId, { db, operationId, acto
   try {
     const result = await db.collection("alerts").updateOne(
       { alert_id: alertId, status: "open" },
-      { $set: { status: "acknowledged", acknowledged_at: record.occurred_at } }
+      { $set: { status: "acknowledged", acknowledged_at: record.occurred_at, audit_operation_id: operationId } }
     );
     if (result.matchedCount === 0) {
       const current = await db.collection("alerts").findOne({ alert_id: alertId });
       const isRetryAfterAppliedChange =
         current?.status === "acknowledged" &&
+        current.audit_operation_id === operationId &&
         current.acknowledged_at instanceof Date &&
         current.acknowledged_at.getTime() === record.occurred_at.getTime();
       if (!isRetryAfterAppliedChange) {

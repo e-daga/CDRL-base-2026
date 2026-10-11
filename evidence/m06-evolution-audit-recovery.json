@@ -1,0 +1,44 @@
+{
+  "assignmentId": "m06-evolution-audit-recovery",
+  "repository": "https://github.com/e-daga/CDRL-base-2026",
+  "tag": "week-06-final",
+  "status": "implemented",
+  "commands": [
+    "make setup",
+    "make verify",
+    "make run"
+  ],
+  "results": {
+    "machineReadableArtifact": "artifacts/m06-verify.json",
+    "experiment": "artifacts/m06-recovery.json",
+    "backup": "artifacts/m06-fixture-backup.json",
+    "runtimeEvidence": "evidence/m06-evolution-audit-recovery-local.json",
+    "report": "docs/ADR-006-evolucion-auditoria-recuperacion.md"
+  },
+  "strategy": {
+    "evolution": "coexistence v1 implicit / v2 with firmware_version",
+    "audit": "pending intention, atomic alert operation marker, completed confirmation",
+    "recovery": "one isolated synthetic document, checksum and measured restore"
+  },
+  "limitations": [
+    "Docker local, AWS not deployed",
+    "Not full database backup or production RTO/RPO",
+    "Audit is not immutable; no cross-collection transaction"
+  ],
+  "authorship": [
+    {
+      "name": "Francesco Romero",
+      "commit": "1b6f189",
+      "contribution": "Evolucion y consultas"
+    },
+    {
+      "name": "Jonathan (Radh117)",
+      "commit": "1f5abf7",
+      "contribution": "Auditoria"
+    },
+    {
+      "name": "Eddi Daga",
+      "contribution": "Recuperacion, revision, integracion y entrega"
+    }
+  ]
+}

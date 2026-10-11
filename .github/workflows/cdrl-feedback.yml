@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          make verify 2>&1 | tee artifacts/m05-verify.log
+          make verify 2>&1 | tee artifacts/m06-verify.log
       - name: make run
         shell: bash
         run: make run
@@ -36,7 +36,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: m05-delivery-${{ github.sha }}
+          name: m06-delivery-${{ github.sha }}
           if-no-files-found: error
           path: |
             artifacts/m01-verify.json
@@ -44,7 +44,13 @@ jobs:
             artifacts/m03-verify.json
             artifacts/m03-tests.json
             artifacts/m03-secrets.json
-            artifacts/m05-verify.log
+            artifacts/m06-verify.log
+            artifacts/m06-tests.json
+            artifacts/m06-verify.json
+            artifacts/m06-recovery.json
+            artifacts/m06-fixture-backup.json
+            evidence/m06-evolution-audit-recovery.json
+            evidence/m06-evolution-audit-recovery-local.json
             artifacts/m05-tests.json
             artifacts/m05-queries.json
             artifacts/m05-verify.json
