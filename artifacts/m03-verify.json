@@ -1,7 +1,7 @@
 {
   "assignmentId": "m03-roles-secrets",
   "status": "failed",
-  "generatedAt": "2026-09-28T01:04:00.949Z",
-  "stage": "setup",
-  "error": "Fallo scripts/setup.mjs (exit 1)."
+  "generatedAt": "2026-10-05T05:00:27.252Z",
+  "stage": "tests",
+  "error": "Fallo scripts/test.mjs (exit 1)."
 }

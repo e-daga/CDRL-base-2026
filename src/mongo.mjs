@@ -2,6 +2,7 @@ import { MongoClient } from "mongodb";
 import { isDeepStrictEqual } from "node:util";
 import "./config.mjs";
 import { toEventView } from "./event-versions.mjs";
+export { AuditPendingError, acknowledgeAlertWithAudit } from "./alert-audit.mjs";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DEVICE_RE = /^dev_[a-z0-9_]+$/;
