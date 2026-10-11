@@ -1,6 +1,7 @@
 import { MongoClient } from "mongodb";
 import { isDeepStrictEqual } from "node:util";
 import "./config.mjs";
+import { toEventView } from "./event-versions.mjs";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DEVICE_RE = /^dev_[a-z0-9_]+$/;
@@ -285,7 +286,9 @@ export async function findEventsByDevice(db, { deviceId, from, to, limit = 50 } 
     }
     if (from && to && filter.observed_at.$gte > filter.observed_at.$lte) throw new Error("Rango temporal invertido.");
   }
-  return db.collection("events").find(filter).sort({ observed_at: -1 }).limit(limit).toArray();
+  const rows = await db.collection("events").find(filter).sort({ observed_at: -1 }).limit(limit).toArray();
+  // M06: v1 y v2 se devuelven con la misma forma, sin reescribir lo almacenado.
+  return rows.map(toEventView);
 }
 
 export async function findOpenAlerts(db, { deviceId, severity, limit = 50 } = {}) {
