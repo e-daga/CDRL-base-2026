@@ -1,0 +1,39 @@
+{
+  "evolution": {
+    "v1": 8,
+    "v2": 3
+  },
+  "audit": {
+    "operation_id": "b7257ca7-d146-4ef5-b3df-23201b1be507",
+    "alert_id": "cf9110a2-a7e9-4cab-b4aa-42f82edab1f0",
+    "action": "alert.acknowledged",
+    "occurred_at": "2026-10-11T20:55:59.820Z",
+    "actor": "synthetic:m06-demo",
+    "changes": {
+      "status": {
+        "from": "open",
+        "to": "acknowledged"
+      },
+      "acknowledged_at": "2026-10-11T20:55:59.820Z"
+    },
+    "audit_status": "completed"
+  },
+  "recovery": {
+    "status": "passed",
+    "failure": "controlled deletion of one isolated synthetic document",
+    "collection": "m06_recovery_fixture",
+    "expected": 1,
+    "missingAfterFailure": 0,
+    "recovered": 1,
+    "lostDocuments": 0,
+    "differences": 0,
+    "recoveryMs": 12.739581999999984,
+    "originalSha256": "051a19bd028489baa1962d488a2bed4398e96589e8549a34a75831c7c3e15bcf",
+    "recoveredSha256": "051a19bd028489baa1962d488a2bed4398e96589e8549a34a75831c7c3e15bcf",
+    "repeatedRestore": {
+      "restored": 0,
+      "alreadyPresent": true
+    },
+    "scope": "Includes deletion, absence check, restore and read-back; not full database RTO/RPO."
+  }
+}

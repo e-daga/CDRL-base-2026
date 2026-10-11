@@ -1,0 +1,32 @@
+{
+  "format": "cdrl-m06-fixture-v1",
+  "collection": "m06_recovery_fixture",
+  "sha256": "051a19bd028489baa1962d488a2bed4398e96589e8549a34a75831c7c3e15bcf",
+  "document": {
+    "_id": "m06-recovery-only",
+    "event_id": "d0000000-0000-4000-8000-000000000006",
+    "device_id": "dev_m06_recovery",
+    "event_type": "battery_pct",
+    "observed_at": {
+      "$date": {
+        "$numberLong": "1790841600000"
+      }
+    },
+    "ingested_at": {
+      "$date": {
+        "$numberLong": "1790841602000"
+      }
+    },
+    "metric_value": {
+      "$numberInt": "42"
+    },
+    "unit": "%",
+    "severity": "info",
+    "source": "synthetic-recovery-m06",
+    "payload": {},
+    "schema_version": {
+      "$numberInt": "2"
+    },
+    "firmware_version": "1.4.0"
+  }
+}
