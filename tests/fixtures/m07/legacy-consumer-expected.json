@@ -1,0 +1,11 @@
+{
+  "critical": 1,
+  "rows": [
+    {"event_id":"d7000000-0006-4000-8000-000000000006","event_type":"signal_dbm","observed_at":"2026-10-13T09:00:00.000Z","metric_value":-70,"unit":"dBm","severity":"info","payload":{}},
+    {"event_id":"d7000000-0005-4000-8000-000000000005","event_type":"temperature_c","observed_at":"2026-10-13T08:00:00.000Z","metric_value":22,"unit":"C","severity":"info","payload":{}},
+    {"event_id":"d7000000-0004-4000-8000-000000000004","event_type":"temperature_c","observed_at":"2026-10-12T11:00:00.000Z","metric_value":41.2,"unit":"C","severity":"critical","payload":{"threshold":40}},
+    {"event_id":"d7000000-0003-4000-8000-000000000003","event_type":"battery_pct","observed_at":"2026-10-12T10:00:00.000Z","metric_value":0,"unit":"%","severity":"warning","payload":{}},
+    {"event_id":"d7000000-0002-4000-8000-000000000002","event_type":"humidity_pct","observed_at":"2026-10-12T09:00:00.000Z","metric_value":55,"unit":"%","severity":"info","payload":{}},
+    {"event_id":"d7000000-0001-4000-8000-000000000001","event_type":"temperature_c","observed_at":"2026-10-12T08:00:00.000Z","metric_value":21.5,"unit":"C","severity":"info","payload":{}}
+  ]
+}

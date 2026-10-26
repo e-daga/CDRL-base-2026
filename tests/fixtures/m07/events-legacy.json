@@ -1,0 +1,8 @@
+[
+ {"event_id":"d7000000-0001-4000-8000-000000000001","device_id":"dev_m07_a","event_type":"temperature_c","observed_at":"2026-10-12T08:00:00Z","ingested_at":"2026-10-12T08:00:02Z","metric_value":21.5,"unit":"C","severity":"info","source":"synthetic-m07","payload":{}},
+ {"event_id":"d7000000-0002-4000-8000-000000000002","device_id":"dev_m07_a","event_type":"humidity_pct","observed_at":"2026-10-12T09:00:00Z","ingested_at":"2026-10-12T09:00:02Z","metric_value":55,"unit":"%","severity":"info","source":"synthetic-m07","payload":{}},
+ {"event_id":"d7000000-0003-4000-8000-000000000003","device_id":"dev_m07_a","event_type":"battery_pct","observed_at":"2026-10-12T10:00:00Z","ingested_at":"2026-10-12T10:00:02Z","metric_value":0,"unit":"%","severity":"warning","source":"synthetic-m07","payload":{}},
+ {"event_id":"d7000000-0004-4000-8000-000000000004","device_id":"dev_m07_a","event_type":"temperature_c","observed_at":"2026-10-12T11:00:00Z","ingested_at":"2026-10-12T11:00:02Z","metric_value":41.2,"unit":"C","severity":"critical","source":"synthetic-m07","payload":{"threshold":40}},
+ {"event_id":"d7000000-0005-4000-8000-000000000005","schema_version":2,"firmware_version":"1.4.0","device_id":"dev_m07_a","event_type":"temperature_c","observed_at":"2026-10-13T08:00:00Z","ingested_at":"2026-10-13T08:00:02Z","metric_value":22,"unit":"C","severity":"info","source":"synthetic-m07","payload":{}},
+ {"event_id":"d7000000-0006-4000-8000-000000000006","schema_version":2,"firmware_version":"2.0.1","firmware_status":"reported","device_id":"dev_m07_a","event_type":"signal_dbm","observed_at":"2026-10-13T09:00:00Z","ingested_at":"2026-10-13T09:00:02Z","metric_value":-70,"unit":"dBm","severity":"info","source":"synthetic-m07","payload":{}}
+]
