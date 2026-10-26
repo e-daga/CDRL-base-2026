@@ -1,0 +1,54 @@
+{
+  "assignmentId": "m07-compatible-evolution",
+  "week": 8,
+  "repository": "https://github.com/e-daga/CDRL-base-2026",
+  "tag": "week-08-final",
+  "status": "implemented",
+  "commands": [
+    "make setup",
+    "make verify",
+    "make run"
+  ],
+  "results": {
+    "machineReadableArtifact": "artifacts/m07-verify.json",
+    "experiment": "artifacts/m07-migration.json",
+    "runtimeEvidence": "evidence/m07-compatible-evolution-local.json",
+    "report": "docs/ADR-007-evolucion-compatible.md"
+  },
+  "strategy": {
+    "versioning": "v1 implicit; v2 reported or unknown with explicit provenance marker",
+    "compatibility": "shape=legacy for strict M05 consumer",
+    "migration": "bounded candidate batches, claims, content comparison and resumable journal",
+    "rollback": "remove only this run's fields if complete document is unchanged"
+  },
+  "cases": {
+    "normal": "Real migration with unchanged legacy consumer in four phases",
+    "boundaries": [
+      "Partial transition and resume",
+      "Empty candidate set",
+      "Repeated migration and rollback"
+    ],
+    "declaredFailure": "Conflicting update and interruption between data write and journal confirmation"
+  },
+  "limitations": [
+    "No AWS deployment or cross-document transaction",
+    "Serialize operations on the same runId",
+    "Legacy direct readers may require adaptation; not universal compatibility"
+  ],
+  "authorship": [
+    {
+      "name": "Francesco Romero",
+      "commit": "5a9b9d4",
+      "contribution": "Contrato y consumidores"
+    },
+    {
+      "name": "Jonathan (Radh117)",
+      "commit": "c4fc703",
+      "contribution": "Migracion y rollback"
+    },
+    {
+      "name": "Eddi Daga",
+      "contribution": "Revision, integracion, evidencia y cierre"
+    }
+  ]
+}

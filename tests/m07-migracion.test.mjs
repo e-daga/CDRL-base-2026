@@ -6,8 +6,8 @@ import { rootDir } from "../src/config.mjs";
 import { withMongo } from "../src/mongo.mjs";
 import { inspectEventMigration, migrateEventsV1, rollbackEventMigration } from "../scripts/event-migration.mjs";
 
-const FIXTURE = "m07_migration_fixture";
-const JOURNAL = "m07_migration_journal_fixture";
+const FIXTURE = "m07_migration_fixture_" + randomUUID().replaceAll("-", "");
+const JOURNAL = "m07_migration_journal_fixture_" + randomUUID().replaceAll("-", "");
 const SCOPE = { source: "synthetic-m07" };
 
 function fixtureEvents() {

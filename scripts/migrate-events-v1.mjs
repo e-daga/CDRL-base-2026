@@ -52,7 +52,7 @@ if (args.includes("--help")) {
     return rollbackEventMigration(db, runId, { batchSize });
   });
   console.log(JSON.stringify(report, null, 2));
-  if (report.conflicts > 0) process.exitCode = 2;
+  if (report.conflicts > 0 || report.unresolved_conflicts > 0) process.exitCode = 2;
 } catch (error) {
   console.error(`Error: ${error.message}`);
   process.exitCode = 1;

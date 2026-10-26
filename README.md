@@ -1,6 +1,25 @@
-# CDRL-base-2026 - M06 evolucion, auditoria y recuperacion
+# CDRL-base-2026 - M07 evolucion compatible (Semana 08)
 
-## Entrega actual M06
+## Entrega actual M07
+
+Ejecutar `make setup && make verify && make run`. Se conservan las pruebas
+M01-M06. La demo usa colecciones aisladas: inspeccion, migracion parcial,
+reanudacion, segunda ejecucion y rollback. No migra los events compartidos.
+
+- [ADR: compatibilidad, rollback y limites](docs/ADR-007-evolucion-compatible.md).
+- [Contrato de Francesco](docs/M07-compatibilidad.md).
+- [Migracion de Jonathan](docs/M07-migracion-rollback.md).
+- [Manifiesto M07](evidence/m07-compatible-evolution.json).
+- Resultados: `artifacts/m07-verify.json`, `artifacts/m07-migration.json`
+  y `evidence/m07-compatible-evolution-local.json`.
+- Tag semanal: `week-08-final` (el hito se llama M07, la tarea es Semana 08).
+
+Los consumidores estrictos M05 deben usar `shape: "legacy"`. El firmware
+desconocido se representa con null y marcas explicitas, nunca con una version
+inventada. Un rollback con conflictos pendientes no se reporta como exito.
+No se afirma despliegue AWS ni compatibilidad universal de lectores directos.
+
+## Entrega anterior M06
 
 Ejecutar `make setup && make verify && make run`. Se conservan las pruebas
 anteriores. MongoDB admite eventos v1/v2 y audita operaciones identificables.

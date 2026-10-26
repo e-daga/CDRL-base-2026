@@ -13,7 +13,7 @@ import {
 
 // Fixture aislado: copia el validador real de events en otra coleccion y no toca
 // los eventos ni alertas de la aplicacion.
-const FIXTURE = "m07_compat_fixture";
+const FIXTURE = "m07_compat_fixture_" + randomUUID().replaceAll("-", "");
 const fixtureDir = path.join(rootDir, "tests", "fixtures", "m07");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(fixtureDir, file), "utf8"));
 const fixtureEvents = () => readJson("events-legacy.json").map((doc) => ({

@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from "node:crypto";
+import { createHash } from "node:crypto";
 import { BSON } from "mongodb";
 
 export const EVENT_MIGRATION_JOURNAL = "event_migration_journal";
@@ -42,6 +42,13 @@ function assertRunId(runId) {
 
 function assertBatchSize(batchSize) {
   if (!Number.isSafeInteger(batchSize) || batchSize < 1) throw new Error("batchSize debe ser un entero positivo.");
+}
+
+function assertCollections(collection, journalCollection) {
+  for (const name of [collection, journalCollection]) {
+    if (typeof name !== "string" || !/^[a-zA-Z][a-zA-Z0-9_]*$/.test(name)) throw new Error("Nombre de coleccion invalido.");
+  }
+  if (collection === journalCollection) throw new Error("El diario debe estar separado de los eventos.");
 }
 
 function eventQuery(scope) {
@@ -169,13 +176,14 @@ export async function inspectEventMigration(db, scope, { collection = "events", 
 export async function migrateEventsV1(db, scope, {
   collection = "events",
   journalCollection = EVENT_MIGRATION_JOURNAL,
-  runId = randomUUID(),
+  runId,
   batchSize = 100,
   maxBatches = Number.POSITIVE_INFINITY
 } = {}) {
   assertScope(scope);
   assertBatchSize(batchSize);
   assertRunId(runId);
+  assertCollections(collection, journalCollection);
   if (!Number.isSafeInteger(maxBatches) && maxBatches !== Number.POSITIVE_INFINITY) {
     throw new Error("maxBatches debe ser un entero positivo.");
   }
@@ -202,6 +210,7 @@ export async function migrateEventsV1(db, scope, {
   if (run.type !== "run" || run.collection !== collection || run.scope_sha256 !== scopeHash) {
     throw new Error("El run-id ya existe con otra colección o alcance.");
   }
+  if (run.phase === "rollback") throw new Error("Esta corrida inicio rollback; para migrar de nuevo usar otro run-id.");
   if (run.created_at) {
     await journal.updateOne({ _id: runKey }, { $set: { updated_at: new Date() } });
   }
@@ -250,6 +259,8 @@ export async function rollbackEventMigration(db, runId, {
   const journal = db.collection(journalCollection);
   const run = await journal.findOne({ _id: `run:${runId}`, type: "run" });
   if (!run) throw new Error(`No existe el registro de migración ${runId}.`);
+  assertCollections(run.collection, journalCollection);
+  await journal.updateOne({ _id: run._id }, { $set: { phase: "rollback", updated_at: new Date() } });
 
   const events = db.collection(run.collection);
   let reverted = 0;
@@ -314,5 +325,6 @@ export async function rollbackEventMigration(db, runId, {
     }
   }
 
-  return { migration_id: runId, collection: run.collection, reverted, conflicts, batches, batch_size: batchSize };
+  const unresolved = await journal.countDocuments({ type: "document", migration_id: runId, status: "conflict" });
+  return { migration_id: runId, collection: run.collection, reverted, conflicts, unresolved_conflicts: unresolved, batches, batch_size: batchSize };
 }

@@ -53,6 +53,15 @@ ensure("events", {
   ] }
 });
 
+// Refresh only the previously owned synthetic recovery collection after schema evolution.
+if (dbc.getCollectionNames().includes("m06_recovery_fixture")) {
+  const fixture = dbc.getCollection("m06_recovery_fixture");
+  if (fixture.countDocuments({}) > 1 || fixture.countDocuments({
+    $nor: [{ _id: "m06-recovery-only", source: "synthetic-recovery-m06" }]
+  }) !== 0) throw new Error("Datos ajenos en fixture M06; no se cambia su contrato.");
+  ensure("m06_recovery_fixture", dbc.getCollectionInfos({ name: "events" })[0].options.validator);
+}
+
 ensure("alerts", {
   $jsonSchema: {
     bsonType: "object",

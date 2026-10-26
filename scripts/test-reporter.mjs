@@ -27,5 +27,6 @@ export default async function* reporter(events) {
   fs.writeFileSync(path.join(rootDir, "artifacts/m04-tests.json"), JSON.stringify(result, null, 2) + "\n");
   fs.writeFileSync(path.join(rootDir, "artifacts/m05-tests.json"), JSON.stringify(result, null, 2) + "\n");
   fs.writeFileSync(path.join(rootDir, "artifacts/m06-tests.json"), JSON.stringify(result, null, 2) + "\n");
+  fs.writeFileSync(path.join(rootDir, "artifacts/m07-tests.json"), JSON.stringify(result, null, 2) + "\n");
   yield `Pruebas: ${result.total}; pass: ${result.passed}; fail: ${result.failed}; skipped: ${result.skipped}; todo: ${result.todo}\n`;
 }
