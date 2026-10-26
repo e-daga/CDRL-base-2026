@@ -1,0 +1,105 @@
+{
+  "status": "passed",
+  "scope": "Six synthetic documents in per-run isolated collections; not application events.",
+  "phases": [
+    {
+      "phase": "before",
+      "documents": 6,
+      "consumerSha256": "b5a4be77c14db33b68a5838940f924ba509da69e5e44ffff8e5a7232801985c0",
+      "legacyCompatible": true,
+      "v1": 4,
+      "v2": 2
+    },
+    {
+      "phase": "during",
+      "documents": 6,
+      "consumerSha256": "b5a4be77c14db33b68a5838940f924ba509da69e5e44ffff8e5a7232801985c0",
+      "legacyCompatible": true,
+      "v1": 2,
+      "v2": 4
+    },
+    {
+      "phase": "after",
+      "documents": 6,
+      "consumerSha256": "b5a4be77c14db33b68a5838940f924ba509da69e5e44ffff8e5a7232801985c0",
+      "legacyCompatible": true,
+      "v1": 0,
+      "v2": 6
+    },
+    {
+      "phase": "rollback",
+      "documents": 6,
+      "consumerSha256": "b5a4be77c14db33b68a5838940f924ba509da69e5e44ffff8e5a7232801985c0",
+      "legacyCompatible": true,
+      "v1": 4,
+      "v2": 2
+    }
+  ],
+  "inspection": {
+    "collection": "m07_delivery_2cccc940e2dc4f7d9b497446a876cd10",
+    "scope_sha256": "7f75fdf28e67dbabfa4487d36732a7a36edcbc067954491cc8c82036bd495887",
+    "pending": 4,
+    "batch_size": 2,
+    "batches": 2
+  },
+  "partial": {
+    "migration_id": "334f8349-8088-4d0f-b4ea-7b6d32d5f4e5",
+    "collection": "m07_delivery_2cccc940e2dc4f7d9b497446a876cd10",
+    "scope_sha256": "7f75fdf28e67dbabfa4487d36732a7a36edcbc067954491cc8c82036bd495887",
+    "changed": 2,
+    "conflicts": 0,
+    "remaining": 2,
+    "batches": 1,
+    "batch_size": 2
+  },
+  "resumed": {
+    "migration_id": "334f8349-8088-4d0f-b4ea-7b6d32d5f4e5",
+    "collection": "m07_delivery_2cccc940e2dc4f7d9b497446a876cd10",
+    "scope_sha256": "7f75fdf28e67dbabfa4487d36732a7a36edcbc067954491cc8c82036bd495887",
+    "changed": 2,
+    "conflicts": 0,
+    "remaining": 0,
+    "batches": 1,
+    "batch_size": 2
+  },
+  "repeated": {
+    "migration_id": "334f8349-8088-4d0f-b4ea-7b6d32d5f4e5",
+    "collection": "m07_delivery_2cccc940e2dc4f7d9b497446a876cd10",
+    "scope_sha256": "7f75fdf28e67dbabfa4487d36732a7a36edcbc067954491cc8c82036bd495887",
+    "changed": 0,
+    "conflicts": 0,
+    "remaining": 0,
+    "batches": 0,
+    "batch_size": 2
+  },
+  "rolledBack": {
+    "migration_id": "334f8349-8088-4d0f-b4ea-7b6d32d5f4e5",
+    "collection": "m07_delivery_2cccc940e2dc4f7d9b497446a876cd10",
+    "reverted": 4,
+    "conflicts": 0,
+    "unresolved_conflicts": 0,
+    "batches": 2,
+    "batch_size": 2
+  },
+  "rollbackRepeated": {
+    "migration_id": "334f8349-8088-4d0f-b4ea-7b6d32d5f4e5",
+    "collection": "m07_delivery_2cccc940e2dc4f7d9b497446a876cd10",
+    "reverted": 0,
+    "conflicts": 0,
+    "unresolved_conflicts": 0,
+    "batches": 0,
+    "batch_size": 2
+  },
+  "beforeSha256": "2a495c15cc62358b45b0b5bcbd3fce7cb46eee7d56923a1df4465e42b337e0ac",
+  "restoredSha256": "2a495c15cc62358b45b0b5bcbd3fce7cb46eee7d56923a1df4465e42b337e0ac",
+  "originalDocuments": 6,
+  "nativeV2Unchanged": 2,
+  "differencesAfterRollback": 0,
+  "elapsedMs": 90.05044699999996,
+  "limitations": [
+    "No cross-document transaction",
+    "Legacy consumers must request shape=legacy",
+    "Timings are fixture measurements, not production latency"
+  ],
+  "fixtureCleanup": "Owned temporary collections removed before the report returns."
+}
