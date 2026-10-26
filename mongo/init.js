@@ -32,12 +32,16 @@ ensure("events", {
       source: { bsonType: "string", minLength: 1 },
       payload: { bsonType: "object" },
       // M06: sin schema_version el documento es v1; v2 exige firmware_version.
+      // M07: firmware desconocido = null + firmware_status "unknown" + migrated_from 1.
       schema_version: { enum: [2] },
-      firmware_version: { bsonType: "string", pattern: FIRMWARE }
+      firmware_version: { bsonType: ["string", "null"], pattern: FIRMWARE },
+      firmware_status: { enum: ["reported", "unknown"] },
+      migrated_from: { enum: [1] }
     },
     anyOf: [
-      { not: { anyOf: [{ required: ["schema_version"] }, { required: ["firmware_version"] }] } },
-      { required: ["schema_version", "firmware_version"] }
+      { not: { anyOf: [{ required: ["schema_version"] }, { required: ["firmware_version"] }, { required: ["firmware_status"] }, { required: ["migrated_from"] }] } },
+      { required: ["schema_version", "firmware_version"], properties: { firmware_version: { bsonType: "string" }, firmware_status: { enum: ["reported"] } }, not: { required: ["migrated_from"] } },
+      { required: ["schema_version", "firmware_version", "firmware_status", "migrated_from"], properties: { firmware_version: { bsonType: "null" }, firmware_status: { enum: ["unknown"] } } }
     ]
   },
   $expr: { $and: [
