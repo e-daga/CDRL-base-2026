@@ -1,7 +1,7 @@
 import { MongoClient } from "mongodb";
 import { isDeepStrictEqual } from "node:util";
 import "./config.mjs";
-import { toEventView, assertEventVersion } from "./event-versions.mjs";
+import { toEventView, toLegacyEventView, assertEventVersion } from "./event-versions.mjs";
 export { AuditPendingError, acknowledgeAlertWithAudit } from "./alert-audit.mjs";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -274,9 +274,14 @@ export async function deleteAlert(alertId, options = {}) {
   return { deletedCount: result.deletedCount, acknowledged: result.acknowledged };
 }
 
-export async function findEventsByDevice(db, { deviceId, from, to, limit = 50 } = {}) {
+const EVENT_VIEWS = { current: toEventView, legacy: toLegacyEventView };
+
+// M07: shape "legacy" entrega la forma de M05 al consumidor anterior; collection
+// permite leer un fixture aislado con el mismo validador.
+export async function findEventsByDevice(db, { deviceId, from, to, limit = 50, shape = "current", collection = "events" } = {}) {
   if (!db) throw new Error("Se requiere una base de datos MongoDB para consultar eventos.");
   validateLimit(limit);
+  if (!Object.hasOwn(EVENT_VIEWS, shape)) throw new Error(`shape invalido (${Object.keys(EVENT_VIEWS).join(", ")}).`);
   if (typeof deviceId !== "string" || !DEVICE_RE.test(deviceId)) throw new Error("deviceId invalido.");
   const filter = { device_id: deviceId };
   if (from || to) {
@@ -288,9 +293,9 @@ export async function findEventsByDevice(db, { deviceId, from, to, limit = 50 } 
     }
     if (from && to && filter.observed_at.$gte > filter.observed_at.$lte) throw new Error("Rango temporal invertido.");
   }
-  const rows = await db.collection("events").find(filter).sort({ observed_at: -1 }).limit(limit).toArray();
+  const rows = await db.collection(collection).find(filter).sort({ observed_at: -1 }).limit(limit).toArray();
   // M06: v1 y v2 se devuelven con la misma forma, sin reescribir lo almacenado.
-  return rows.map(toEventView);
+  return rows.map(EVENT_VIEWS[shape]);
 }
 
 export async function findOpenAlerts(db, { deviceId, severity, limit = 50 } = {}) {
