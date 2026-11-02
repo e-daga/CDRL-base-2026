@@ -92,7 +92,7 @@ Lo cubre la prueba `[M08][boundary] insertar entre paginas ...`, que inserta los
 
 ## Pruebas (`tests/m08-paginacion.test.mjs`)
 
-Fixture sintetico `tests/fixtures/m08/events-pages.json`: 7 eventos de `dev_m08_a` (tres con la misma fecha, v1 y v2 mezclados) y 1 de `dev_m08_b`. Se cargan en una coleccion aislada (`m08_pagination_fixture`) con el validador y los indices reales de `events`, y se borra al final.
+Fixture sintetico `tests/fixtures/m08/events-pages.json`: 7 eventos de `dev_m08_a` (tres con la misma fecha, v1 y v2 mezclados) y 1 de `dev_m08_b`. Se cargan en una coleccion aislada (`m08_pagination_<uuid>`) con el validador y los indices reales de `events`, y se borra al final solo si esta ejecucion la creo.
 
 - **normal:** recorrido completo con `limit` 3 (paginas de 3, 3 y 1, en orden, sin repetidos, sin mezclar otro dispositivo, misma forma que la consulta anterior). Plan con el indice declarado, sin `SORT` y con costo fijo por pagina.
 - **boundary:** empates de fecha partidos entre paginas (`limit` 2 y 1); coleccion vacia y dispositivo sin eventos; ultima pagina exacta (`limit` 7 y 6) sin pagina vacia extra; inserciones entre paginas.
@@ -124,4 +124,4 @@ await withMongo(async (db) => {
 - No se puede ir hacia atras. Para volver, el cliente guarda los cursores que ya uso.
 - Los empates en `observed_at` se ordenan por `event_id`, que es un UUID: no indica que evento ocurrio antes.
 - Las cifras de `explain` de esta seccion son de un fixture de 8 eventos; el benchmark con volumen y sus limitaciones estan en el [reporte M08](./M08-benchmark-comparacion.md).
-- No se modificaron `verify.mjs`, el workflow ni los scripts generales, y no se creo el tag: es la integracion de la entrega.
+- La integracion de verify, workflow y entrega se documenta en ADR-008.

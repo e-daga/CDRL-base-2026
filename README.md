@@ -1,6 +1,24 @@
-# CDRL-base-2026 - M07 evolucion compatible (Semana 08)
+# CDRL-base-2026 - M08 paginacion y rendimiento (Semana 09)
 
-## Entrega actual M07
+## Entrega actual M08
+
+Ejecutar `make setup && make verify && make run`. Se conservan todas las pruebas
+M01-M07. M08 agrega paginacion estable ante inserciones y un benchmark real de
+40.000 documentos, 180 muestras, p50/p95 y planes de ejecucion. No exige un
+porcentaje de mejora ni modifica los eventos de la aplicacion.
+
+- [ADR: decision, mediciones y limites](docs/ADR-008-paginacion-rendimiento.md).
+- [Paginacion de Francesco](docs/M08-paginacion.md).
+- [Benchmark de Jonathan](docs/M08-benchmark-comparacion.md).
+- [Manifiesto M08](evidence/m08-pagination-performance.json).
+
+Resultados: artifacts/m08-verify.json, artifacts/m08-benchmark.json y evidencia
+ejecutada evidence/m08-pagination-performance-local.json. make run repite el
+benchmark; verify conserva su propia medicion dentro de su reporte.
+Tag semanal: week-09-final. Entregar el SHA real, log de make verify y evidencia
+ejecutada. No reemplazar tags ni subir secretos. Ver ADR para limites de la medicion.
+
+## Entrega anterior M07
 
 Ejecutar `make setup && make verify && make run`. Se conservan las pruebas
 M01-M06. La demo usa colecciones aisladas: inspeccion, migracion parcial,

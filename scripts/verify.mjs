@@ -10,6 +10,7 @@ import { withMongo } from "../src/mongo.mjs";
 import { collectM05 } from "../src/m05-report.mjs";
 import { collectM06 } from "../src/m06-recovery.mjs";
 import { collectM07 } from "../src/m07-experiment.mjs";
+import { validateBenchmark } from "../src/m08-report.mjs";
 
 const write = (file, data) => fs.writeFileSync(path.join(rootDir, file), JSON.stringify(data, null, 2) + "\n");
 const git = (...args) => execFileSync("git", args, { cwd: rootDir, encoding: "utf8" }).trim();
@@ -41,7 +42,10 @@ try {
     "evidence/m06-evolution-audit-recovery.json",
     "docs/ADR-007-evolucion-compatible.md", "evidence/m07-compatible-evolution.json",
     "src/m07-experiment.mjs", "scripts/event-migration.mjs", "scripts/migrate-events-v1.mjs",
-    "tests/m07-compatibilidad.test.mjs", "tests/m07-migracion.test.mjs", "tests/m07-integration.test.mjs"
+    "tests/m07-compatibilidad.test.mjs", "tests/m07-migracion.test.mjs", "tests/m07-integration.test.mjs",
+    "tests/m08-paginacion.test.mjs", "tests/m08-integration.test.mjs", "tests/fixtures/m08/events-pages.json",
+    "scripts/benchmark-paging.mjs", "src/m08-report.mjs", "docs/ADR-008-paginacion-rendimiento.md",
+    "evidence/m08-pagination-performance.json"
   ];
   for (const file of required) assert.ok(fs.existsSync(path.join(rootDir, file)), `Falta ${file}`);
   const evidence = JSON.parse(fs.readFileSync(path.join(rootDir, "evidence/m03-roles-secrets.json"), "utf8"));
@@ -60,18 +64,31 @@ try {
   const evidence07 = JSON.parse(fs.readFileSync(path.join(rootDir, "evidence/m07-compatible-evolution.json"), "utf8"));
   assert.equal(evidence07.assignmentId, "m07-compatible-evolution");
   assert.equal(evidence07.tag, "week-08-final");
+  const evidence08 = JSON.parse(fs.readFileSync(path.join(rootDir, "evidence/m08-pagination-performance.json"), "utf8"));
+  assert.equal(evidence08.assignmentId, "m08-pagination-performance");
+  assert.equal(evidence08.tag, "week-09-final");
 
   stage = "setup";
   run("scripts/setup.mjs");
   if (fs.existsSync(envPath)) process.loadEnvFile(envPath);
 
   stage = "tests";
-  const testReportPath = path.join(rootDir, "artifacts/m07-tests.json");
+  const testReportPath = path.join(rootDir, "artifacts/m08-tests.json");
   if (fs.existsSync(testReportPath)) fs.unlinkSync(testReportPath);
   run("scripts/test.mjs", "--report");
   const tests = JSON.parse(fs.readFileSync(testReportPath, "utf8"));
   assert.ok(tests.total > 0 && tests.passed === tests.total, "Todas las pruebas deben pasar.");
   assert.equal(tests.failed + tests.skipped + tests.todo, 0, "No se admiten pruebas fallidas, omitidas ni pendientes.");
+  const m08Files = ["tests/m08-paginacion.test.mjs", "tests/m08-integration.test.mjs"];
+  for (const file of m08Files) assert.ok(tests.cases.some((item) => item.file === file), `Suite sin ejecutar: ${file}`);
+  const m08 = tests.cases.filter((item) => m08Files.includes(item.file));
+  assert.ok(m08.some((item) => item.name.includes("[normal]")));
+  assert.ok(m08.filter((item) => item.name.includes("[boundary]")).length >= 2);
+  assert.ok(m08.some((item) => item.name.includes("[declared failure]")));
+  stage = "m08-benchmark";
+  run("scripts/benchmark-paging.mjs");
+  const pagingBenchmark = JSON.parse(fs.readFileSync(path.join(rootDir, "artifacts/m08-benchmark.json"), "utf8"));
+  const benchmarkValidation = validateBenchmark(pagingBenchmark);
   for (const file of ["telemetry-contract", "operational-model", "roles-access", "secret-rotation", "nosql-decision", "m04-integration", "mongo-validation", "m05-crud-consultas", "m05-integration"]) {
     assert.ok(tests.cases.some((item) => item.file === `tests/${file}.test.mjs`), `Suite sin ejecutar: ${file}`);
   }
@@ -192,6 +209,11 @@ try {
   write("artifacts/m07-verify.json", artifact07);
   write("evidence/m07-compatible-evolution-local.json", { ...evidence07, status: "passed", commitSha: base.git.commitSha, verification: artifact07 });
   console.log(`M07 PASSED: ${m07.length} pruebas M07; ${tests.passed} totales; 4 documentos migrados y rollback exacto.`);
+  const artifact08 = { assignmentId: evidence08.assignmentId, ...base, tests, m08Tests: m08.length, pagingBenchmark, benchmarkValidation, secrets, environment: artifact.environment };
+  write("artifacts/m08-verify.json", artifact08);
+  write("evidence/m08-pagination-performance-local.json", { ...evidence08, status: "passed", commitSha: base.git.commitSha, verification: artifact08 });
+  console.log(`M08 PASSED: ${m08.length} pruebas M08; ${tests.passed} totales; ${benchmarkValidation.sampleCount} mediciones reales, sin umbral obligatorio de velocidad.`);
+  console.log("Evidencia M08: evidence/m08-pagination-performance-local.json");
   console.log(`M03 PASSED: ${tests.passed} pruebas, ${denied.length} accesos denegados, ${secrets.findings.length} secretos detectados.`);
   console.log(`SHA verificado: ${base.git.commitSha}`);
   console.log("Artefacto: artifacts/m03-verify.json");
@@ -216,5 +238,8 @@ try {
   process.exitCode = 1;
   for (const file of ["artifacts/m07-verify.json", "artifacts/m07-migration.json", "evidence/m07-compatible-evolution-local.json"]) {
     write(file, { ...failure, assignmentId: "m07-compatible-evolution" });
+  }
+  for (const file of ["artifacts/m08-verify.json", "artifacts/m08-benchmark.json", "evidence/m08-pagination-performance-local.json"]) {
+    write(file, { ...failure, assignmentId: "m08-pagination-performance" });
   }
 }

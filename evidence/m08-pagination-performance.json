@@ -1,0 +1,25 @@
+{
+  "assignmentId": "m08-pagination-performance",
+  "week": 9,
+  "repository": "https://github.com/e-daga/CDRL-base-2026",
+  "tag": "week-09-final",
+  "status": "implemented",
+  "commands": ["make setup", "make verify", "make run"],
+  "results": {
+    "machineReadableArtifact": "artifacts/m08-verify.json",
+    "benchmark": "artifacts/m08-benchmark.json",
+    "runtimeEvidence": "evidence/m08-pagination-performance-local.json",
+    "report": "docs/ADR-008-paginacion-rendimiento.md"
+  },
+  "cases": {
+    "normal": "Recorrido ordenado; indice comprobado; benchmark con resultados equivalentes",
+    "boundaries": ["Empates entre paginas", "Coleccion vacia y pagina final", "Inserciones durante el recorrido"],
+    "declaredFailure": "Cursor invalido y reporte inconsistente rechazados"
+  },
+  "limitations": ["No es snapshot", "Benchmark sintetico, no produccion", "Comparacion conjunta de indice y cursor", "Cursores profundos preparados fuera del cronometro"],
+  "authorship": [
+    { "name": "Francesco Romero", "commits": ["46e8ad0", "54c0502", "2187aca"], "contribution": "Paginacion, indice, pruebas y documentacion" },
+    { "name": "Jonathan (Radh117)", "commit": "2c4d34b", "contribution": "Benchmark reproducible, muestras y comparacion" },
+    { "name": "Eddi Daga", "contribution": "Revision, integracion, validacion de reportes, ADR, evidencia y cierre" }
+  ]
+}

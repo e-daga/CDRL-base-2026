@@ -7,6 +7,7 @@ import { performance } from "node:perf_hooks";
 import { rootDir } from "../src/config.mjs";
 import { eventsPageQuery, findEventsPage, withMongo } from "../src/mongo.mjs";
 import { toEventView } from "../src/event-versions.mjs";
+import { percentile, validateBenchmark } from "../src/m08-report.mjs";
 
 const SEED = 20261101;
 const TARGET_DOCUMENTS = 30_000;
@@ -70,14 +71,6 @@ function makeSyntheticEvents() {
 
 function digest(items) {
   return createHash("sha256").update(JSON.stringify(items)).digest("hex");
-}
-
-function percentile(samples, fraction) {
-  const sorted = [...samples].sort((a, b) => a - b);
-  const position = (sorted.length - 1) * fraction;
-  const lower = Math.floor(position);
-  const upper = Math.ceil(position);
-  return sorted[lower] + (sorted[upper] - sorted[lower]) * (position - lower);
 }
 
 function summarizePlan(explain) {
@@ -227,6 +220,8 @@ async function runBenchmark(db) {
     collectionCreated = true;
     const collection = db.collection(collectionName);
     const events = makeSyntheticEvents();
+    // insertMany adds random _id values to input objects; hash the seeded data first.
+    const fixtureSha256 = digest(events);
     for (let offset = 0; offset < events.length; offset += 1000) {
       await collection.insertMany(events.slice(offset, offset + 1000), { ordered: true });
     }
@@ -344,7 +339,7 @@ async function runBenchmark(db) {
           targetDevice: DEVICE_ID,
           targetDeviceDocuments: TARGET_DOCUMENTS,
           otherDeviceDocuments: OTHER_DOCUMENTS,
-          generatedDocumentsSha256: digest(events),
+          generatedDocumentsSha256: fixtureSha256,
           dateRangeInclusive: { from: FROM, to: TO }
         },
         workload: {
@@ -357,6 +352,8 @@ async function runBenchmark(db) {
           elapsedTiming: "performance.now() alrededor de la consulta y el mapeo de resultados; sin comparacion/hash",
           percentileMethod: "Interpolacion lineal (tipo 7, indice (n-1)*p)",
           schedule: "Muestras mezcladas con PRNG y semilla fija; lotes de concurrencia constante",
+          cursorPreparationIncludedInTiming: false,
+          cursorPreparation: "Recorrido previo hasta cada pagina; se mide continuar desde un cursor conocido, no acceso aleatorio.",
           warmupMeasurementsIncludedInSamples: false
         },
         variants: {
@@ -401,6 +398,7 @@ async function runBenchmark(db) {
 fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
 try {
   const report = await withMongo(runBenchmark);
+  validateBenchmark(report);
   fs.writeFileSync(OUTPUT_PATH, `${JSON.stringify(report, null, 2)}\n`);
   console.log(`Benchmark M08 generado: ${path.relative(rootDir, OUTPUT_PATH)}`);
   for (const row of report.benchmark.comparisons) {

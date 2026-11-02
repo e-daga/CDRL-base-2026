@@ -2,6 +2,7 @@ import test, { before, after } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { randomUUID } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { rootDir } from "../src/config.mjs";
 import { withMongo, findEventsPage, findEventsByDevice, eventsPageQuery, explainQuery } from "../src/mongo.mjs";
@@ -9,7 +10,8 @@ import { summarizeExplain } from "../src/m05-report.mjs";
 
 // Coleccion aislada con el validador y los indices reales de events: no toca
 // los eventos ni las alertas de la aplicacion.
-const FIXTURE = "m08_pagination_fixture";
+const FIXTURE = `m08_pagination_${randomUUID().replaceAll("-", "")}`;
+let fixtureCreated = false;
 const PAGE_INDEX = "idx_events_device_observed_id";
 const fixtureEvents = () => JSON.parse(fs.readFileSync(path.join(rootDir, "tests", "fixtures", "m08", "events-pages.json"), "utf8"))
   .map((doc) => ({ ...doc, observed_at: new Date(doc.observed_at), ingested_at: new Date(doc.ingested_at) }));
@@ -41,8 +43,8 @@ before(async () => {
   execFileSync(process.execPath, ["scripts/mongo.mjs", "up"], { cwd: rootDir, stdio: "inherit" });
   await withMongo(async (db) => {
     const [events] = await db.listCollections({ name: "events" }).toArray();
-    await db.collection(FIXTURE).drop().catch(() => {});
     await db.createCollection(FIXTURE, { validator: events.options.validator, validationLevel: "strict", validationAction: "error" });
+    fixtureCreated = true;
     for (const index of await db.collection("events").listIndexes().toArray()) {
       if (index.name !== "_id_") await db.collection(FIXTURE).createIndex(index.key, { name: index.name, unique: index.unique ?? false });
     }
@@ -50,7 +52,7 @@ before(async () => {
 });
 
 after(async () => {
-  await withMongo((db) => db.collection(FIXTURE).drop().catch(() => {}));
+  if (fixtureCreated) await withMongo((db) => db.collection(FIXTURE).drop());
 });
 
 async function resetFixture(db) {

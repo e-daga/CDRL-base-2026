@@ -1,5 +1,10 @@
 # M08 - Benchmark y comparacion de paginacion
 
+Nota de integracion: las cifras siguientes describen la ejecucion inicial de
+Jonathan (commit 2c4d34b). Las nuevas ejecuciones tienen sus propias muestras y
+entorno en artifacts/m08-benchmark.json; consultar tambien ADR-008. El hash del
+fixture ahora se obtiene antes de insertMany para excluir los _id aleatorios.
+
 ## Alcance y reproduccion
 
 El benchmark compara la consulta por offset con la paginacion por cursor de
@@ -24,7 +29,7 @@ Fixture reproducible:
   cuatro dispositivos adicionales.
 - Fechas entre `2025-01-01T00:00:00.000Z` y `2025-02-01T00:00:00.000Z`;
   timestamps repetidos por pares para ejercitar el desempate por `event_id`.
-- SHA-256 del dataset: `e9984915b8b17791f712b11cfdb4b3e32f669044f8a7b983d8ae2572e4e81fff`.
+- SHA-256 logico del dataset: campo `fixture.generatedDocumentsSha256` en la ejecucion actual.
 
 El filtro de ambas variantes es el mismo dispositivo y el mismo rango inclusivo
 de `observed_at`. Ambas ordenan por `{ observed_at: -1, event_id: -1 }`, piden
