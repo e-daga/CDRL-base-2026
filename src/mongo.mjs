@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 import { isDeepStrictEqual } from "node:util";
+import { createHash } from "node:crypto";
 import "./config.mjs";
 import { toEventView, toLegacyEventView, assertEventVersion } from "./event-versions.mjs";
 export { AuditPendingError, acknowledgeAlertWithAudit } from "./alert-audit.mjs";
@@ -282,6 +283,13 @@ export async function findEventsByDevice(db, { deviceId, from, to, limit = 50, s
   if (!db) throw new Error("Se requiere una base de datos MongoDB para consultar eventos.");
   validateLimit(limit);
   if (!Object.hasOwn(EVENT_VIEWS, shape)) throw new Error(`shape invalido (${Object.keys(EVENT_VIEWS).join(", ")}).`);
+  const filter = eventRangeFilter({ deviceId, from, to });
+  const rows = await db.collection(collection).find(filter).sort({ observed_at: -1 }).limit(limit).toArray();
+  // M06: v1 y v2 se devuelven con la misma forma, sin reescribir lo almacenado.
+  return rows.map(EVENT_VIEWS[shape]);
+}
+
+function eventRangeFilter({ deviceId, from, to }) {
   if (typeof deviceId !== "string" || !DEVICE_RE.test(deviceId)) throw new Error("deviceId invalido.");
   const filter = { device_id: deviceId };
   if (from || to) {
@@ -293,9 +301,76 @@ export async function findEventsByDevice(db, { deviceId, from, to, limit = 50, s
     }
     if (from && to && filter.observed_at.$gte > filter.observed_at.$lte) throw new Error("Rango temporal invertido.");
   }
-  const rows = await db.collection(collection).find(filter).sort({ observed_at: -1 }).limit(limit).toArray();
-  // M06: v1 y v2 se devuelven con la misma forma, sin reescribir lo almacenado.
-  return rows.map(EVENT_VIEWS[shape]);
+  return filter;
+}
+
+// M08: paginacion por cursor (keyset) sobre los eventos de un dispositivo.
+// Orden estable: observed_at desc y event_id desc como desempate (event_id es
+// unico). Lo resuelve el indice idx_events_device_observed_id sin ordenar en memoria.
+export const EVENT_PAGE_SORT = { observed_at: -1, event_id: -1 };
+const EVENT_CURSOR_VERSION = 1;
+
+// Huella de los filtros: un cursor solo vale para la misma consulta.
+function eventCursorScope(filter) {
+  const range = [filter.observed_at?.$gte, filter.observed_at?.$lte].map((date) => date?.toISOString() ?? null);
+  return createHash("sha256").update(JSON.stringify([filter.device_id, ...range])).digest("base64url").slice(0, 16);
+}
+
+function encodeEventCursor(doc, scope) {
+  const position = { v: EVENT_CURSOR_VERSION, at: doc.observed_at.toISOString(), id: doc.event_id, q: scope };
+  return Buffer.from(JSON.stringify(position)).toString("base64url");
+}
+
+function decodeEventCursor(cursor, scope) {
+  if (typeof cursor !== "string" || !cursor) throw new Error("cursor invalido: debe ser texto no vacio.");
+  let position;
+  try {
+    position = JSON.parse(Buffer.from(cursor, "base64url").toString("utf8"));
+  } catch {
+    throw new Error("cursor invalido: no se puede leer.");
+  }
+  if (!position || typeof position !== "object" || position.v !== EVENT_CURSOR_VERSION) {
+    throw new Error("cursor invalido: version no soportada.");
+  }
+  const at = new Date(position.at);
+  if (typeof position.at !== "string" || !Number.isFinite(at.getTime()) || typeof position.id !== "string" || !UUID_RE.test(position.id)) {
+    throw new Error("cursor invalido: posicion mal formada.");
+  }
+  if (position.q !== scope) throw new Error("cursor invalido: pertenece a otra consulta.");
+  return { at, id: position.id };
+}
+
+// Filtro y orden de una pagina; sirve tambien para explain y para el benchmark.
+export function eventsPageQuery({ deviceId, from, to, cursor } = {}) {
+  const filter = eventRangeFilter({ deviceId, from, to });
+  const scope = eventCursorScope(filter);
+  if (cursor !== undefined && cursor !== null) {
+    const { at, id } = decodeEventCursor(cursor, scope);
+    // Solo lo que queda despues de la ultima fila entregada, en el mismo orden.
+    // El tope $lte va en el rango para que el indice empiece en el cursor; el
+    // $or solo descarta los empates ya entregados (misma fecha, event_id mayor o igual).
+    const upper = filter.observed_at?.$lte;
+    filter.observed_at = { ...filter.observed_at, $lte: upper && upper < at ? upper : at };
+    filter.$or = [{ observed_at: { $lt: at } }, { event_id: { $lt: id } }];
+  }
+  return { filter, sort: EVENT_PAGE_SORT, scope };
+}
+
+export async function findEventsPage(db, { deviceId, from, to, cursor, limit = 50, shape = "current", collection = "events" } = {}) {
+  if (!db) throw new Error("Se requiere una base de datos MongoDB para consultar eventos.");
+  validateLimit(limit);
+  if (!Object.hasOwn(EVENT_VIEWS, shape)) throw new Error(`shape invalido (${Object.keys(EVENT_VIEWS).join(", ")}).`);
+  const { filter, sort, scope } = eventsPageQuery({ deviceId, from, to, cursor });
+  // Se pide una fila de mas para saber si hay otra pagina sin contar la coleccion.
+  const rows = await db.collection(collection).find(filter).sort(sort).limit(limit + 1).toArray();
+  const hasMore = rows.length > limit;
+  const page = rows.slice(0, limit);
+  return {
+    items: page.map(EVENT_VIEWS[shape]),
+    next_cursor: hasMore ? encodeEventCursor(page.at(-1), scope) : null,
+    has_more: hasMore,
+    limit
+  };
 }
 
 export async function findOpenAlerts(db, { deviceId, severity, limit = 50 } = {}) {

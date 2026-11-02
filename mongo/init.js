@@ -92,6 +92,8 @@ ensure("alerts", {
 dbc.events.createIndex({ event_id: 1 }, { unique: true, name: "uq_events_event_id" });
 dbc.events.createIndex({ device_id: 1, observed_at: -1 }, { name: "idx_events_device_observed" });
 dbc.events.createIndex({ event_type: 1, observed_at: -1 }, { name: "idx_events_type_observed" });
+// M08: paginacion por cursor (device_id + rango, orden observed_at desc, event_id desc).
+dbc.events.createIndex({ device_id: 1, observed_at: -1, event_id: -1 }, { name: "idx_events_device_observed_id" });
 dbc.alerts.createIndex({ alert_id: 1 }, { unique: true, name: "uq_alerts_alert_id" });
 dbc.alerts.createIndex({ event_id: 1 }, { unique: true, name: "uq_alerts_event_id" });
 dbc.alerts.createIndex({ status: 1, device_id: 1, severity: 1 }, { name: "idx_alerts_status_device_severity" });
