@@ -31,7 +31,6 @@ jobs:
           make verify 2>&1 | tee artifacts/m08-verify.log
       - name: make run
         shell: bash
-        shell: bash
         run: |
           set -o pipefail
           make run 2>&1 | tee artifacts/m08-run.log
