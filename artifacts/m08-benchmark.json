@@ -1,0 +1,2872 @@
+{
+  "benchmark": {
+    "name": "M08 cursor pagination vs offset pagination",
+    "status": "completed",
+    "seed": 20261101,
+    "fixture": {
+      "collectionName": "m08_benchmark_e722fe0d54b74df18d7d914a692f9199",
+      "isolated": true,
+      "applicationEventsModified": false,
+      "documentCount": 40000,
+      "targetDevice": "dev_bench_primary",
+      "targetDeviceDocuments": 30000,
+      "otherDeviceDocuments": 10000,
+      "generatedDocumentsSha256": "e9984915b8b17791f712b11cfdb4b3e32f669044f8a7b983d8ae2572e4e81fff",
+      "dateRangeInclusive": {
+        "from": "2025-01-01T00:00:00.000Z",
+        "to": "2025-02-01T00:00:00.000Z"
+      }
+    },
+    "workload": {
+      "pageSize": 50,
+      "pageIndexes": [
+        0,
+        100,
+        400
+      ],
+      "offsets": [
+        0,
+        5000,
+        20000
+      ],
+      "warmupPerVariantPerPage": 5,
+      "measurementsPerVariantPerPage": 30,
+      "concurrency": 4,
+      "elapsedTiming": "performance.now() alrededor de la consulta y el mapeo de resultados; sin comparacion/hash",
+      "percentileMethod": "Interpolacion lineal (tipo 7, indice (n-1)*p)",
+      "schedule": "Muestras mezcladas con PRNG y semilla fija; lotes de concurrencia constante",
+      "warmupMeasurementsIncludedInSamples": false
+    },
+    "variants": {
+      "baseline_skip": {
+        "description": "Filtro device_id + observed_at entre FROM/TO; sort observed_at desc y event_id desc; skip(pageIndex * pageSize); limit(pageSize + 1); hint del indice anterior.",
+        "indexHint": "idx_events_device_observed",
+        "cursorPredicate": false
+      },
+      "optimized_cursor": {
+        "description": "Mismo filtro/orden/limite; cursor M08 con observed_at <= cursor.at y desempate $or por observed_at/event_id; sin skip y sin hint.",
+        "indexHint": null,
+        "cursorPredicate": true
+      }
+    },
+    "equivalentResults": {
+      "verified": true,
+      "checks": "SHA-256 de los items normalizados mediante toEventView y hasMore coincidentes para cada pagina y cada muestra.",
+      "pages": {
+        "0": {
+          "digest": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d",
+          "hasMore": true
+        },
+        "100": {
+          "digest": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe",
+          "hasMore": true
+        },
+        "400": {
+          "digest": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0",
+          "hasMore": true
+        }
+      }
+    },
+    "environment": {
+      "node": "v22.14.0",
+      "mongodbDriver": "7.7.0",
+      "mongodbServer": "7.0.43",
+      "platform": "win32 10.0.26200",
+      "architecture": "x64",
+      "cpuModel": "Intel(R) Core(TM) i9-14900HX",
+      "logicalCpuCount": 32,
+      "totalMemoryBytes": 34049417216,
+      "freeMemoryBytesAtStart": 12076576768,
+      "processMemoryBytesAtStart": 58880000,
+      "processMemoryBytesAtEnd": 141045760,
+      "mongoConnectionPoolMaxSize": 5,
+      "mongoServerMemoryStats": "No consultado: benchmark no requiere privilegio serverStatus; recursos del host local quedan registrados."
+    },
+    "collectionStats": {
+      "available": true,
+      "documentCount": 40000,
+      "dataSizeBytes": 12493194,
+      "storageSizeBytes": 2662400,
+      "totalIndexSizeBytes": 2367488,
+      "indexSizesBytes": {
+        "_id_": 413696,
+        "idx_events_device_observed": 471040,
+        "idx_events_device_observed_id": 1482752
+      }
+    },
+    "indexes": [
+      {
+        "name": "_id_",
+        "key": {
+          "_id": 1
+        },
+        "unique": false
+      },
+      {
+        "name": "idx_events_device_observed",
+        "key": {
+          "device_id": 1,
+          "observed_at": -1
+        },
+        "unique": false
+      },
+      {
+        "name": "idx_events_device_observed_id",
+        "key": {
+          "device_id": 1,
+          "observed_at": -1,
+          "event_id": -1
+        },
+        "unique": false
+      }
+    ],
+    "executionPlans": {
+      "0": {
+        "baseline": {
+          "indexesUsed": [
+            "idx_events_device_observed"
+          ],
+          "stages": [
+            "FETCH",
+            "IXSCAN",
+            "SORT"
+          ],
+          "winningPlan": {
+            "stage": "SORT",
+            "sortPattern": {
+              "observed_at": -1,
+              "event_id": -1
+            },
+            "memLimit": 104857600,
+            "limitAmount": 51,
+            "type": "simple",
+            "inputStage": {
+              "stage": "FETCH",
+              "inputStage": {
+                "stage": "IXSCAN",
+                "keyPattern": {
+                  "device_id": 1,
+                  "observed_at": -1
+                },
+                "indexName": "idx_events_device_observed",
+                "isMultiKey": false,
+                "multiKeyPaths": {
+                  "device_id": [],
+                  "observed_at": []
+                },
+                "isUnique": false,
+                "isSparse": false,
+                "isPartial": false,
+                "indexVersion": 2,
+                "direction": "forward",
+                "indexBounds": {
+                  "device_id": [
+                    "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                  ],
+                  "observed_at": [
+                    "[new Date(1738368000000), new Date(1735689600000)]"
+                  ]
+                }
+              }
+            }
+          },
+          "executionStats": {
+            "nReturned": 51,
+            "totalKeysExamined": 30000,
+            "totalDocsExamined": 30000,
+            "executionTimeMillis": 32,
+            "executionStages": {
+              "stage": "SORT",
+              "nReturned": 51,
+              "executionTimeMillisEstimate": 2,
+              "works": 30053,
+              "advanced": 51,
+              "needTime": 30001,
+              "needYield": 0,
+              "saveState": 30,
+              "restoreState": 30,
+              "isEOF": 1,
+              "sortPattern": {
+                "observed_at": -1,
+                "event_id": -1
+              },
+              "memLimit": 104857600,
+              "limitAmount": 51,
+              "type": "simple",
+              "totalDataSizeSorted": 23877,
+              "usedDisk": false,
+              "spills": 0,
+              "spilledDataStorageSize": 0,
+              "inputStage": {
+                "stage": "FETCH",
+                "nReturned": 30000,
+                "executionTimeMillisEstimate": 1,
+                "works": 30001,
+                "advanced": 30000,
+                "needTime": 0,
+                "needYield": 0,
+                "saveState": 30,
+                "restoreState": 30,
+                "isEOF": 1,
+                "docsExamined": 30000,
+                "alreadyHasObj": 0,
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "nReturned": 30000,
+                  "executionTimeMillisEstimate": 0,
+                  "works": 30001,
+                  "advanced": 30000,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 30,
+                  "restoreState": 30,
+                  "isEOF": 1,
+                  "keyPattern": {
+                    "device_id": 1,
+                    "observed_at": -1
+                  },
+                  "indexName": "idx_events_device_observed",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "device_id": [],
+                    "observed_at": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "device_id": [
+                      "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                    ],
+                    "observed_at": [
+                      "[new Date(1738368000000), new Date(1735689600000)]"
+                    ]
+                  },
+                  "keysExamined": 30000,
+                  "seeks": 1,
+                  "dupsTested": 0,
+                  "dupsDropped": 0
+                }
+              }
+            }
+          }
+        },
+        "optimized": {
+          "indexesUsed": [
+            "idx_events_device_observed_id"
+          ],
+          "stages": [
+            "FETCH",
+            "IXSCAN",
+            "LIMIT"
+          ],
+          "winningPlan": {
+            "stage": "LIMIT",
+            "limitAmount": 51,
+            "inputStage": {
+              "stage": "FETCH",
+              "inputStage": {
+                "stage": "IXSCAN",
+                "keyPattern": {
+                  "device_id": 1,
+                  "observed_at": -1,
+                  "event_id": -1
+                },
+                "indexName": "idx_events_device_observed_id",
+                "isMultiKey": false,
+                "multiKeyPaths": {
+                  "device_id": [],
+                  "observed_at": [],
+                  "event_id": []
+                },
+                "isUnique": false,
+                "isSparse": false,
+                "isPartial": false,
+                "indexVersion": 2,
+                "direction": "forward",
+                "indexBounds": {
+                  "device_id": [
+                    "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                  ],
+                  "observed_at": [
+                    "[new Date(1738368000000), new Date(1735689600000)]"
+                  ],
+                  "event_id": [
+                    "[MaxKey, MinKey]"
+                  ]
+                }
+              }
+            }
+          },
+          "executionStats": {
+            "nReturned": 51,
+            "totalKeysExamined": 51,
+            "totalDocsExamined": 51,
+            "executionTimeMillis": 0,
+            "executionStages": {
+              "stage": "LIMIT",
+              "nReturned": 51,
+              "executionTimeMillisEstimate": 0,
+              "works": 52,
+              "advanced": 51,
+              "needTime": 0,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 1,
+              "limitAmount": 51,
+              "inputStage": {
+                "stage": "FETCH",
+                "nReturned": 51,
+                "executionTimeMillisEstimate": 0,
+                "works": 51,
+                "advanced": 51,
+                "needTime": 0,
+                "needYield": 0,
+                "saveState": 0,
+                "restoreState": 0,
+                "isEOF": 0,
+                "docsExamined": 51,
+                "alreadyHasObj": 0,
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "nReturned": 51,
+                  "executionTimeMillisEstimate": 0,
+                  "works": 51,
+                  "advanced": 51,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 0,
+                  "restoreState": 0,
+                  "isEOF": 0,
+                  "keyPattern": {
+                    "device_id": 1,
+                    "observed_at": -1,
+                    "event_id": -1
+                  },
+                  "indexName": "idx_events_device_observed_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "device_id": [],
+                    "observed_at": [],
+                    "event_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "device_id": [
+                      "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                    ],
+                    "observed_at": [
+                      "[new Date(1738368000000), new Date(1735689600000)]"
+                    ],
+                    "event_id": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  },
+                  "keysExamined": 51,
+                  "seeks": 1,
+                  "dupsTested": 0,
+                  "dupsDropped": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "100": {
+        "baseline": {
+          "indexesUsed": [
+            "idx_events_device_observed"
+          ],
+          "stages": [
+            "FETCH",
+            "IXSCAN",
+            "SKIP",
+            "SORT"
+          ],
+          "winningPlan": {
+            "stage": "SKIP",
+            "skipAmount": 5000,
+            "inputStage": {
+              "stage": "SORT",
+              "sortPattern": {
+                "observed_at": -1,
+                "event_id": -1
+              },
+              "memLimit": 104857600,
+              "limitAmount": 5051,
+              "type": "simple",
+              "inputStage": {
+                "stage": "FETCH",
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "device_id": 1,
+                    "observed_at": -1
+                  },
+                  "indexName": "idx_events_device_observed",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "device_id": [],
+                    "observed_at": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "device_id": [
+                      "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                    ],
+                    "observed_at": [
+                      "[new Date(1738368000000), new Date(1735689600000)]"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "executionStats": {
+            "nReturned": 51,
+            "totalKeysExamined": 30000,
+            "totalDocsExamined": 30000,
+            "executionTimeMillis": 35,
+            "executionStages": {
+              "stage": "SKIP",
+              "nReturned": 51,
+              "executionTimeMillisEstimate": 4,
+              "works": 35053,
+              "advanced": 51,
+              "needTime": 35001,
+              "needYield": 0,
+              "saveState": 35,
+              "restoreState": 35,
+              "isEOF": 1,
+              "skipAmount": 5000,
+              "inputStage": {
+                "stage": "SORT",
+                "nReturned": 5051,
+                "executionTimeMillisEstimate": 4,
+                "works": 35053,
+                "advanced": 5051,
+                "needTime": 30001,
+                "needYield": 0,
+                "saveState": 35,
+                "restoreState": 35,
+                "isEOF": 1,
+                "sortPattern": {
+                  "observed_at": -1,
+                  "event_id": -1
+                },
+                "memLimit": 104857600,
+                "limitAmount": 5051,
+                "type": "simple",
+                "totalDataSizeSorted": 2365794,
+                "usedDisk": false,
+                "spills": 0,
+                "spilledDataStorageSize": 0,
+                "inputStage": {
+                  "stage": "FETCH",
+                  "nReturned": 30000,
+                  "executionTimeMillisEstimate": 4,
+                  "works": 30001,
+                  "advanced": 30000,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 35,
+                  "restoreState": 35,
+                  "isEOF": 1,
+                  "docsExamined": 30000,
+                  "alreadyHasObj": 0,
+                  "inputStage": {
+                    "stage": "IXSCAN",
+                    "nReturned": 30000,
+                    "executionTimeMillisEstimate": 2,
+                    "works": 30001,
+                    "advanced": 30000,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 35,
+                    "restoreState": 35,
+                    "isEOF": 1,
+                    "keyPattern": {
+                      "device_id": 1,
+                      "observed_at": -1
+                    },
+                    "indexName": "idx_events_device_observed",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "device_id": [],
+                      "observed_at": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "device_id": [
+                        "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                      ],
+                      "observed_at": [
+                        "[new Date(1738368000000), new Date(1735689600000)]"
+                      ]
+                    },
+                    "keysExamined": 30000,
+                    "seeks": 1,
+                    "dupsTested": 0,
+                    "dupsDropped": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "optimized": {
+          "indexesUsed": [
+            "idx_events_device_observed_id"
+          ],
+          "stages": [
+            "FETCH",
+            "IXSCAN",
+            "LIMIT"
+          ],
+          "winningPlan": {
+            "stage": "LIMIT",
+            "limitAmount": 51,
+            "inputStage": {
+              "stage": "FETCH",
+              "filter": {
+                "$or": [
+                  {
+                    "event_id": {
+                      "$lt": "e8080000-0000-4000-8000-000000025001"
+                    }
+                  },
+                  {
+                    "observed_at": {
+                      "$lt": "2025-01-26T20:00:00.000Z"
+                    }
+                  }
+                ]
+              },
+              "inputStage": {
+                "stage": "IXSCAN",
+                "keyPattern": {
+                  "device_id": 1,
+                  "observed_at": -1,
+                  "event_id": -1
+                },
+                "indexName": "idx_events_device_observed_id",
+                "isMultiKey": false,
+                "multiKeyPaths": {
+                  "device_id": [],
+                  "observed_at": [],
+                  "event_id": []
+                },
+                "isUnique": false,
+                "isSparse": false,
+                "isPartial": false,
+                "indexVersion": 2,
+                "direction": "forward",
+                "indexBounds": {
+                  "device_id": [
+                    "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                  ],
+                  "observed_at": [
+                    "[new Date(1737921600000), new Date(1735689600000)]"
+                  ],
+                  "event_id": [
+                    "[MaxKey, MinKey]"
+                  ]
+                }
+              }
+            }
+          },
+          "executionStats": {
+            "nReturned": 51,
+            "totalKeysExamined": 53,
+            "totalDocsExamined": 53,
+            "executionTimeMillis": 0,
+            "executionStages": {
+              "stage": "LIMIT",
+              "nReturned": 51,
+              "executionTimeMillisEstimate": 0,
+              "works": 54,
+              "advanced": 51,
+              "needTime": 2,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 1,
+              "limitAmount": 51,
+              "inputStage": {
+                "stage": "FETCH",
+                "filter": {
+                  "$or": [
+                    {
+                      "event_id": {
+                        "$lt": "e8080000-0000-4000-8000-000000025001"
+                      }
+                    },
+                    {
+                      "observed_at": {
+                        "$lt": "2025-01-26T20:00:00.000Z"
+                      }
+                    }
+                  ]
+                },
+                "nReturned": 51,
+                "executionTimeMillisEstimate": 0,
+                "works": 53,
+                "advanced": 51,
+                "needTime": 2,
+                "needYield": 0,
+                "saveState": 0,
+                "restoreState": 0,
+                "isEOF": 0,
+                "docsExamined": 53,
+                "alreadyHasObj": 0,
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "nReturned": 53,
+                  "executionTimeMillisEstimate": 0,
+                  "works": 53,
+                  "advanced": 53,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 0,
+                  "restoreState": 0,
+                  "isEOF": 0,
+                  "keyPattern": {
+                    "device_id": 1,
+                    "observed_at": -1,
+                    "event_id": -1
+                  },
+                  "indexName": "idx_events_device_observed_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "device_id": [],
+                    "observed_at": [],
+                    "event_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "device_id": [
+                      "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                    ],
+                    "observed_at": [
+                      "[new Date(1737921600000), new Date(1735689600000)]"
+                    ],
+                    "event_id": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  },
+                  "keysExamined": 53,
+                  "seeks": 1,
+                  "dupsTested": 0,
+                  "dupsDropped": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "baseline": {
+          "indexesUsed": [
+            "idx_events_device_observed"
+          ],
+          "stages": [
+            "FETCH",
+            "IXSCAN",
+            "SKIP",
+            "SORT"
+          ],
+          "winningPlan": {
+            "stage": "SKIP",
+            "skipAmount": 20000,
+            "inputStage": {
+              "stage": "SORT",
+              "sortPattern": {
+                "observed_at": -1,
+                "event_id": -1
+              },
+              "memLimit": 104857600,
+              "limitAmount": 20051,
+              "type": "simple",
+              "inputStage": {
+                "stage": "FETCH",
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "device_id": 1,
+                    "observed_at": -1
+                  },
+                  "indexName": "idx_events_device_observed",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "device_id": [],
+                    "observed_at": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "device_id": [
+                      "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                    ],
+                    "observed_at": [
+                      "[new Date(1738368000000), new Date(1735689600000)]"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "executionStats": {
+            "nReturned": 51,
+            "totalKeysExamined": 30000,
+            "totalDocsExamined": 30000,
+            "executionTimeMillis": 44,
+            "executionStages": {
+              "stage": "SKIP",
+              "nReturned": 51,
+              "executionTimeMillisEstimate": 4,
+              "works": 50053,
+              "advanced": 51,
+              "needTime": 50001,
+              "needYield": 0,
+              "saveState": 50,
+              "restoreState": 50,
+              "isEOF": 1,
+              "skipAmount": 20000,
+              "inputStage": {
+                "stage": "SORT",
+                "nReturned": 20051,
+                "executionTimeMillisEstimate": 4,
+                "works": 50053,
+                "advanced": 20051,
+                "needTime": 30001,
+                "needYield": 0,
+                "saveState": 50,
+                "restoreState": 50,
+                "isEOF": 1,
+                "sortPattern": {
+                  "observed_at": -1,
+                  "event_id": -1
+                },
+                "memLimit": 104857600,
+                "limitAmount": 20051,
+                "type": "simple",
+                "totalDataSizeSorted": 9390708,
+                "usedDisk": false,
+                "spills": 0,
+                "spilledDataStorageSize": 0,
+                "inputStage": {
+                  "stage": "FETCH",
+                  "nReturned": 30000,
+                  "executionTimeMillisEstimate": 3,
+                  "works": 30001,
+                  "advanced": 30000,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 50,
+                  "restoreState": 50,
+                  "isEOF": 1,
+                  "docsExamined": 30000,
+                  "alreadyHasObj": 0,
+                  "inputStage": {
+                    "stage": "IXSCAN",
+                    "nReturned": 30000,
+                    "executionTimeMillisEstimate": 0,
+                    "works": 30001,
+                    "advanced": 30000,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 50,
+                    "restoreState": 50,
+                    "isEOF": 1,
+                    "keyPattern": {
+                      "device_id": 1,
+                      "observed_at": -1
+                    },
+                    "indexName": "idx_events_device_observed",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "device_id": [],
+                      "observed_at": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "device_id": [
+                        "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                      ],
+                      "observed_at": [
+                        "[new Date(1738368000000), new Date(1735689600000)]"
+                      ]
+                    },
+                    "keysExamined": 30000,
+                    "seeks": 1,
+                    "dupsTested": 0,
+                    "dupsDropped": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "optimized": {
+          "indexesUsed": [
+            "idx_events_device_observed_id"
+          ],
+          "stages": [
+            "FETCH",
+            "IXSCAN",
+            "LIMIT"
+          ],
+          "winningPlan": {
+            "stage": "LIMIT",
+            "limitAmount": 51,
+            "inputStage": {
+              "stage": "FETCH",
+              "filter": {
+                "$or": [
+                  {
+                    "event_id": {
+                      "$lt": "e8080000-0000-4000-8000-000000010001"
+                    }
+                  },
+                  {
+                    "observed_at": {
+                      "$lt": "2025-01-11T08:00:00.000Z"
+                    }
+                  }
+                ]
+              },
+              "inputStage": {
+                "stage": "IXSCAN",
+                "keyPattern": {
+                  "device_id": 1,
+                  "observed_at": -1,
+                  "event_id": -1
+                },
+                "indexName": "idx_events_device_observed_id",
+                "isMultiKey": false,
+                "multiKeyPaths": {
+                  "device_id": [],
+                  "observed_at": [],
+                  "event_id": []
+                },
+                "isUnique": false,
+                "isSparse": false,
+                "isPartial": false,
+                "indexVersion": 2,
+                "direction": "forward",
+                "indexBounds": {
+                  "device_id": [
+                    "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                  ],
+                  "observed_at": [
+                    "[new Date(1736582400000), new Date(1735689600000)]"
+                  ],
+                  "event_id": [
+                    "[MaxKey, MinKey]"
+                  ]
+                }
+              }
+            }
+          },
+          "executionStats": {
+            "nReturned": 51,
+            "totalKeysExamined": 53,
+            "totalDocsExamined": 53,
+            "executionTimeMillis": 0,
+            "executionStages": {
+              "stage": "LIMIT",
+              "nReturned": 51,
+              "executionTimeMillisEstimate": 0,
+              "works": 54,
+              "advanced": 51,
+              "needTime": 2,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 1,
+              "limitAmount": 51,
+              "inputStage": {
+                "stage": "FETCH",
+                "filter": {
+                  "$or": [
+                    {
+                      "event_id": {
+                        "$lt": "e8080000-0000-4000-8000-000000010001"
+                      }
+                    },
+                    {
+                      "observed_at": {
+                        "$lt": "2025-01-11T08:00:00.000Z"
+                      }
+                    }
+                  ]
+                },
+                "nReturned": 51,
+                "executionTimeMillisEstimate": 0,
+                "works": 53,
+                "advanced": 51,
+                "needTime": 2,
+                "needYield": 0,
+                "saveState": 0,
+                "restoreState": 0,
+                "isEOF": 0,
+                "docsExamined": 53,
+                "alreadyHasObj": 0,
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "nReturned": 53,
+                  "executionTimeMillisEstimate": 0,
+                  "works": 53,
+                  "advanced": 53,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 0,
+                  "restoreState": 0,
+                  "isEOF": 0,
+                  "keyPattern": {
+                    "device_id": 1,
+                    "observed_at": -1,
+                    "event_id": -1
+                  },
+                  "indexName": "idx_events_device_observed_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "device_id": [],
+                    "observed_at": [],
+                    "event_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "device_id": [
+                      "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                    ],
+                    "observed_at": [
+                      "[new Date(1736582400000), new Date(1735689600000)]"
+                    ],
+                    "event_id": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  },
+                  "keysExamined": 53,
+                  "seeks": 1,
+                  "dupsTested": 0,
+                  "dupsDropped": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "summaries": {
+      "baseline_skip": {
+        "0": {
+          "measurementCount": 30,
+          "p50Ms": 36.9427,
+          "p95Ms": 46.30204,
+          "minMs": 33.451,
+          "maxMs": 49.3146
+        },
+        "100": {
+          "measurementCount": 30,
+          "p50Ms": 39.6132,
+          "p95Ms": 46.91598,
+          "minMs": 36.5549,
+          "maxMs": 50.4132
+        },
+        "400": {
+          "measurementCount": 30,
+          "p50Ms": 51.5247,
+          "p95Ms": 60.26182,
+          "minMs": 44.3833,
+          "maxMs": 68.8301
+        }
+      },
+      "optimized_cursor": {
+        "0": {
+          "measurementCount": 30,
+          "p50Ms": 3.25395,
+          "p95Ms": 12.11699,
+          "minMs": 2.2025,
+          "maxMs": 13.1683
+        },
+        "100": {
+          "measurementCount": 30,
+          "p50Ms": 3.28935,
+          "p95Ms": 9.90195,
+          "minMs": 2.1553,
+          "maxMs": 11.6425
+        },
+        "400": {
+          "measurementCount": 30,
+          "p50Ms": 3.2902,
+          "p95Ms": 9.86459,
+          "minMs": 2.2327,
+          "maxMs": 19.4488
+        }
+      }
+    },
+    "comparisons": [
+      {
+        "pageIndex": 0,
+        "offset": 0,
+        "p50ChangePercent": -91.19,
+        "p95ChangePercent": -73.83
+      },
+      {
+        "pageIndex": 100,
+        "offset": 5000,
+        "p50ChangePercent": -91.7,
+        "p95ChangePercent": -78.89
+      },
+      {
+        "pageIndex": 400,
+        "offset": 20000,
+        "p50ChangePercent": -93.61,
+        "p95ChangePercent": -83.63
+      }
+    ],
+    "samples": [
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 4,
+        "durationMs": 4.2083,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 19,
+        "durationMs": 44.3154,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 30,
+        "durationMs": 13.1683,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 18,
+        "durationMs": 7.5269,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 12,
+        "durationMs": 4.2994,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 22,
+        "durationMs": 3.0652,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 25,
+        "durationMs": 33.5679,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 10,
+        "durationMs": 8.5852,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 2,
+        "durationMs": 40.7855,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 1,
+        "durationMs": 3.5182,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 24,
+        "durationMs": 2.7082,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 11,
+        "durationMs": 39.6375,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 24,
+        "durationMs": 33.8524,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 29,
+        "durationMs": 2.7043,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 10,
+        "durationMs": 4.0177,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 7,
+        "durationMs": 3.363,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 29,
+        "durationMs": 2.8464,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 3,
+        "durationMs": 3.4551,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 21,
+        "durationMs": 4.034,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 30,
+        "durationMs": 37.0206,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 23,
+        "durationMs": 5.4157,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 19,
+        "durationMs": 51.7387,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 6,
+        "durationMs": 50.9636,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 23,
+        "durationMs": 3.4101,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 21,
+        "durationMs": 48.1423,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 30,
+        "durationMs": 3.6667,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 27,
+        "durationMs": 35.1997,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 11,
+        "durationMs": 2.6466,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 5,
+        "durationMs": 3.9101,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 29,
+        "durationMs": 34.8756,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 11,
+        "durationMs": 2.8449,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 18,
+        "durationMs": 45.8368,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 13,
+        "durationMs": 2.9139,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 20,
+        "durationMs": 4.2345,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 13,
+        "durationMs": 3.5357,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 28,
+        "durationMs": 44.3833,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 3,
+        "durationMs": 49.173,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 24,
+        "durationMs": 40.1684,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 25,
+        "durationMs": 3.3498,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 8,
+        "durationMs": 2.5473,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 21,
+        "durationMs": 38.2241,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 14,
+        "durationMs": 2.3682,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 2,
+        "durationMs": 3.0628,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 17,
+        "durationMs": 52.8796,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 30,
+        "durationMs": 4.2579,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 4,
+        "durationMs": 39.5889,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 12,
+        "durationMs": 3.427,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 14,
+        "durationMs": 2.6728,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 9,
+        "durationMs": 40.9607,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 8,
+        "durationMs": 57.7138,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 30,
+        "durationMs": 41.5405,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 11,
+        "durationMs": 56.7644,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 18,
+        "durationMs": 13.5046,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 13,
+        "durationMs": 55.7239,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 20,
+        "durationMs": 41.5444,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 8,
+        "durationMs": 12.5282,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 17,
+        "durationMs": 45.9471,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 18,
+        "durationMs": 42.2915,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 20,
+        "durationMs": 68.8301,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 18,
+        "durationMs": 11.6425,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 22,
+        "durationMs": 60.9928,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 14,
+        "durationMs": 50.4132,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 8,
+        "durationMs": 49.3146,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 12,
+        "durationMs": 19.4488,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 23,
+        "durationMs": 47.7087,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 27,
+        "durationMs": 3.0307,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 16,
+        "durationMs": 3.6511,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 6,
+        "durationMs": 46.0833,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 4,
+        "durationMs": 4.2286,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 5,
+        "durationMs": 46.481,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 6,
+        "durationMs": 4.2045,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 7,
+        "durationMs": 2.6491,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 26,
+        "durationMs": 39.6775,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 29,
+        "durationMs": 4.3861,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 26,
+        "durationMs": 4.8074,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 15,
+        "durationMs": 3.0172,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 19,
+        "durationMs": 2.6855,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 11,
+        "durationMs": 3.2264,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 9,
+        "durationMs": 47.7664,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 19,
+        "durationMs": 37.0652,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 29,
+        "durationMs": 52.9853,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 25,
+        "durationMs": 39.4839,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 1,
+        "durationMs": 37.4126,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 24,
+        "durationMs": 49.0871,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 27,
+        "durationMs": 58.2812,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 14,
+        "durationMs": 58.8454,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 26,
+        "durationMs": 2.7428,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 25,
+        "durationMs": 59.3684,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 12,
+        "durationMs": 35.7023,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 26,
+        "durationMs": 36.2562,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 1,
+        "durationMs": 3.758,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 5,
+        "durationMs": 2.7501,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 15,
+        "durationMs": 50.8047,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 3,
+        "durationMs": 36.3385,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 1,
+        "durationMs": 49.9483,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 21,
+        "durationMs": 37.2726,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 1,
+        "durationMs": 11.0759,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 20,
+        "durationMs": 45.3196,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 8,
+        "durationMs": 44.6413,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 22,
+        "durationMs": 42.7997,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 2,
+        "durationMs": 35.0262,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 6,
+        "durationMs": 3.1882,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 6,
+        "durationMs": 36.5549,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 7,
+        "durationMs": 2.4261,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 2,
+        "durationMs": 3.0505,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 28,
+        "durationMs": 37.9437,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 10,
+        "durationMs": 39.7216,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 24,
+        "durationMs": 2.1553,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 28,
+        "durationMs": 2.2446,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 22,
+        "durationMs": 38.2154,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 28,
+        "durationMs": 36.4728,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 16,
+        "durationMs": 35.7801,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 23,
+        "durationMs": 47.03,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 17,
+        "durationMs": 34.7284,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 13,
+        "durationMs": 2.9662,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 23,
+        "durationMs": 2.2025,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 7,
+        "durationMs": 39.5507,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 28,
+        "durationMs": 3.1582,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 9,
+        "durationMs": 3.9187,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 3,
+        "durationMs": 37.9994,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 9,
+        "durationMs": 40.1343,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 8,
+        "durationMs": 3.3656,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 15,
+        "durationMs": 2.4447,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 27,
+        "durationMs": 39.1661,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 16,
+        "durationMs": 48.1173,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 6,
+        "durationMs": 2.6275,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 15,
+        "durationMs": 39.8297,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 3,
+        "durationMs": 3.2291,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 9,
+        "durationMs": 3.3496,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 26,
+        "durationMs": 2.3925,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 5,
+        "durationMs": 38.0642,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 18,
+        "durationMs": 37.324,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 10,
+        "durationMs": 33.5533,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 19,
+        "durationMs": 3.9482,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 20,
+        "durationMs": 3.0874,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 21,
+        "durationMs": 2.32,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 2,
+        "durationMs": 50.4677,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 3,
+        "durationMs": 2.9296,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 27,
+        "durationMs": 3.7067,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 4,
+        "durationMs": 35.2436,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 2,
+        "durationMs": 3.0751,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 24,
+        "durationMs": 3.6184,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 7,
+        "durationMs": 39.2122,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 11,
+        "durationMs": 38.4926,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 21,
+        "durationMs": 5.6377,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 17,
+        "durationMs": 10.9793,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 17,
+        "durationMs": 11.6144,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 30,
+        "durationMs": 49.2113,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 17,
+        "durationMs": 4.752,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 22,
+        "durationMs": 3.9016,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 9,
+        "durationMs": 3.2174,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 20,
+        "durationMs": 2.4809,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 5,
+        "durationMs": 53.9576,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 26,
+        "durationMs": 52.2243,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 7,
+        "durationMs": 52.9924,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 19,
+        "durationMs": 2.7435,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 14,
+        "durationMs": 2.6933,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 16,
+        "durationMs": 3.2702,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 22,
+        "durationMs": 3.9189,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 23,
+        "durationMs": 33.451,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 13,
+        "durationMs": 39.8887,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 28,
+        "durationMs": 2.6614,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 13,
+        "durationMs": 35.8872,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 15,
+        "durationMs": 37.8827,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 12,
+        "durationMs": 54.1382,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 10,
+        "durationMs": 51.3107,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 5,
+        "durationMs": 2.9618,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 25,
+        "durationMs": 2.2327,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 16,
+        "durationMs": 38.3507,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 4,
+        "durationMs": 3.2377,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 25,
+        "durationMs": 3.8025,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 16,
+        "durationMs": 2.4524,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 1,
+        "durationMs": 41.328,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 4,
+        "durationMs": 48.7162,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 12,
+        "durationMs": 41.8217,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 14,
+        "durationMs": 39.3146,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 0,
+        "offset": 0,
+        "iteration": 15,
+        "durationMs": 3.1681,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+      },
+      {
+        "variant": "baseline_skip",
+        "pageIndex": 100,
+        "offset": 5000,
+        "iteration": 29,
+        "durationMs": 37.2986,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 10,
+        "durationMs": 2.3266,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      },
+      {
+        "variant": "optimized_cursor",
+        "pageIndex": 400,
+        "offset": 20000,
+        "iteration": 27,
+        "durationMs": 3.5297,
+        "documentsReturned": 50,
+        "hasMore": true,
+        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+      }
+    ]
+  },
+  "generatedAt": "2026-11-02T02:43:52.691Z",
+  "git": {
+    "commit": "2187aca55e22b2f5423fe45f42db05ddf3b050a3",
+    "worktreeChangesBeforeRun": [
+      "M package.json",
+      "?? artifacts/m08-benchmark.json",
+      "?? scripts/benchmark-paging.mjs"
+    ]
+  },
+  "cleanup": "Coleccion sintetica de esta ejecucion eliminada tras recopilar la evidencia."
+}

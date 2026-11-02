@@ -77,7 +77,7 @@ Comprobado con `explain("executionStats")` sobre el fixture (prueba `[M08][norma
 
 Con cursor se revisa una fila mas: la del cursor, que se descarta. Ese costo **no crece con el numero de pagina**, a diferencia de `skip`, que recorre todo lo anterior. Antes de poner el tope `$lte: at`, la pagina 2 revisaba 7 documentos (todo desde el inicio), y la prueba lo detecto.
 
-La medicion con volumen y la comparacion contra `skip` son el benchmark de Jonathan. Estas cifras son de 8 eventos sinteticos.
+La medicion con volumen y la comparacion contra `skip` estan en el [reporte M08](./M08-benchmark-comparacion.md) y sus muestras en `artifacts/m08-benchmark.json`. Las cifras de esta seccion siguen siendo de 8 eventos sinteticos.
 
 ## Inserciones durante el recorrido
 
@@ -123,5 +123,5 @@ await withMongo(async (db) => {
 - El cursor no esta firmado. Alguien puede fabricar uno valido para la **misma** consulta y saltar a otra posicion, pero solo ve datos que ya podia consultar. No es un mecanismo de seguridad.
 - No se puede ir hacia atras. Para volver, el cliente guarda los cursores que ya uso.
 - Los empates en `observed_at` se ordenan por `event_id`, que es un UUID: no indica que evento ocurrio antes.
-- Las cifras de `explain` son de un fixture de 8 eventos. Escala y tiempos quedan para el benchmark.
+- Las cifras de `explain` de esta seccion son de un fixture de 8 eventos; el benchmark con volumen y sus limitaciones estan en el [reporte M08](./M08-benchmark-comparacion.md).
 - No se modificaron `verify.mjs`, el workflow ni los scripts generales, y no se creo el tag: es la integracion de la entrega.

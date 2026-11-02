@@ -10,6 +10,7 @@
     "verify": "node scripts/verify.mjs",
     "scan:secrets": "node scripts/scan-secrets.mjs",
     "compare:nosql": "node scripts/compare-nosql.mjs",
+    "benchmark:paging": "node scripts/benchmark-paging.mjs",
     "rotate:secret": "node scripts/rotate-secret.mjs",
     "migrate:events:v1": "node scripts/migrate-events-v1.mjs",
     "run": "node scripts/run.mjs"
