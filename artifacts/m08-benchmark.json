@@ -4,14 +4,14 @@
     "status": "completed",
     "seed": 20261101,
     "fixture": {
-      "collectionName": "m08_benchmark_e722fe0d54b74df18d7d914a692f9199",
+      "collectionName": "m08_benchmark_49bd08d4c66845cea174d89ce7f96842",
       "isolated": true,
       "applicationEventsModified": false,
       "documentCount": 40000,
       "targetDevice": "dev_bench_primary",
       "targetDeviceDocuments": 30000,
       "otherDeviceDocuments": 10000,
-      "generatedDocumentsSha256": "e9984915b8b17791f712b11cfdb4b3e32f669044f8a7b983d8ae2572e4e81fff",
+      "generatedDocumentsSha256": "9bb43a5e90f289437a71cc3024284d3c31b9439b015fcbf96fa28b12cd61a3ab",
       "dateRangeInclusive": {
         "from": "2025-01-01T00:00:00.000Z",
         "to": "2025-02-01T00:00:00.000Z"
@@ -35,6 +35,8 @@
       "elapsedTiming": "performance.now() alrededor de la consulta y el mapeo de resultados; sin comparacion/hash",
       "percentileMethod": "Interpolacion lineal (tipo 7, indice (n-1)*p)",
       "schedule": "Muestras mezcladas con PRNG y semilla fija; lotes de concurrencia constante",
+      "cursorPreparationIncludedInTiming": false,
+      "cursorPreparation": "Recorrido previo hasta cada pagina; se mide continuar desde un cursor conocido, no acceso aleatorio.",
       "warmupMeasurementsIncludedInSamples": false
     },
     "variants": {
@@ -54,31 +56,31 @@
       "checks": "SHA-256 de los items normalizados mediante toEventView y hasMore coincidentes para cada pagina y cada muestra.",
       "pages": {
         "0": {
-          "digest": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d",
+          "digest": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6",
           "hasMore": true
         },
         "100": {
-          "digest": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe",
+          "digest": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03",
           "hasMore": true
         },
         "400": {
-          "digest": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0",
+          "digest": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301",
           "hasMore": true
         }
       }
     },
     "environment": {
-      "node": "v22.14.0",
+      "node": "v20.20.2",
       "mongodbDriver": "7.7.0",
       "mongodbServer": "7.0.43",
-      "platform": "win32 10.0.26200",
+      "platform": "linux 7.0.0-1017-azure",
       "architecture": "x64",
-      "cpuModel": "Intel(R) Core(TM) i9-14900HX",
-      "logicalCpuCount": 32,
-      "totalMemoryBytes": 34049417216,
-      "freeMemoryBytesAtStart": 12076576768,
-      "processMemoryBytesAtStart": 58880000,
-      "processMemoryBytesAtEnd": 141045760,
+      "cpuModel": "AMD EPYC 9V45 96-Core Processor",
+      "logicalCpuCount": 4,
+      "totalMemoryBytes": 16760344576,
+      "freeMemoryBytesAtStart": 15118856192,
+      "processMemoryBytesAtStart": 83759104,
+      "processMemoryBytesAtEnd": 203653120,
       "mongoConnectionPoolMaxSize": 5,
       "mongoServerMemoryStats": "No consultado: benchmark no requiere privilegio serverStatus; recursos del host local quedan registrados."
     },
@@ -86,10 +88,10 @@
       "available": true,
       "documentCount": 40000,
       "dataSizeBytes": 12493194,
-      "storageSizeBytes": 2662400,
-      "totalIndexSizeBytes": 2367488,
+      "storageSizeBytes": 4096,
+      "totalIndexSizeBytes": 1957888,
       "indexSizesBytes": {
-        "_id_": 413696,
+        "_id_": 4096,
         "idx_events_device_observed": 471040,
         "idx_events_device_observed_id": 1482752
       }
@@ -174,11 +176,11 @@
             "nReturned": 51,
             "totalKeysExamined": 30000,
             "totalDocsExamined": 30000,
-            "executionTimeMillis": 32,
+            "executionTimeMillis": 30,
             "executionStages": {
               "stage": "SORT",
               "nReturned": 51,
-              "executionTimeMillisEstimate": 2,
+              "executionTimeMillisEstimate": 3,
               "works": 30053,
               "advanced": 51,
               "needTime": 30001,
@@ -200,7 +202,7 @@
               "inputStage": {
                 "stage": "FETCH",
                 "nReturned": 30000,
-                "executionTimeMillisEstimate": 1,
+                "executionTimeMillisEstimate": 3,
                 "works": 30001,
                 "advanced": 30000,
                 "needTime": 0,
@@ -213,7 +215,7 @@
                 "inputStage": {
                   "stage": "IXSCAN",
                   "nReturned": 30000,
-                  "executionTimeMillisEstimate": 0,
+                  "executionTimeMillisEstimate": 3,
                   "works": 30001,
                   "advanced": 30000,
                   "needTime": 0,
@@ -437,11 +439,11 @@
             "nReturned": 51,
             "totalKeysExamined": 30000,
             "totalDocsExamined": 30000,
-            "executionTimeMillis": 35,
+            "executionTimeMillis": 34,
             "executionStages": {
               "stage": "SKIP",
               "nReturned": 51,
-              "executionTimeMillisEstimate": 4,
+              "executionTimeMillisEstimate": 2,
               "works": 35053,
               "advanced": 51,
               "needTime": 35001,
@@ -453,7 +455,7 @@
               "inputStage": {
                 "stage": "SORT",
                 "nReturned": 5051,
-                "executionTimeMillisEstimate": 4,
+                "executionTimeMillisEstimate": 2,
                 "works": 35053,
                 "advanced": 5051,
                 "needTime": 30001,
@@ -475,7 +477,7 @@
                 "inputStage": {
                   "stage": "FETCH",
                   "nReturned": 30000,
-                  "executionTimeMillisEstimate": 4,
+                  "executionTimeMillisEstimate": 2,
                   "works": 30001,
                   "advanced": 30000,
                   "needTime": 0,
@@ -488,7 +490,7 @@
                   "inputStage": {
                     "stage": "IXSCAN",
                     "nReturned": 30000,
-                    "executionTimeMillisEstimate": 2,
+                    "executionTimeMillisEstimate": 1,
                     "works": 30001,
                     "advanced": 30000,
                     "needTime": 0,
@@ -741,11 +743,11 @@
             "nReturned": 51,
             "totalKeysExamined": 30000,
             "totalDocsExamined": 30000,
-            "executionTimeMillis": 44,
+            "executionTimeMillis": 45,
             "executionStages": {
               "stage": "SKIP",
               "nReturned": 51,
-              "executionTimeMillisEstimate": 4,
+              "executionTimeMillisEstimate": 6,
               "works": 50053,
               "advanced": 51,
               "needTime": 50001,
@@ -757,7 +759,7 @@
               "inputStage": {
                 "stage": "SORT",
                 "nReturned": 20051,
-                "executionTimeMillisEstimate": 4,
+                "executionTimeMillisEstimate": 6,
                 "works": 50053,
                 "advanced": 20051,
                 "needTime": 30001,
@@ -779,7 +781,7 @@
                 "inputStage": {
                   "stage": "FETCH",
                   "nReturned": 30000,
-                  "executionTimeMillisEstimate": 3,
+                  "executionTimeMillisEstimate": 2,
                   "works": 30001,
                   "advanced": 30000,
                   "needTime": 0,
@@ -992,47 +994,47 @@
       "baseline_skip": {
         "0": {
           "measurementCount": 30,
-          "p50Ms": 36.9427,
-          "p95Ms": 46.30204,
-          "minMs": 33.451,
-          "maxMs": 49.3146
+          "p50Ms": 38.37128,
+          "p95Ms": 48.61964,
+          "minMs": 31.29337,
+          "maxMs": 50.22208
         },
         "100": {
           "measurementCount": 30,
-          "p50Ms": 39.6132,
-          "p95Ms": 46.91598,
-          "minMs": 36.5549,
-          "maxMs": 50.4132
+          "p50Ms": 42.45179,
+          "p95Ms": 56.55097,
+          "minMs": 32.82235,
+          "maxMs": 61.59446
         },
         "400": {
           "measurementCount": 30,
-          "p50Ms": 51.5247,
-          "p95Ms": 60.26182,
-          "minMs": 44.3833,
-          "maxMs": 68.8301
+          "p50Ms": 54.50568,
+          "p95Ms": 66.40353,
+          "minMs": 44.29519,
+          "maxMs": 68.22413
         }
       },
       "optimized_cursor": {
         "0": {
           "measurementCount": 30,
-          "p50Ms": 3.25395,
-          "p95Ms": 12.11699,
-          "minMs": 2.2025,
-          "maxMs": 13.1683
+          "p50Ms": 3.17012,
+          "p95Ms": 6.29345,
+          "minMs": 1.63491,
+          "maxMs": 7.11604
         },
         "100": {
           "measurementCount": 30,
-          "p50Ms": 3.28935,
-          "p95Ms": 9.90195,
-          "minMs": 2.1553,
-          "maxMs": 11.6425
+          "p50Ms": 2.91633,
+          "p95Ms": 5.45423,
+          "minMs": 1.60809,
+          "maxMs": 6.06619
         },
         "400": {
           "measurementCount": 30,
-          "p50Ms": 3.2902,
-          "p95Ms": 9.86459,
-          "minMs": 2.2327,
-          "maxMs": 19.4488
+          "p50Ms": 3.23997,
+          "p95Ms": 6.40093,
+          "minMs": 1.85248,
+          "maxMs": 6.73336
         }
       }
     },
@@ -1040,20 +1042,20 @@
       {
         "pageIndex": 0,
         "offset": 0,
-        "p50ChangePercent": -91.19,
-        "p95ChangePercent": -73.83
+        "p50ChangePercent": -91.74,
+        "p95ChangePercent": -87.06
       },
       {
         "pageIndex": 100,
         "offset": 5000,
-        "p50ChangePercent": -91.7,
-        "p95ChangePercent": -78.89
+        "p50ChangePercent": -93.13,
+        "p95ChangePercent": -90.36
       },
       {
         "pageIndex": 400,
         "offset": 20000,
-        "p50ChangePercent": -93.61,
-        "p95ChangePercent": -83.63
+        "p50ChangePercent": -94.06,
+        "p95ChangePercent": -90.36
       }
     ],
     "samples": [
@@ -1062,1810 +1064,1819 @@
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 4,
-        "durationMs": 4.2083,
+        "durationMs": 3.44005,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 19,
-        "durationMs": 44.3154,
+        "durationMs": 38.47419,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 30,
-        "durationMs": 13.1683,
+        "durationMs": 7.11604,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 18,
-        "durationMs": 7.5269,
+        "durationMs": 4.42642,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 12,
-        "durationMs": 4.2994,
+        "durationMs": 2.89358,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 22,
-        "durationMs": 3.0652,
+        "durationMs": 2.04495,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 25,
-        "durationMs": 33.5679,
+        "durationMs": 35.27548,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 10,
-        "durationMs": 8.5852,
+        "durationMs": 5.89607,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 2,
-        "durationMs": 40.7855,
+        "durationMs": 35.48136,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 1,
-        "durationMs": 3.5182,
+        "durationMs": 2.10885,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 24,
-        "durationMs": 2.7082,
+        "durationMs": 4.29397,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 11,
-        "durationMs": 39.6375,
+        "durationMs": 35.93399,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 24,
-        "durationMs": 33.8524,
+        "durationMs": 32.66375,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 29,
-        "durationMs": 2.7043,
+        "durationMs": 2.3917,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 10,
-        "durationMs": 4.0177,
+        "durationMs": 1.63491,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 7,
-        "durationMs": 3.363,
+        "durationMs": 3.0399,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 29,
-        "durationMs": 2.8464,
+        "durationMs": 6.06619,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 3,
-        "durationMs": 3.4551,
+        "durationMs": 4.73155,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 21,
-        "durationMs": 4.034,
+        "durationMs": 6.4925,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 30,
-        "durationMs": 37.0206,
+        "durationMs": 38.26043,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 23,
-        "durationMs": 5.4157,
+        "durationMs": 3.60479,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 19,
-        "durationMs": 51.7387,
+        "durationMs": 47.85558,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 6,
-        "durationMs": 50.9636,
+        "durationMs": 49.0951,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 23,
-        "durationMs": 3.4101,
+        "durationMs": 1.60809,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 21,
-        "durationMs": 48.1423,
+        "durationMs": 44.29519,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 30,
-        "durationMs": 3.6667,
+        "durationMs": 2.63725,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 27,
-        "durationMs": 35.1997,
+        "durationMs": 33.19245,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 11,
-        "durationMs": 2.6466,
+        "durationMs": 3.59496,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 5,
-        "durationMs": 3.9101,
+        "durationMs": 3.29283,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 29,
-        "durationMs": 34.8756,
+        "durationMs": 40.47639,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 11,
-        "durationMs": 2.8449,
+        "durationMs": 2.00205,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 18,
-        "durationMs": 45.8368,
+        "durationMs": 53.78591,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 13,
-        "durationMs": 2.9139,
+        "durationMs": 2.47586,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 20,
-        "durationMs": 4.2345,
+        "durationMs": 3.30197,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 13,
-        "durationMs": 3.5357,
+        "durationMs": 4.23453,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 28,
-        "durationMs": 44.3833,
+        "durationMs": 48.15382,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 3,
-        "durationMs": 49.173,
+        "durationMs": 44.30071,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 24,
-        "durationMs": 40.1684,
+        "durationMs": 36.31968,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 25,
-        "durationMs": 3.3498,
+        "durationMs": 3.62871,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 8,
-        "durationMs": 2.5473,
+        "durationMs": 2.26326,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 21,
-        "durationMs": 38.2241,
+        "durationMs": 38.58617,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 14,
-        "durationMs": 2.3682,
+        "durationMs": 2.29111,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 2,
-        "durationMs": 3.0628,
+        "durationMs": 2.94502,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 17,
-        "durationMs": 52.8796,
+        "durationMs": 48.66392,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 30,
-        "durationMs": 4.2579,
+        "durationMs": 3.14053,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 4,
-        "durationMs": 39.5889,
+        "durationMs": 41.67907,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 12,
-        "durationMs": 3.427,
+        "durationMs": 3.96237,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 14,
-        "durationMs": 2.6728,
+        "durationMs": 4.84769,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 9,
-        "durationMs": 40.9607,
+        "durationMs": 49.26791,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 8,
-        "durationMs": 57.7138,
+        "durationMs": 63.98557,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 30,
-        "durationMs": 41.5405,
+        "durationMs": 50.22208,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 11,
-        "durationMs": 56.7644,
+        "durationMs": 66.50926,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 18,
-        "durationMs": 13.5046,
+        "durationMs": 2.26894,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 13,
-        "durationMs": 55.7239,
+        "durationMs": 47.81501,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 20,
-        "durationMs": 41.5444,
+        "durationMs": 36.36349,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 8,
-        "durationMs": 12.5282,
+        "durationMs": 2.86804,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 17,
-        "durationMs": 45.9471,
+        "durationMs": 49.38594,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 18,
-        "durationMs": 42.2915,
+        "durationMs": 33.32266,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 20,
-        "durationMs": 68.8301,
+        "durationMs": 61.50878,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 18,
-        "durationMs": 11.6425,
+        "durationMs": 2.47839,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 22,
-        "durationMs": 60.9928,
+        "durationMs": 61.0121,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 14,
-        "durationMs": 50.4132,
+        "durationMs": 50.32167,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 8,
-        "durationMs": 49.3146,
+        "durationMs": 33.35826,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 12,
-        "durationMs": 19.4488,
+        "durationMs": 4.43545,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 23,
-        "durationMs": 47.7087,
+        "durationMs": 38.65168,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 27,
-        "durationMs": 3.0307,
+        "durationMs": 2.87731,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 16,
-        "durationMs": 3.6511,
+        "durationMs": 1.94653,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 6,
-        "durationMs": 46.0833,
+        "durationMs": 35.99274,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 4,
-        "durationMs": 4.2286,
+        "durationMs": 3.41918,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 5,
-        "durationMs": 46.481,
+        "durationMs": 33.58791,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 6,
-        "durationMs": 4.2045,
+        "durationMs": 4.12678,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 7,
-        "durationMs": 2.6491,
+        "durationMs": 4.9142,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 26,
-        "durationMs": 39.6775,
+        "durationMs": 36.73194,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 29,
-        "durationMs": 4.3861,
+        "durationMs": 3.66384,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 26,
-        "durationMs": 4.8074,
+        "durationMs": 2.49963,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 15,
-        "durationMs": 3.0172,
+        "durationMs": 4.38176,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 19,
-        "durationMs": 2.6855,
+        "durationMs": 1.95338,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 11,
-        "durationMs": 3.2264,
+        "durationMs": 2.41756,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 9,
-        "durationMs": 47.7664,
+        "durationMs": 47.61642,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 19,
-        "durationMs": 37.0652,
+        "durationMs": 39.40035,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 29,
-        "durationMs": 52.9853,
+        "durationMs": 62.11645,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 25,
-        "durationMs": 39.4839,
+        "durationMs": 48.57699,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 1,
-        "durationMs": 37.4126,
+        "durationMs": 46.47458,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 24,
-        "durationMs": 49.0871,
+        "durationMs": 62.73725,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 27,
-        "durationMs": 58.2812,
+        "durationMs": 54.14121,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 14,
-        "durationMs": 58.8454,
+        "durationMs": 66.13263,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 26,
-        "durationMs": 2.7428,
+        "durationMs": 2.3085,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 25,
-        "durationMs": 59.3684,
+        "durationMs": 68.22413,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 12,
-        "durationMs": 35.7023,
+        "durationMs": 38.26837,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 26,
-        "durationMs": 36.2562,
+        "durationMs": 41.90588,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 1,
-        "durationMs": 3.758,
+        "durationMs": 2.97893,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 5,
-        "durationMs": 2.7501,
+        "durationMs": 6.73336,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 15,
-        "durationMs": 50.8047,
+        "durationMs": 64.27732,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 3,
-        "durationMs": 36.3385,
+        "durationMs": 47.82731,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 1,
-        "durationMs": 49.9483,
+        "durationMs": 63.2517,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 21,
-        "durationMs": 37.2726,
+        "durationMs": 49.08849,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 1,
-        "durationMs": 11.0759,
+        "durationMs": 2.45973,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 20,
-        "durationMs": 45.3196,
+        "durationMs": 49.70343,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 8,
-        "durationMs": 44.6413,
+        "durationMs": 48.86301,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 22,
-        "durationMs": 42.7997,
+        "durationMs": 31.98673,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 2,
-        "durationMs": 35.0262,
+        "durationMs": 31.29337,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 6,
-        "durationMs": 3.1882,
+        "durationMs": 5.24288,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 6,
-        "durationMs": 36.5549,
+        "durationMs": 32.82235,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 7,
-        "durationMs": 2.4261,
+        "durationMs": 4.00875,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 2,
-        "durationMs": 3.0505,
+        "durationMs": 2.53214,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 28,
-        "durationMs": 37.9437,
+        "durationMs": 40.29192,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 10,
-        "durationMs": 39.7216,
+        "durationMs": 41.05062,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 24,
-        "durationMs": 2.1553,
+        "durationMs": 2.84881,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 28,
-        "durationMs": 2.2446,
+        "durationMs": 2.21748,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 22,
-        "durationMs": 38.2154,
+        "durationMs": 42.34911,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 28,
-        "durationMs": 36.4728,
+        "durationMs": 47.38908,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 16,
-        "durationMs": 35.7801,
+        "durationMs": 46.57502,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 23,
-        "durationMs": 47.03,
+        "durationMs": 57.77142,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 17,
-        "durationMs": 34.7284,
+        "durationMs": 41.61333,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 13,
-        "durationMs": 2.9662,
+        "durationMs": 1.92085,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 23,
-        "durationMs": 2.2025,
+        "durationMs": 2.77617,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 7,
-        "durationMs": 39.5507,
+        "durationMs": 50.49188,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 28,
-        "durationMs": 3.1582,
+        "durationMs": 3.5786,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 9,
-        "durationMs": 3.9187,
+        "durationMs": 4.6313,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 3,
-        "durationMs": 37.9994,
+        "durationMs": 50.99185,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 9,
-        "durationMs": 40.1343,
+        "durationMs": 61.09934,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 8,
-        "durationMs": 3.3656,
+        "durationMs": 3.54312,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 15,
-        "durationMs": 2.4447,
+        "durationMs": 2.26256,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 27,
-        "durationMs": 39.1661,
+        "durationMs": 61.59446,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 16,
-        "durationMs": 48.1173,
+        "durationMs": 52.03046,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 6,
-        "durationMs": 2.6275,
+        "durationMs": 2.28759,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 15,
-        "durationMs": 39.8297,
+        "durationMs": 38.4516,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 3,
-        "durationMs": 3.2291,
+        "durationMs": 3.29135,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 9,
-        "durationMs": 3.3496,
+        "durationMs": 2.38758,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 26,
-        "durationMs": 2.3925,
+        "durationMs": 3.99564,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 5,
-        "durationMs": 38.0642,
+        "durationMs": 42.55447,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 18,
-        "durationMs": 37.324,
+        "durationMs": 43.4433,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 10,
-        "durationMs": 33.5533,
+        "durationMs": 32.85519,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 19,
-        "durationMs": 3.9482,
+        "durationMs": 3.41738,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 20,
-        "durationMs": 3.0874,
+        "durationMs": 2.6524,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 21,
-        "durationMs": 2.32,
+        "durationMs": 1.7483,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 2,
-        "durationMs": 50.4677,
+        "durationMs": 54.87015,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 3,
-        "durationMs": 2.9296,
+        "durationMs": 6.91924,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 27,
-        "durationMs": 3.7067,
+        "durationMs": 5.52859,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 4,
-        "durationMs": 35.2436,
+        "durationMs": 35.275,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 2,
-        "durationMs": 3.0751,
+        "durationMs": 4.43372,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 24,
-        "durationMs": 3.6184,
+        "durationMs": 5.48335,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 7,
-        "durationMs": 39.2122,
+        "durationMs": 40.52581,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 11,
-        "durationMs": 38.4926,
+        "durationMs": 39.63911,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 21,
-        "durationMs": 5.6377,
+        "durationMs": 2.71177,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 17,
-        "durationMs": 10.9793,
+        "durationMs": 1.79488,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 17,
-        "durationMs": 11.6144,
+        "durationMs": 2.97758,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 30,
-        "durationMs": 49.2113,
+        "durationMs": 51.91803,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 17,
-        "durationMs": 4.752,
+        "durationMs": 1.85248,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 22,
-        "durationMs": 3.9016,
+        "durationMs": 2.95535,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 9,
-        "durationMs": 3.2174,
+        "durationMs": 3.53481,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 20,
-        "durationMs": 2.4809,
+        "durationMs": 2.24477,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 5,
-        "durationMs": 53.9576,
+        "durationMs": 65.58737,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 26,
-        "durationMs": 52.2243,
+        "durationMs": 66.2743,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 7,
-        "durationMs": 52.9924,
+        "durationMs": 50.79949,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 19,
-        "durationMs": 2.7435,
+        "durationMs": 2.41624,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 14,
-        "durationMs": 2.6933,
+        "durationMs": 3.4515,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 16,
-        "durationMs": 3.2702,
+        "durationMs": 3.94441,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 22,
-        "durationMs": 3.9189,
+        "durationMs": 4.51728,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 23,
-        "durationMs": 33.451,
+        "durationMs": 32.2302,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 13,
-        "durationMs": 39.8887,
+        "durationMs": 45.09777,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 28,
-        "durationMs": 2.6614,
+        "durationMs": 5.27547,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 13,
-        "durationMs": 35.8872,
+        "durationMs": 32.62881,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 15,
-        "durationMs": 37.8827,
+        "durationMs": 42.79504,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 12,
-        "durationMs": 54.1382,
+        "durationMs": 53.82026,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 10,
-        "durationMs": 51.3107,
+        "durationMs": 52.79106,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 5,
-        "durationMs": 2.9618,
+        "durationMs": 2.8728,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 25,
-        "durationMs": 2.2327,
+        "durationMs": 1.89952,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 16,
-        "durationMs": 38.3507,
+        "durationMs": 35.65384,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 4,
-        "durationMs": 3.2377,
+        "durationMs": 2.51047,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 25,
-        "durationMs": 3.8025,
+        "durationMs": 3.04742,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 16,
-        "durationMs": 2.4524,
+        "durationMs": 1.68754,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 1,
-        "durationMs": 41.328,
+        "durationMs": 45.8388,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 4,
-        "durationMs": 48.7162,
+        "durationMs": 59.42884,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 12,
-        "durationMs": 41.8217,
+        "durationMs": 47.7687,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 14,
-        "durationMs": 39.3146,
+        "durationMs": 44.00202,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 0,
         "offset": 0,
         "iteration": 15,
-        "durationMs": 3.1681,
+        "durationMs": 4.33147,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "cf5c041ca7015d227b4b2d8fee8972757b66276850b07aba160ba482865bfb1d"
+        "resultSha256": "3f609f53a0a5adb9fbcf2db2ce93563db2e0234e9c8b2f48f9826c20c1a9e2a6"
       },
       {
         "variant": "baseline_skip",
         "pageIndex": 100,
         "offset": 5000,
         "iteration": 29,
-        "durationMs": 37.2986,
+        "durationMs": 37.28523,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "23cbad9d00803d2bd88bf08870447bf27df9a273f6e38e81487e3da5844932fe"
+        "resultSha256": "82170026f1097c3226f7b9c658bbc34dd44681988d46ea00e28d4811c1cfab03"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 10,
-        "durationMs": 2.3266,
+        "durationMs": 6.28902,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       },
       {
         "variant": "optimized_cursor",
         "pageIndex": 400,
         "offset": 20000,
         "iteration": 27,
-        "durationMs": 3.5297,
+        "durationMs": 5.12045,
         "documentsReturned": 50,
         "hasMore": true,
-        "resultSha256": "259cd09efd984d1023ca345568f14e48b129846db53de0d7ca05cea208b8acc0"
+        "resultSha256": "5bebab55c8e926290c16deeef516dec6631d6028ef3048280f46cae3bb777301"
       }
     ]
   },
-  "generatedAt": "2026-11-02T02:43:52.691Z",
+  "generatedAt": "2026-11-02T03:06:58.545Z",
   "git": {
-    "commit": "2187aca55e22b2f5423fe45f42db05ddf3b050a3",
+    "commit": "ffb1cb49afd620646a6566f52881e06ab4c1a3d7",
     "worktreeChangesBeforeRun": [
-      "M package.json",
-      "?? artifacts/m08-benchmark.json",
-      "?? scripts/benchmark-paging.mjs"
+      "M artifacts/m01-verify.json",
+      " M artifacts/m02-verify.json",
+      " M artifacts/m03-verify.json",
+      " M artifacts/m04-verify.json",
+      " M artifacts/m05-queries.json",
+      " M artifacts/m05-verify.json",
+      " M artifacts/m06-recovery.json",
+      " M artifacts/m06-verify.json",
+      " M artifacts/m07-migration.json",
+      " M artifacts/m07-verify.json",
+      " M artifacts/m08-benchmark.json",
+      "?? artifacts/m08-verify.json"
     ]
   },
   "cleanup": "Coleccion sintetica de esta ejecucion eliminada tras recopilar la evidencia."

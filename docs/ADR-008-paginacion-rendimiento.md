@@ -63,6 +63,25 @@ concurrencia y planes junto con los tiempos; no son una promesa de produccion.
 Los recursos registrados son del cliente, no cuotas del contenedor. Estas no se
 miden. Docker Compose es el entorno validado; no se afirma haber validado AWS.
 
+### Medicion de integracion comprobada
+
+make verify del commit ffb1cb49afd620646a6566f52881e06ab4c1a3d7:
+[Actions 41381152493](https://github.com/e-daga/CDRL-base-2026/actions/runs/41381152493).
+169 pruebas aprobadas (12 M08), cero fallidas/omitidas/pendientes y cero hallazgos
+del escaner. 180 muestras. Tiempos en ms, 30 muestras por variante/pagina:
+
+| Pagina | Baseline p50 | Baseline p95 | Cursor p50 | Cursor p95 |
+| --- | ---: | ---: | ---: | ---: |
+| 0 | 37.10340 | 45.34359 | 2.91392 | 6.66822 |
+| 100 | 37.33966 | 54.84428 | 2.58470 | 5.68814 |
+| 400 | 52.20340 | 71.48761 | 2.80320 | 4.87185 |
+
+Entorno Linux x64, Node 20.20.2, MongoDB 7.0.43, driver 7.7.0, cuatro CPU
+logicos visibles, 16.760.344.576 bytes de RAM del host visible. Cache calentada,
+concurrencia 4. Las nuevas ejecuciones del tag tienen tiempos propios.
+El hash logico 9bb43a5e90f289437a71cc3024284d3c31b9439b015fcbf96fa28b12cd61a3ab
+coincidio entre esta ejecucion de GitHub y la ejecucion local en Windows.
+
 ## Trade-off y alternativa descartada
 
 Elegimos cursor para un recorrido secuencial resistente a inserciones. El indice

@@ -1,0 +1,3814 @@
+{
+  "assignmentId": "m08-pagination-performance",
+  "status": "passed",
+  "generatedAt": "2026-11-02T03:06:54.070Z",
+  "git": {
+    "commitSha": "ffb1cb49afd620646a6566f52881e06ab4c1a3d7",
+    "workingTreeStatus": "M artifacts/m05-queries.json\n M artifacts/m06-recovery.json\n M artifacts/m07-migration.json\n M artifacts/m08-benchmark.json"
+  },
+  "commands": [
+    "make setup",
+    "make verify",
+    "make run"
+  ],
+  "database": {
+    "engine": "PostgreSQL",
+    "counts": {
+      "devices": 2,
+      "telemetry_events": 3,
+      "device_status": 2,
+      "telemetry_alerts": 1,
+      "migrations": 4
+    },
+    "migrations": [
+      {
+        "version": "001_create_telemetry_contract",
+        "checksum": "7964a96ed199bb2433dab27063e91b279aded60052b7f62d0fb568be8002cbad"
+      },
+      {
+        "version": "002_create_operational_model",
+        "checksum": "5ffb39f9578f24a1abe9e16d82c53d3b6d633b7adb9e2cb0cf97f6d96c78f80b"
+      },
+      {
+        "version": "003_create_roles_and_privileges",
+        "checksum": "a91f2f46ba03e0cd1cec601c60b8c9b32130c123888f47199280236189ed13dd"
+      },
+      {
+        "version": "004_enforce_role_ownership",
+        "checksum": "ff24b417c3ee59dc7210031cac9687289e25025691437ca4384e045a0a17c9fe"
+      }
+    ],
+    "owners": [
+      {
+        "tablename": "device_status",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "devices",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "schema_migrations",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "telemetry_alerts",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "telemetry_events",
+        "tableowner": "role_migrator"
+      }
+    ]
+  },
+  "tests": {
+    "total": 169,
+    "passed": 169,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cases": [
+      {
+        "name": "[M04][normal] matriz real calcula ranking y volumen revisados a mano",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][boundary] mayor prioridad a escala cambia el candidato preferido",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][boundary] empate no se resuelve inventando un ganador",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][declared failure] rechaza familia omitida o duplicada",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][declared failure] rechaza volumen invalido",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][declared failure] rechaza fuentes ausentes y protocolos inseguros",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][declared failure] no etiqueta hipotesis como mediciones realizadas",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][normal] resultado conserva las veinte hipotesis y sus fuentes",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "CRUD normal de eventos",
+        "status": "passed",
+        "file": "tests/m05-crud-consultas.test.mjs"
+      },
+      {
+        "name": "CRUD normal de alertas",
+        "status": "passed",
+        "file": "tests/m05-crud-consultas.test.mjs"
+      },
+      {
+        "name": "idempotencia de eventos: duplicado no crea otro y reutilizar id con datos distintos da conflicto explícito",
+        "status": "passed",
+        "file": "tests/m05-crud-consultas.test.mjs"
+      },
+      {
+        "name": "lecturas, borrados y actualizaciones sobre documentos inexistentes devuelven resultados explícitos",
+        "status": "passed",
+        "file": "tests/m05-crud-consultas.test.mjs"
+      },
+      {
+        "name": "cronograma de Q1 y Q2 con explain executionStats usan los índices esperados",
+        "status": "passed",
+        "file": "tests/m05-crud-consultas.test.mjs"
+      },
+      {
+        "name": "actualizaciones inválidas son rechazadas por validación del esquema",
+        "status": "passed",
+        "file": "tests/m05-crud-consultas.test.mjs"
+      },
+      {
+        "name": "[M05][normal] Q1 y las cuatro variantes Q2 ejecutan indices declarados",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M05][boundary] porcentaje 0 aceptado directamente",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M05][boundary] porcentaje 100 aceptado directamente",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M05][boundary] reintentos concurrentes y orden de claves no duplican",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M05][declared failure] actualizacion directa invalida no modifica el documento",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M05][declared failure] limites, fechas y filtros invalidos son rechazados",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M05][declared failure] un indice solo en rejectedPlans no cuenta",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] misma fecha no permite atribuir otra operacion",
+        "status": "passed",
+        "file": "tests/m06-audit-safety.test.mjs"
+      },
+      {
+        "name": "[M06][boundary] reintentos concurrentes guardan una sola auditoria",
+        "status": "passed",
+        "file": "tests/m06-audit-safety.test.mjs"
+      },
+      {
+        "name": "[M06][normal] reconoce alerta y registra sólo campos permitidos",
+        "status": "passed",
+        "file": "tests/m06-auditoria.test.mjs"
+      },
+      {
+        "name": "[M06][retry] el mismo operation_id no repite ni duplica la operación",
+        "status": "passed",
+        "file": "tests/m06-auditoria.test.mjs"
+      },
+      {
+        "name": "[M06][missing] alerta inexistente no genera cambio ni auditoría",
+        "status": "passed",
+        "file": "tests/m06-auditoria.test.mjs"
+      },
+      {
+        "name": "[M06][controlled failure] deja auditoría pendiente y la completa al reintentar",
+        "status": "passed",
+        "file": "tests/m06-auditoria.test.mjs"
+      },
+      {
+        "name": "[M06][normal] la consulta por dispositivo lee v1 y v2 con la misma forma",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][normal] el validador acepta un v1 nuevo y un v2 nuevo",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][boundary] los documentos de M05 se leen como v1 sin reescribirse",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][boundary] la vista no muta el documento original",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: schema_version desconocida (3)",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: schema_version como texto",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: schema_version 1 explicita",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: v2 sin firmware_version",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: v2 con firmware_version mal formado",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: v1 con firmware_version",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: v2 incompleto (sin device_id)",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: v2 con campo no declarado",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] las reglas de version tambien fallan en la aplicacion",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] subir un v1 a una version invalida no cambia el documento",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][boundary] init repetido sobre el volumen existente conserva datos y reglas",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][normal] recupera un fixture completo y mide el resultado",
+        "status": "passed",
+        "file": "tests/m06-recovery.test.mjs"
+      },
+      {
+        "name": "[M06][boundary] repetir restauracion no duplica el fixture",
+        "status": "passed",
+        "file": "tests/m06-recovery.test.mjs"
+      },
+      {
+        "name": "[M06][boundary] fixture ausente no produce respaldo vacio",
+        "status": "passed",
+        "file": "tests/m06-recovery.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] respaldo corrupto o destino ajeno no modifica datos",
+        "status": "passed",
+        "file": "tests/m06-recovery.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] error al persistir respaldo impide borrar el fixture",
+        "status": "passed",
+        "file": "tests/m06-recovery.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] datos ajenos en coleccion aislada bloquean experimento",
+        "status": "passed",
+        "file": "tests/m06-recovery.test.mjs"
+      },
+      {
+        "name": "[M07][normal] el consumidor anterior recibe lo mismo antes, durante, despues y tras revertir",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][normal] el consumidor M06 conserva firmware_version y firmware_status en todas las fases",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][boundary] durante la migracion conviven v1 pendientes, v2 desconocidos y v2 reportados",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][boundary] repetir la migracion no cambia nada y no toca los v2 reportados",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][boundary] el CRUD lee y actualiza un evento migrado sin perder la marca de desconocido",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: null sin firmware_status",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: null sin migrated_from",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: null con firmware_status reported",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: firmware conocido marcado unknown",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: firmware conocido con migrated_from",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: migrated_from distinto de 1",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: firmware_status inventado",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: firmware como texto vacio",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: v1 con firmware_status",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: v1 con migrated_from",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] la vista legada no oculta una version desconocida",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] una migracion que deja un estado invalido se rechaza y el documento queda igual",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][normal] migracion real conserva consumidor antes durante despues y rollback",
+        "status": "passed",
+        "file": "tests/m07-integration.test.mjs"
+      },
+      {
+        "name": "[M07][boundary] alcance vacio de datos no cambia documentos ni inventa trabajo",
+        "status": "passed",
+        "file": "tests/m07-integration.test.mjs"
+      },
+      {
+        "name": "[M07][boundary] rollback repetido no oculta conflictos pendientes",
+        "status": "passed",
+        "file": "tests/m07-integration.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] recupera escritura aplicada antes de guardar estado del diario",
+        "status": "passed",
+        "file": "tests/m07-integration.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] requiere run-id y diario separado sin escribir",
+        "status": "passed",
+        "file": "tests/m07-integration.test.mjs"
+      },
+      {
+        "name": "[M07 migration] inspección declara alcance, pendientes y lotes sin escribir",
+        "status": "passed",
+        "file": "tests/m07-migracion.test.mjs"
+      },
+      {
+        "name": "[M07 migration] reanuda después de interrupción y la segunda ejecución no modifica nada",
+        "status": "passed",
+        "file": "tests/m07-migracion.test.mjs"
+      },
+      {
+        "name": "[M07 migration] rollback revierte solo sus cambios y reporta modificaciones posteriores",
+        "status": "passed",
+        "file": "tests/m07-migracion.test.mjs"
+      },
+      {
+        "name": "[M07 migration] una escritura concurrente falla la comparación y no se sobrescribe",
+        "status": "passed",
+        "file": "tests/m07-migracion.test.mjs"
+      },
+      {
+        "name": "[M07 migration] dos corridas concurrentes no reclaman el mismo cambio ni se revierten entre sí",
+        "status": "passed",
+        "file": "tests/m07-migracion.test.mjs"
+      },
+      {
+        "name": "[M08][normal] evidencia coherente se acepta aunque la variante optimizada tarde mas",
+        "status": "passed",
+        "file": "tests/m08-integration.test.mjs"
+      },
+      {
+        "name": "[M08][normal] percentiles tipo 7 se calculan de las muestras sin mutarlas",
+        "status": "passed",
+        "file": "tests/m08-integration.test.mjs"
+      },
+      {
+        "name": "[M08][boundary] una muestra, empates y extremos de percentil",
+        "status": "passed",
+        "file": "tests/m08-integration.test.mjs"
+      },
+      {
+        "name": "[M08][boundary] no se calculan estadisticas sobre muestras vacias o invalidas",
+        "status": "passed",
+        "file": "tests/m08-integration.test.mjs"
+      },
+      {
+        "name": "[M08][declared failure] se rechazan evidencia incompleta, resultados distintos y percentiles falsos",
+        "status": "passed",
+        "file": "tests/m08-integration.test.mjs"
+      },
+      {
+        "name": "[M08][normal] el recorrido por cursor entrega todo en orden estable, sin repetir ni perder",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M08][normal] la pagina con cursor usa el indice declarado y no ordena en memoria",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M08][boundary] eventos con la misma fecha se desempatan por event_id aunque crucen paginas",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M08][boundary] coleccion vacia y dispositivo sin eventos devuelven una pagina vacia y final",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M08][boundary] la ultima pagina exacta no deja una pagina vacia extra",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M08][boundary] insertar entre paginas no repite ni pierde los eventos originales",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M08][declared failure] un cursor invalido se rechaza con un error claro",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "control: documentos validos si se aceptan",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: sin device_id",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: device_id con formato invalido",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: event_type no permitido",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: severity no permitida",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: payload no es objeto",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: metric_value como texto",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: campo no declarado",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: battery_pct > 100",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: humidity_pct < 0",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: observed_at en el futuro (> 5 min)",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "alerts rechaza: status no permitido",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "alerts rechaza: alert_type no permitido",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "alerts rechaza: severity no permitida",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "alerts rechaza: acknowledged sin acknowledged_at",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "alerts rechaza: resolved sin resolved_at",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "alerts rechaza: resolved_at anterior a opened_at",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "indice unico: event_id duplicado",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "indice unico: alert_id duplicado",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "indices esperados existen",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "seed repetido no duplica",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "[M04] caso normal calcula puntajes esperados sobre 100",
+        "status": "passed",
+        "file": "tests/nosql-decision.test.mjs"
+      },
+      {
+        "name": "[M04] alternativas con mismo resultado comparten puesto y se reportan como empate",
+        "status": "passed",
+        "file": "tests/nosql-decision.test.mjs"
+      },
+      {
+        "name": "[M04] cambiar puntuacion de criterio con peso cero no cambia resultado",
+        "status": "passed",
+        "file": "tests/nosql-decision.test.mjs"
+      },
+      {
+        "name": "[M04] fallo declarado cuando los pesos no suman 100",
+        "status": "passed",
+        "file": "tests/nosql-decision.test.mjs"
+      },
+      {
+        "name": "[M04] rechaza puntuaciones fuera del rango de 1 a 5",
+        "status": "passed",
+        "file": "tests/nosql-decision.test.mjs"
+      },
+      {
+        "name": "[M04] rechaza justificaciones ausentes o vacias",
+        "status": "passed",
+        "file": "tests/nosql-decision.test.mjs"
+      },
+      {
+        "name": "normal case: parameterized telemetry query returns device events",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "empty case: unknown device returns empty parameterized results",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "boundary case: telemetry limit returns at most one row",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "boundary case: device status accepts maintenance with battery 0",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "declared failure: device status rejects battery above 100",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "declared failure: resolved alert requires acknowledgement",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "[M03][normal] migrator authenticates with its own non-admin account",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] writer authenticates with its own non-admin account",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] reader authenticates with its own non-admin account",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] operator authenticates with its own non-admin account",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] writer inserts devices and telemetry",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] reader queries all four application tables",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][boundary] writer upserts device status with battery 0",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][boundary] writer upserts device status with battery 100",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][boundary] reader can query an empty result",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] operator opens acknowledges and resolves an alert",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] migrator creates alters and drops tables, including existing objects",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][boundary] future migrator tables inherit read-only access",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot read telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot insert telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot read telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot update raw telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot manage alerts (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot update device status (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot update device status (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot delete telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot delete devices (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot delete alerts (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot create application tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot alter existing tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot truncate telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot read migration metadata (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot escalate to migrator (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot create login roles (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot create temporary tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot create application tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot alter existing tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot truncate telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot read migration metadata (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot escalate to migrator (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot create login roles (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot create temporary tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot create application tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot alter existing tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot truncate telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot read migration metadata (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot escalate to migrator (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot create login roles (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot create temporary tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] complete effective table permission matrix matches the declaration",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][rotation] new credential works, old login and existing session are revoked",
+        "status": "passed",
+        "file": "tests/secret-rotation.test.mjs"
+      },
+      {
+        "name": "normal case: accepts a temperature telemetry event",
+        "status": "passed",
+        "file": "tests/telemetry-contract.test.mjs"
+      },
+      {
+        "name": "boundary case: accepts battery_pct lower bound 0",
+        "status": "passed",
+        "file": "tests/telemetry-contract.test.mjs"
+      },
+      {
+        "name": "boundary case: accepts humidity_pct upper bound 100",
+        "status": "passed",
+        "file": "tests/telemetry-contract.test.mjs"
+      },
+      {
+        "name": "declared failure: rejects battery_pct above 100",
+        "status": "passed",
+        "file": "tests/telemetry-contract.test.mjs"
+      }
+    ]
+  },
+  "m08Tests": 12,
+  "pagingBenchmark": {
+    "benchmark": {
+      "name": "M08 cursor pagination vs offset pagination",
+      "status": "completed",
+      "seed": 20261101,
+      "fixture": {
+        "collectionName": "m08_benchmark_19e9553a7e264ba5911136497a5d34e5",
+        "isolated": true,
+        "applicationEventsModified": false,
+        "documentCount": 40000,
+        "targetDevice": "dev_bench_primary",
+        "targetDeviceDocuments": 30000,
+        "otherDeviceDocuments": 10000,
+        "generatedDocumentsSha256": "9bb43a5e90f289437a71cc3024284d3c31b9439b015fcbf96fa28b12cd61a3ab",
+        "dateRangeInclusive": {
+          "from": "2025-01-01T00:00:00.000Z",
+          "to": "2025-02-01T00:00:00.000Z"
+        }
+      },
+      "workload": {
+        "pageSize": 50,
+        "pageIndexes": [
+          0,
+          100,
+          400
+        ],
+        "offsets": [
+          0,
+          5000,
+          20000
+        ],
+        "warmupPerVariantPerPage": 5,
+        "measurementsPerVariantPerPage": 30,
+        "concurrency": 4,
+        "elapsedTiming": "performance.now() alrededor de la consulta y el mapeo de resultados; sin comparacion/hash",
+        "percentileMethod": "Interpolacion lineal (tipo 7, indice (n-1)*p)",
+        "schedule": "Muestras mezcladas con PRNG y semilla fija; lotes de concurrencia constante",
+        "cursorPreparationIncludedInTiming": false,
+        "cursorPreparation": "Recorrido previo hasta cada pagina; se mide continuar desde un cursor conocido, no acceso aleatorio.",
+        "warmupMeasurementsIncludedInSamples": false
+      },
+      "variants": {
+        "baseline_skip": {
+          "description": "Filtro device_id + observed_at entre FROM/TO; sort observed_at desc y event_id desc; skip(pageIndex * pageSize); limit(pageSize + 1); hint del indice anterior.",
+          "indexHint": "idx_events_device_observed",
+          "cursorPredicate": false
+        },
+        "optimized_cursor": {
+          "description": "Mismo filtro/orden/limite; cursor M08 con observed_at <= cursor.at y desempate $or por observed_at/event_id; sin skip y sin hint.",
+          "indexHint": null,
+          "cursorPredicate": true
+        }
+      },
+      "equivalentResults": {
+        "verified": true,
+        "checks": "SHA-256 de los items normalizados mediante toEventView y hasMore coincidentes para cada pagina y cada muestra.",
+        "pages": {
+          "0": {
+            "digest": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6",
+            "hasMore": true
+          },
+          "100": {
+            "digest": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83",
+            "hasMore": true
+          },
+          "400": {
+            "digest": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b",
+            "hasMore": true
+          }
+        }
+      },
+      "environment": {
+        "node": "v20.20.2",
+        "mongodbDriver": "7.7.0",
+        "mongodbServer": "7.0.43",
+        "platform": "linux 7.0.0-1017-azure",
+        "architecture": "x64",
+        "cpuModel": "AMD EPYC 9V45 96-Core Processor",
+        "logicalCpuCount": 4,
+        "totalMemoryBytes": 16760344576,
+        "freeMemoryBytesAtStart": 15119843328,
+        "processMemoryBytesAtStart": 67801088,
+        "processMemoryBytesAtEnd": 197246976,
+        "mongoConnectionPoolMaxSize": 5,
+        "mongoServerMemoryStats": "No consultado: benchmark no requiere privilegio serverStatus; recursos del host local quedan registrados."
+      },
+      "collectionStats": {
+        "available": true,
+        "documentCount": 40000,
+        "dataSizeBytes": 12493194,
+        "storageSizeBytes": 4096,
+        "totalIndexSizeBytes": 1957888,
+        "indexSizesBytes": {
+          "_id_": 4096,
+          "idx_events_device_observed": 471040,
+          "idx_events_device_observed_id": 1482752
+        }
+      },
+      "indexes": [
+        {
+          "name": "_id_",
+          "key": {
+            "_id": 1
+          },
+          "unique": false
+        },
+        {
+          "name": "idx_events_device_observed",
+          "key": {
+            "device_id": 1,
+            "observed_at": -1
+          },
+          "unique": false
+        },
+        {
+          "name": "idx_events_device_observed_id",
+          "key": {
+            "device_id": 1,
+            "observed_at": -1,
+            "event_id": -1
+          },
+          "unique": false
+        }
+      ],
+      "executionPlans": {
+        "0": {
+          "baseline": {
+            "indexesUsed": [
+              "idx_events_device_observed"
+            ],
+            "stages": [
+              "FETCH",
+              "IXSCAN",
+              "SORT"
+            ],
+            "winningPlan": {
+              "stage": "SORT",
+              "sortPattern": {
+                "observed_at": -1,
+                "event_id": -1
+              },
+              "memLimit": 104857600,
+              "limitAmount": 51,
+              "type": "simple",
+              "inputStage": {
+                "stage": "FETCH",
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "device_id": 1,
+                    "observed_at": -1
+                  },
+                  "indexName": "idx_events_device_observed",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "device_id": [],
+                    "observed_at": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "device_id": [
+                      "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                    ],
+                    "observed_at": [
+                      "[new Date(1738368000000), new Date(1735689600000)]"
+                    ]
+                  }
+                }
+              }
+            },
+            "executionStats": {
+              "nReturned": 51,
+              "totalKeysExamined": 30000,
+              "totalDocsExamined": 30000,
+              "executionTimeMillis": 29,
+              "executionStages": {
+                "stage": "SORT",
+                "nReturned": 51,
+                "executionTimeMillisEstimate": 3,
+                "works": 30053,
+                "advanced": 51,
+                "needTime": 30001,
+                "needYield": 0,
+                "saveState": 30,
+                "restoreState": 30,
+                "isEOF": 1,
+                "sortPattern": {
+                  "observed_at": -1,
+                  "event_id": -1
+                },
+                "memLimit": 104857600,
+                "limitAmount": 51,
+                "type": "simple",
+                "totalDataSizeSorted": 23877,
+                "usedDisk": false,
+                "spills": 0,
+                "spilledDataStorageSize": 0,
+                "inputStage": {
+                  "stage": "FETCH",
+                  "nReturned": 30000,
+                  "executionTimeMillisEstimate": 2,
+                  "works": 30001,
+                  "advanced": 30000,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 30,
+                  "restoreState": 30,
+                  "isEOF": 1,
+                  "docsExamined": 30000,
+                  "alreadyHasObj": 0,
+                  "inputStage": {
+                    "stage": "IXSCAN",
+                    "nReturned": 30000,
+                    "executionTimeMillisEstimate": 0,
+                    "works": 30001,
+                    "advanced": 30000,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 30,
+                    "restoreState": 30,
+                    "isEOF": 1,
+                    "keyPattern": {
+                      "device_id": 1,
+                      "observed_at": -1
+                    },
+                    "indexName": "idx_events_device_observed",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "device_id": [],
+                      "observed_at": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "device_id": [
+                        "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                      ],
+                      "observed_at": [
+                        "[new Date(1738368000000), new Date(1735689600000)]"
+                      ]
+                    },
+                    "keysExamined": 30000,
+                    "seeks": 1,
+                    "dupsTested": 0,
+                    "dupsDropped": 0
+                  }
+                }
+              }
+            }
+          },
+          "optimized": {
+            "indexesUsed": [
+              "idx_events_device_observed_id"
+            ],
+            "stages": [
+              "FETCH",
+              "IXSCAN",
+              "LIMIT"
+            ],
+            "winningPlan": {
+              "stage": "LIMIT",
+              "limitAmount": 51,
+              "inputStage": {
+                "stage": "FETCH",
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "device_id": 1,
+                    "observed_at": -1,
+                    "event_id": -1
+                  },
+                  "indexName": "idx_events_device_observed_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "device_id": [],
+                    "observed_at": [],
+                    "event_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "device_id": [
+                      "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                    ],
+                    "observed_at": [
+                      "[new Date(1738368000000), new Date(1735689600000)]"
+                    ],
+                    "event_id": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  }
+                }
+              }
+            },
+            "executionStats": {
+              "nReturned": 51,
+              "totalKeysExamined": 51,
+              "totalDocsExamined": 51,
+              "executionTimeMillis": 0,
+              "executionStages": {
+                "stage": "LIMIT",
+                "nReturned": 51,
+                "executionTimeMillisEstimate": 0,
+                "works": 52,
+                "advanced": 51,
+                "needTime": 0,
+                "needYield": 0,
+                "saveState": 0,
+                "restoreState": 0,
+                "isEOF": 1,
+                "limitAmount": 51,
+                "inputStage": {
+                  "stage": "FETCH",
+                  "nReturned": 51,
+                  "executionTimeMillisEstimate": 0,
+                  "works": 51,
+                  "advanced": 51,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 0,
+                  "restoreState": 0,
+                  "isEOF": 0,
+                  "docsExamined": 51,
+                  "alreadyHasObj": 0,
+                  "inputStage": {
+                    "stage": "IXSCAN",
+                    "nReturned": 51,
+                    "executionTimeMillisEstimate": 0,
+                    "works": 51,
+                    "advanced": 51,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 0,
+                    "restoreState": 0,
+                    "isEOF": 0,
+                    "keyPattern": {
+                      "device_id": 1,
+                      "observed_at": -1,
+                      "event_id": -1
+                    },
+                    "indexName": "idx_events_device_observed_id",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "device_id": [],
+                      "observed_at": [],
+                      "event_id": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "device_id": [
+                        "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                      ],
+                      "observed_at": [
+                        "[new Date(1738368000000), new Date(1735689600000)]"
+                      ],
+                      "event_id": [
+                        "[MaxKey, MinKey]"
+                      ]
+                    },
+                    "keysExamined": 51,
+                    "seeks": 1,
+                    "dupsTested": 0,
+                    "dupsDropped": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "100": {
+          "baseline": {
+            "indexesUsed": [
+              "idx_events_device_observed"
+            ],
+            "stages": [
+              "FETCH",
+              "IXSCAN",
+              "SKIP",
+              "SORT"
+            ],
+            "winningPlan": {
+              "stage": "SKIP",
+              "skipAmount": 5000,
+              "inputStage": {
+                "stage": "SORT",
+                "sortPattern": {
+                  "observed_at": -1,
+                  "event_id": -1
+                },
+                "memLimit": 104857600,
+                "limitAmount": 5051,
+                "type": "simple",
+                "inputStage": {
+                  "stage": "FETCH",
+                  "inputStage": {
+                    "stage": "IXSCAN",
+                    "keyPattern": {
+                      "device_id": 1,
+                      "observed_at": -1
+                    },
+                    "indexName": "idx_events_device_observed",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "device_id": [],
+                      "observed_at": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "device_id": [
+                        "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                      ],
+                      "observed_at": [
+                        "[new Date(1738368000000), new Date(1735689600000)]"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "executionStats": {
+              "nReturned": 51,
+              "totalKeysExamined": 30000,
+              "totalDocsExamined": 30000,
+              "executionTimeMillis": 40,
+              "executionStages": {
+                "stage": "SKIP",
+                "nReturned": 51,
+                "executionTimeMillisEstimate": 6,
+                "works": 35053,
+                "advanced": 51,
+                "needTime": 35001,
+                "needYield": 0,
+                "saveState": 35,
+                "restoreState": 35,
+                "isEOF": 1,
+                "skipAmount": 5000,
+                "inputStage": {
+                  "stage": "SORT",
+                  "nReturned": 5051,
+                  "executionTimeMillisEstimate": 5,
+                  "works": 35053,
+                  "advanced": 5051,
+                  "needTime": 30001,
+                  "needYield": 0,
+                  "saveState": 35,
+                  "restoreState": 35,
+                  "isEOF": 1,
+                  "sortPattern": {
+                    "observed_at": -1,
+                    "event_id": -1
+                  },
+                  "memLimit": 104857600,
+                  "limitAmount": 5051,
+                  "type": "simple",
+                  "totalDataSizeSorted": 2365794,
+                  "usedDisk": false,
+                  "spills": 0,
+                  "spilledDataStorageSize": 0,
+                  "inputStage": {
+                    "stage": "FETCH",
+                    "nReturned": 30000,
+                    "executionTimeMillisEstimate": 4,
+                    "works": 30001,
+                    "advanced": 30000,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 35,
+                    "restoreState": 35,
+                    "isEOF": 1,
+                    "docsExamined": 30000,
+                    "alreadyHasObj": 0,
+                    "inputStage": {
+                      "stage": "IXSCAN",
+                      "nReturned": 30000,
+                      "executionTimeMillisEstimate": 1,
+                      "works": 30001,
+                      "advanced": 30000,
+                      "needTime": 0,
+                      "needYield": 0,
+                      "saveState": 35,
+                      "restoreState": 35,
+                      "isEOF": 1,
+                      "keyPattern": {
+                        "device_id": 1,
+                        "observed_at": -1
+                      },
+                      "indexName": "idx_events_device_observed",
+                      "isMultiKey": false,
+                      "multiKeyPaths": {
+                        "device_id": [],
+                        "observed_at": []
+                      },
+                      "isUnique": false,
+                      "isSparse": false,
+                      "isPartial": false,
+                      "indexVersion": 2,
+                      "direction": "forward",
+                      "indexBounds": {
+                        "device_id": [
+                          "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                        ],
+                        "observed_at": [
+                          "[new Date(1738368000000), new Date(1735689600000)]"
+                        ]
+                      },
+                      "keysExamined": 30000,
+                      "seeks": 1,
+                      "dupsTested": 0,
+                      "dupsDropped": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "optimized": {
+            "indexesUsed": [
+              "idx_events_device_observed_id"
+            ],
+            "stages": [
+              "FETCH",
+              "IXSCAN",
+              "LIMIT"
+            ],
+            "winningPlan": {
+              "stage": "LIMIT",
+              "limitAmount": 51,
+              "inputStage": {
+                "stage": "FETCH",
+                "filter": {
+                  "$or": [
+                    {
+                      "event_id": {
+                        "$lt": "e8080000-0000-4000-8000-000000025001"
+                      }
+                    },
+                    {
+                      "observed_at": {
+                        "$lt": "2025-01-26T20:00:00.000Z"
+                      }
+                    }
+                  ]
+                },
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "device_id": 1,
+                    "observed_at": -1,
+                    "event_id": -1
+                  },
+                  "indexName": "idx_events_device_observed_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "device_id": [],
+                    "observed_at": [],
+                    "event_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "device_id": [
+                      "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                    ],
+                    "observed_at": [
+                      "[new Date(1737921600000), new Date(1735689600000)]"
+                    ],
+                    "event_id": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  }
+                }
+              }
+            },
+            "executionStats": {
+              "nReturned": 51,
+              "totalKeysExamined": 53,
+              "totalDocsExamined": 53,
+              "executionTimeMillis": 0,
+              "executionStages": {
+                "stage": "LIMIT",
+                "nReturned": 51,
+                "executionTimeMillisEstimate": 0,
+                "works": 54,
+                "advanced": 51,
+                "needTime": 2,
+                "needYield": 0,
+                "saveState": 0,
+                "restoreState": 0,
+                "isEOF": 1,
+                "limitAmount": 51,
+                "inputStage": {
+                  "stage": "FETCH",
+                  "filter": {
+                    "$or": [
+                      {
+                        "event_id": {
+                          "$lt": "e8080000-0000-4000-8000-000000025001"
+                        }
+                      },
+                      {
+                        "observed_at": {
+                          "$lt": "2025-01-26T20:00:00.000Z"
+                        }
+                      }
+                    ]
+                  },
+                  "nReturned": 51,
+                  "executionTimeMillisEstimate": 0,
+                  "works": 53,
+                  "advanced": 51,
+                  "needTime": 2,
+                  "needYield": 0,
+                  "saveState": 0,
+                  "restoreState": 0,
+                  "isEOF": 0,
+                  "docsExamined": 53,
+                  "alreadyHasObj": 0,
+                  "inputStage": {
+                    "stage": "IXSCAN",
+                    "nReturned": 53,
+                    "executionTimeMillisEstimate": 0,
+                    "works": 53,
+                    "advanced": 53,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 0,
+                    "restoreState": 0,
+                    "isEOF": 0,
+                    "keyPattern": {
+                      "device_id": 1,
+                      "observed_at": -1,
+                      "event_id": -1
+                    },
+                    "indexName": "idx_events_device_observed_id",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "device_id": [],
+                      "observed_at": [],
+                      "event_id": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "device_id": [
+                        "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                      ],
+                      "observed_at": [
+                        "[new Date(1737921600000), new Date(1735689600000)]"
+                      ],
+                      "event_id": [
+                        "[MaxKey, MinKey]"
+                      ]
+                    },
+                    "keysExamined": 53,
+                    "seeks": 1,
+                    "dupsTested": 0,
+                    "dupsDropped": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "baseline": {
+            "indexesUsed": [
+              "idx_events_device_observed"
+            ],
+            "stages": [
+              "FETCH",
+              "IXSCAN",
+              "SKIP",
+              "SORT"
+            ],
+            "winningPlan": {
+              "stage": "SKIP",
+              "skipAmount": 20000,
+              "inputStage": {
+                "stage": "SORT",
+                "sortPattern": {
+                  "observed_at": -1,
+                  "event_id": -1
+                },
+                "memLimit": 104857600,
+                "limitAmount": 20051,
+                "type": "simple",
+                "inputStage": {
+                  "stage": "FETCH",
+                  "inputStage": {
+                    "stage": "IXSCAN",
+                    "keyPattern": {
+                      "device_id": 1,
+                      "observed_at": -1
+                    },
+                    "indexName": "idx_events_device_observed",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "device_id": [],
+                      "observed_at": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "device_id": [
+                        "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                      ],
+                      "observed_at": [
+                        "[new Date(1738368000000), new Date(1735689600000)]"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "executionStats": {
+              "nReturned": 51,
+              "totalKeysExamined": 30000,
+              "totalDocsExamined": 30000,
+              "executionTimeMillis": 41,
+              "executionStages": {
+                "stage": "SKIP",
+                "nReturned": 51,
+                "executionTimeMillisEstimate": 7,
+                "works": 50053,
+                "advanced": 51,
+                "needTime": 50001,
+                "needYield": 0,
+                "saveState": 50,
+                "restoreState": 50,
+                "isEOF": 1,
+                "skipAmount": 20000,
+                "inputStage": {
+                  "stage": "SORT",
+                  "nReturned": 20051,
+                  "executionTimeMillisEstimate": 7,
+                  "works": 50053,
+                  "advanced": 20051,
+                  "needTime": 30001,
+                  "needYield": 0,
+                  "saveState": 50,
+                  "restoreState": 50,
+                  "isEOF": 1,
+                  "sortPattern": {
+                    "observed_at": -1,
+                    "event_id": -1
+                  },
+                  "memLimit": 104857600,
+                  "limitAmount": 20051,
+                  "type": "simple",
+                  "totalDataSizeSorted": 9390708,
+                  "usedDisk": false,
+                  "spills": 0,
+                  "spilledDataStorageSize": 0,
+                  "inputStage": {
+                    "stage": "FETCH",
+                    "nReturned": 30000,
+                    "executionTimeMillisEstimate": 3,
+                    "works": 30001,
+                    "advanced": 30000,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 50,
+                    "restoreState": 50,
+                    "isEOF": 1,
+                    "docsExamined": 30000,
+                    "alreadyHasObj": 0,
+                    "inputStage": {
+                      "stage": "IXSCAN",
+                      "nReturned": 30000,
+                      "executionTimeMillisEstimate": 3,
+                      "works": 30001,
+                      "advanced": 30000,
+                      "needTime": 0,
+                      "needYield": 0,
+                      "saveState": 50,
+                      "restoreState": 50,
+                      "isEOF": 1,
+                      "keyPattern": {
+                        "device_id": 1,
+                        "observed_at": -1
+                      },
+                      "indexName": "idx_events_device_observed",
+                      "isMultiKey": false,
+                      "multiKeyPaths": {
+                        "device_id": [],
+                        "observed_at": []
+                      },
+                      "isUnique": false,
+                      "isSparse": false,
+                      "isPartial": false,
+                      "indexVersion": 2,
+                      "direction": "forward",
+                      "indexBounds": {
+                        "device_id": [
+                          "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                        ],
+                        "observed_at": [
+                          "[new Date(1738368000000), new Date(1735689600000)]"
+                        ]
+                      },
+                      "keysExamined": 30000,
+                      "seeks": 1,
+                      "dupsTested": 0,
+                      "dupsDropped": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "optimized": {
+            "indexesUsed": [
+              "idx_events_device_observed_id"
+            ],
+            "stages": [
+              "FETCH",
+              "IXSCAN",
+              "LIMIT"
+            ],
+            "winningPlan": {
+              "stage": "LIMIT",
+              "limitAmount": 51,
+              "inputStage": {
+                "stage": "FETCH",
+                "filter": {
+                  "$or": [
+                    {
+                      "event_id": {
+                        "$lt": "e8080000-0000-4000-8000-000000010001"
+                      }
+                    },
+                    {
+                      "observed_at": {
+                        "$lt": "2025-01-11T08:00:00.000Z"
+                      }
+                    }
+                  ]
+                },
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "device_id": 1,
+                    "observed_at": -1,
+                    "event_id": -1
+                  },
+                  "indexName": "idx_events_device_observed_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "device_id": [],
+                    "observed_at": [],
+                    "event_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "device_id": [
+                      "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                    ],
+                    "observed_at": [
+                      "[new Date(1736582400000), new Date(1735689600000)]"
+                    ],
+                    "event_id": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  }
+                }
+              }
+            },
+            "executionStats": {
+              "nReturned": 51,
+              "totalKeysExamined": 53,
+              "totalDocsExamined": 53,
+              "executionTimeMillis": 0,
+              "executionStages": {
+                "stage": "LIMIT",
+                "nReturned": 51,
+                "executionTimeMillisEstimate": 0,
+                "works": 54,
+                "advanced": 51,
+                "needTime": 2,
+                "needYield": 0,
+                "saveState": 0,
+                "restoreState": 0,
+                "isEOF": 1,
+                "limitAmount": 51,
+                "inputStage": {
+                  "stage": "FETCH",
+                  "filter": {
+                    "$or": [
+                      {
+                        "event_id": {
+                          "$lt": "e8080000-0000-4000-8000-000000010001"
+                        }
+                      },
+                      {
+                        "observed_at": {
+                          "$lt": "2025-01-11T08:00:00.000Z"
+                        }
+                      }
+                    ]
+                  },
+                  "nReturned": 51,
+                  "executionTimeMillisEstimate": 0,
+                  "works": 53,
+                  "advanced": 51,
+                  "needTime": 2,
+                  "needYield": 0,
+                  "saveState": 0,
+                  "restoreState": 0,
+                  "isEOF": 0,
+                  "docsExamined": 53,
+                  "alreadyHasObj": 0,
+                  "inputStage": {
+                    "stage": "IXSCAN",
+                    "nReturned": 53,
+                    "executionTimeMillisEstimate": 0,
+                    "works": 53,
+                    "advanced": 53,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 0,
+                    "restoreState": 0,
+                    "isEOF": 0,
+                    "keyPattern": {
+                      "device_id": 1,
+                      "observed_at": -1,
+                      "event_id": -1
+                    },
+                    "indexName": "idx_events_device_observed_id",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "device_id": [],
+                      "observed_at": [],
+                      "event_id": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "device_id": [
+                        "[\"dev_bench_primary\", \"dev_bench_primary\"]"
+                      ],
+                      "observed_at": [
+                        "[new Date(1736582400000), new Date(1735689600000)]"
+                      ],
+                      "event_id": [
+                        "[MaxKey, MinKey]"
+                      ]
+                    },
+                    "keysExamined": 53,
+                    "seeks": 1,
+                    "dupsTested": 0,
+                    "dupsDropped": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "summaries": {
+        "baseline_skip": {
+          "0": {
+            "measurementCount": 30,
+            "p50Ms": 37.1034,
+            "p95Ms": 45.34359,
+            "minMs": 31.2991,
+            "maxMs": 52.28762
+          },
+          "100": {
+            "measurementCount": 30,
+            "p50Ms": 37.33966,
+            "p95Ms": 54.84428,
+            "minMs": 32.82587,
+            "maxMs": 60.19976
+          },
+          "400": {
+            "measurementCount": 30,
+            "p50Ms": 52.2034,
+            "p95Ms": 71.48761,
+            "minMs": 44.89763,
+            "maxMs": 74.26835
+          }
+        },
+        "optimized_cursor": {
+          "0": {
+            "measurementCount": 30,
+            "p50Ms": 2.91392,
+            "p95Ms": 6.66822,
+            "minMs": 1.61687,
+            "maxMs": 7.90147
+          },
+          "100": {
+            "measurementCount": 30,
+            "p50Ms": 2.5847,
+            "p95Ms": 5.68814,
+            "minMs": 1.7288,
+            "maxMs": 12.00645
+          },
+          "400": {
+            "measurementCount": 30,
+            "p50Ms": 2.8032,
+            "p95Ms": 4.87185,
+            "minMs": 1.66914,
+            "maxMs": 5.84262
+          }
+        }
+      },
+      "comparisons": [
+        {
+          "pageIndex": 0,
+          "offset": 0,
+          "p50ChangePercent": -92.15,
+          "p95ChangePercent": -85.29
+        },
+        {
+          "pageIndex": 100,
+          "offset": 5000,
+          "p50ChangePercent": -93.08,
+          "p95ChangePercent": -89.63
+        },
+        {
+          "pageIndex": 400,
+          "offset": 20000,
+          "p50ChangePercent": -94.63,
+          "p95ChangePercent": -93.19
+        }
+      ],
+      "samples": [
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 4,
+          "durationMs": 2.77183,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 19,
+          "durationMs": 37.52781,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 30,
+          "durationMs": 7.90147,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 18,
+          "durationMs": 3.5514,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 12,
+          "durationMs": 6.65579,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 22,
+          "durationMs": 5.02103,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 25,
+          "durationMs": 35.28701,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 10,
+          "durationMs": 12.00645,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 2,
+          "durationMs": 34.18685,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 1,
+          "durationMs": 4.5324,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 24,
+          "durationMs": 2.42668,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 11,
+          "durationMs": 34.80724,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 24,
+          "durationMs": 33.31835,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 29,
+          "durationMs": 2.17749,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 10,
+          "durationMs": 3.48598,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 7,
+          "durationMs": 4.78428,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 29,
+          "durationMs": 2.28006,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 3,
+          "durationMs": 3.00859,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 21,
+          "durationMs": 4.61643,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 30,
+          "durationMs": 42.71244,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 23,
+          "durationMs": 2.63138,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 19,
+          "durationMs": 47.44523,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 6,
+          "durationMs": 46.55749,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 23,
+          "durationMs": 3.57744,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 21,
+          "durationMs": 47.41403,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 30,
+          "durationMs": 2.06283,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 27,
+          "durationMs": 37.90756,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 11,
+          "durationMs": 2.74171,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 5,
+          "durationMs": 4.35467,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 29,
+          "durationMs": 32.3505,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 11,
+          "durationMs": 2.90585,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 18,
+          "durationMs": 44.89763,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 13,
+          "durationMs": 2.07409,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 20,
+          "durationMs": 3.24828,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 13,
+          "durationMs": 2.50604,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 28,
+          "durationMs": 45.93992,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 3,
+          "durationMs": 47.29162,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 24,
+          "durationMs": 40.50584,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 25,
+          "durationMs": 2.63884,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 8,
+          "durationMs": 1.74697,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 21,
+          "durationMs": 36.61794,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 14,
+          "durationMs": 3.0005,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 2,
+          "durationMs": 2.16453,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 17,
+          "durationMs": 45.24585,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 30,
+          "durationMs": 3.53633,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 4,
+          "durationMs": 36.61841,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 12,
+          "durationMs": 4.34487,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 14,
+          "durationMs": 2.07899,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 9,
+          "durationMs": 44.21445,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 8,
+          "durationMs": 56.41138,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 30,
+          "durationMs": 42.79958,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 11,
+          "durationMs": 55.44283,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 18,
+          "durationMs": 2.04707,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 13,
+          "durationMs": 46.91458,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 20,
+          "durationMs": 37.80129,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 8,
+          "durationMs": 2.82733,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 17,
+          "durationMs": 35.24854,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 18,
+          "durationMs": 42.68294,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 20,
+          "durationMs": 58.40969,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 18,
+          "durationMs": 2.48156,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 22,
+          "durationMs": 59.28765,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 14,
+          "durationMs": 48.59921,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 8,
+          "durationMs": 32.70192,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 12,
+          "durationMs": 2.50406,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 23,
+          "durationMs": 33.90431,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 27,
+          "durationMs": 6.2124,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 16,
+          "durationMs": 4.94349,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 6,
+          "durationMs": 31.94952,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 4,
+          "durationMs": 3.28056,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 5,
+          "durationMs": 32.0849,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 6,
+          "durationMs": 1.7288,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 7,
+          "durationMs": 2.33672,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 26,
+          "durationMs": 36.9742,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 29,
+          "durationMs": 4.11703,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 26,
+          "durationMs": 3.02134,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 15,
+          "durationMs": 1.9272,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 19,
+          "durationMs": 3.26735,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 11,
+          "durationMs": 1.89381,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 9,
+          "durationMs": 52.25013,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 19,
+          "durationMs": 40.51531,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 29,
+          "durationMs": 73.60983,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 25,
+          "durationMs": 47.6074,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 1,
+          "durationMs": 46.26744,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 24,
+          "durationMs": 74.26835,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 27,
+          "durationMs": 68.89379,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 14,
+          "durationMs": 49.9322,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 26,
+          "durationMs": 1.93534,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 25,
+          "durationMs": 67.69245,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 12,
+          "durationMs": 36.81803,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 26,
+          "durationMs": 37.46555,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 1,
+          "durationMs": 3.51862,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 5,
+          "durationMs": 2.3032,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 15,
+          "durationMs": 68.29527,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 3,
+          "durationMs": 43.79341,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 1,
+          "durationMs": 66.94382,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 21,
+          "durationMs": 49.83227,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 1,
+          "durationMs": 2.45523,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 20,
+          "durationMs": 43.93465,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 8,
+          "durationMs": 35.22745,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 22,
+          "durationMs": 41.9338,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 2,
+          "durationMs": 31.2991,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 6,
+          "durationMs": 4.0671,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 6,
+          "durationMs": 32.82587,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 7,
+          "durationMs": 1.92424,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 2,
+          "durationMs": 2.21725,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 28,
+          "durationMs": 35.09463,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 10,
+          "durationMs": 35.84101,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 24,
+          "durationMs": 3.04693,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 28,
+          "durationMs": 2.00723,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 22,
+          "durationMs": 46.98182,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 28,
+          "durationMs": 42.32778,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 16,
+          "durationMs": 31.96195,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 23,
+          "durationMs": 55.2388,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 17,
+          "durationMs": 39.36842,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 13,
+          "durationMs": 3.11279,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 23,
+          "durationMs": 2.2541,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 7,
+          "durationMs": 35.36743,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 28,
+          "durationMs": 3.6628,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 9,
+          "durationMs": 2.28674,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 3,
+          "durationMs": 35.75944,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 9,
+          "durationMs": 34.67423,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 8,
+          "durationMs": 1.96146,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 15,
+          "durationMs": 3.89411,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 27,
+          "durationMs": 33.63276,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 16,
+          "durationMs": 52.13883,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 6,
+          "durationMs": 2.00207,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 15,
+          "durationMs": 40.92641,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 3,
+          "durationMs": 2.53056,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 9,
+          "durationMs": 2.20133,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 26,
+          "durationMs": 4.13376,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 5,
+          "durationMs": 40.7634,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 18,
+          "durationMs": 39.94021,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 10,
+          "durationMs": 31.77016,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 19,
+          "durationMs": 1.61687,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 20,
+          "durationMs": 2.83456,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 21,
+          "durationMs": 2.15266,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 2,
+          "durationMs": 50.17317,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 3,
+          "durationMs": 5.64664,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 27,
+          "durationMs": 6.67839,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 4,
+          "durationMs": 33.06054,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 2,
+          "durationMs": 2.73196,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 24,
+          "durationMs": 1.75234,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 7,
+          "durationMs": 37.38877,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 11,
+          "durationMs": 36.58642,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 21,
+          "durationMs": 4.26285,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 17,
+          "durationMs": 5.04738,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 17,
+          "durationMs": 5.84661,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 30,
+          "durationMs": 51.19538,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 17,
+          "durationMs": 3.54937,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 22,
+          "durationMs": 1.86312,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 9,
+          "durationMs": 3.84603,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 20,
+          "durationMs": 2.53232,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 5,
+          "durationMs": 66.92962,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 26,
+          "durationMs": 49.74899,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 7,
+          "durationMs": 67.53397,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 19,
+          "durationMs": 1.66914,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 14,
+          "durationMs": 5.84262,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 16,
+          "durationMs": 4.82782,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 22,
+          "durationMs": 1.74411,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 23,
+          "durationMs": 32.38396,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 13,
+          "durationMs": 44.28174,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 28,
+          "durationMs": 2.73993,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 13,
+          "durationMs": 42.04923,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 15,
+          "durationMs": 33.43101,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 12,
+          "durationMs": 51.4326,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 10,
+          "durationMs": 52.15666,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 5,
+          "durationMs": 2.38025,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 25,
+          "durationMs": 3.16644,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 16,
+          "durationMs": 37.70512,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 4,
+          "durationMs": 4.57753,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 25,
+          "durationMs": 3.35063,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 16,
+          "durationMs": 2.26123,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 1,
+          "durationMs": 60.19976,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 4,
+          "durationMs": 67.98716,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 12,
+          "durationMs": 58.94501,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 14,
+          "durationMs": 52.28762,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 0,
+          "offset": 0,
+          "iteration": 15,
+          "durationMs": 2.12741,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "68e8394d303a3f8fd7700d87c415f16e5116c644e116fd54e30ed089c4716fe6"
+        },
+        {
+          "variant": "baseline_skip",
+          "pageIndex": 100,
+          "offset": 5000,
+          "iteration": 29,
+          "durationMs": 36.49566,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "5364027e17adffb9272b464317fae625e9d94c60a50824ab069d3adda9f5bc83"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 10,
+          "durationMs": 2.63809,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        },
+        {
+          "variant": "optimized_cursor",
+          "pageIndex": 400,
+          "offset": 20000,
+          "iteration": 27,
+          "durationMs": 3.19823,
+          "documentsReturned": 50,
+          "hasMore": true,
+          "resultSha256": "1e297b981445661df8f4439f157bff78f881148cf7e94930de440a8755218f4b"
+        }
+      ]
+    },
+    "generatedAt": "2026-11-02T03:06:51.277Z",
+    "git": {
+      "commit": "ffb1cb49afd620646a6566f52881e06ab4c1a3d7",
+      "worktreeChangesBeforeRun": []
+    },
+    "cleanup": "Coleccion sintetica de esta ejecucion eliminada tras recopilar la evidencia."
+  },
+  "benchmarkValidation": {
+    "valid": true,
+    "sampleCount": 180,
+    "timingThresholdEnforced": false
+  },
+  "secrets": {
+    "status": "passed",
+    "tool": "gitleaks",
+    "version": "8.30.1",
+    "image": "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f",
+    "scope": [
+      "all Git refs and complete reachable history",
+      "tracked and non-ignored new files"
+    ],
+    "commitsScanned": 48,
+    "filesScanned": 127,
+    "findings": [],
+    "detectionSelfTest": "passed",
+    "limitations": "Pattern-based scanning cannot guarantee absence of every possible secret."
+  },
+  "environment": {
+    "mode": "local",
+    "awsValidated": false,
+    "note": "Docker Compose es el entorno validado. AWS requiere un Learner Lab habilitado y autorizacion del entorno."
+  }
+}
