@@ -13,17 +13,19 @@ import { MONGO_ACCOUNTS, MONGO_UNAUTHORIZED, mongoAccount, withMongoAs } from ".
 
 // Todo se ejecuta contra MongoDB real con cada cuenta. La cuenta de mantenimiento
 // (MONGO_APP_USER) solo prepara y limpia los datos sinteticos y comprueba que no cambiaron.
-const SOURCE = "synthetic-m09";
-const DEVICE = "dev_m09_perm";
+const SUFFIX = randomUUID().replaceAll("-", "");
+const SOURCE = `synthetic-m09-${SUFFIX}`;
+const DEVICE = `dev_m09_${SUFFIX}`;
+const ACTOR = `synthetic:m09-${SUFFIX}`;
 const ACCOUNTS = Object.keys(MONGO_ACCOUNTS);
 
 const shell = 'exec mongosh --quiet -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin';
 const rootScript = (file, env = {}) =>
   execFileSync("docker", [
     "compose", "--profile", "mongo", "exec", "-T",
-    ...Object.entries(env).flatMap(([name, value]) => ["-e", `${name}=${value}`]),
+    ...Object.keys(env).flatMap((name) => ["-e", name]),
     "mongo", "sh", "-c", `${shell} ${file}`
-  ], { cwd: rootDir, encoding: "utf8" });
+  ], { cwd: rootDir, encoding: "utf8", env: { ...process.env, ...env } });
 
 const newEvent = (overrides = {}) => ({
   event_id: randomUUID(), device_id: DEVICE, event_type: "temperature_c",
@@ -47,12 +49,12 @@ const denied = (promise, label) =>
 const snapshot = (db) => Promise.all([
   db.collection("events").find({ source: SOURCE }, { projection: { _id: 0 } }).sort({ event_id: 1 }).toArray(),
   db.collection("alerts").find({ device_id: DEVICE }, { projection: { _id: 0 } }).sort({ alert_id: 1 }).toArray(),
-  db.collection("alert_audit").find({ actor: /^synthetic:m09/ }, { projection: { _id: 0 } }).sort({ operation_id: 1 }).toArray()
+  db.collection("alert_audit").find({ actor: ACTOR }, { projection: { _id: 0 } }).sort({ operation_id: 1 }).toArray()
 ]).then(([events, alerts, audit]) => ({ events, alerts, audit }));
 
 async function cleanup(db) {
   const alerts = await db.collection("alerts").find({ device_id: DEVICE }).toArray();
-  await db.collection("alert_audit").deleteMany({ $or: [{ actor: /^synthetic:m09/ }, { alert_id: { $in: alerts.map((a) => a.alert_id) } }] });
+  await db.collection("alert_audit").deleteMany({ $or: [{ actor: ACTOR }, { alert_id: { $in: alerts.map((a) => a.alert_id) } }] });
   await db.collection("alerts").deleteMany({ device_id: DEVICE });
   await db.collection("events").deleteMany({ source: SOURCE });
 }
@@ -66,7 +68,7 @@ async function seedAudited() {
     await db.collection("events").insertOne({ ...event });
     await db.collection("alerts").insertOne({ ...alert });
   });
-  const result = await withMongoAs("operator", (db) => acknowledgeAlertWithAudit(alert.alert_id, { db, operationId, actor: "synthetic:m09-operator" }));
+  const result = await withMongoAs("operator", (db) => acknowledgeAlertWithAudit(alert.alert_id, { db, operationId, actor: ACTOR }));
   assert.equal(result.status, "completed");
   return { event, alert, operationId };
 }
@@ -112,7 +114,7 @@ test("[M09][normal] operator reconoce una alerta con auditoria y auditor la pued
     const record = await withMongoAs("auditor", (db) => db.collection("alert_audit").findOne({ operation_id: operationId }));
     assert.equal(record.alert_id, alert.alert_id);
     assert.equal(record.audit_status, "completed");
-    assert.equal(record.actor, "synthetic:m09-operator");
+    assert.equal(record.actor, ACTOR);
     assert.deepEqual(record.resource, { type: "alert", id: alert.alert_id });
     assert.equal(record.result, "success");
     assert.equal(record.result_code, "alert_acknowledged");
@@ -281,18 +283,23 @@ test("[M09][declared failure] nadie fuera del flujo puede modificar ni borrar la
     const tamper = {
       update: (db) => db.collection("alert_audit").updateOne({ operation_id: operationId }, { $set: { actor: "synthetic:m09-otro" } }),
       deleteOne: (db) => db.collection("alert_audit").deleteOne({ operation_id: operationId }),
-      deleteMany: (db) => db.collection("alert_audit").deleteMany({}),
+      deleteMany: (db) => db.collection("alert_audit").deleteMany({ operation_id: operationId }),
       drop: (db) => db.collection("alert_audit").drop(),
       insert: (db) => db.collection("alert_audit").insertOne({ ...forged })
     };
     for (const name of ["ingest", "reader", "auditor"]) {
       await withMongoAs(name, async (db) => {
+        const auth = await db.command({ connectionStatus: 1, showPrivileges: true });
+        assert.deepEqual(privilegeSet(auth.authInfo.authenticatedUserPrivileges), privilegeSet(MONGO_ACCOUNTS[name].privileges));
         for (const [action, attempt] of Object.entries(tamper)) await denied(attempt(db), `${name} ${action} auditoria`);
       });
     }
     // operator escribe la auditoria del reconocimiento, pero no la borra ni la elimina.
     await withMongoAs("operator", async (db) => {
+      const auth = await db.command({ connectionStatus: 1, showPrivileges: true });
+      assert.deepEqual(privilegeSet(auth.authInfo.authenticatedUserPrivileges), privilegeSet(MONGO_ACCOUNTS.operator.privileges));
       for (const action of ["deleteOne", "deleteMany", "drop"]) await denied(tamper[action](db), `operator ${action} auditoria`);
+      await denied(db.collection("alert_audit").createIndex({ actor: 1 }, { name: "m09_forbidden_index" }), "operator createIndex");
     });
     assert.deepEqual(await withMongo(snapshot), before, "la auditoria queda igual");
   } finally {
@@ -302,11 +309,13 @@ test("[M09][declared failure] nadie fuera del flujo puede modificar ni borrar la
 
 test("[M09][declared failure] las cuentas no pueden administrar usuarios, roles ni la base", async () => {
   for (const name of ACCOUNTS) {
-    await withMongoAs(name, async (db) => {
+    await withMongoAs(name, async (db, client) => {
+      const auth = await db.command({ connectionStatus: 1, showPrivileges: true });
+      assert.deepEqual(privilegeSet(auth.authInfo.authenticatedUserPrivileges), privilegeSet(MONGO_ACCOUNTS[name].privileges));
       await denied(db.command({ createUser: `m09_intruso_${name}`, pwd: randomUUID(), roles: [{ role: "readWrite", db: "cdrl" }] }), `${name} createUser`);
       await denied(db.command({ grantRolesToUser: mongoAccount(name).user, roles: [{ role: "readWrite", db: "cdrl" }] }), `${name} se da readWrite`);
       await denied(db.command({ usersInfo: 1 }), `${name} lista usuarios`);
-      await denied(db.dropDatabase(), `${name} dropDatabase`);
+      await denied(client.db(`m09_denied_${SUFFIX}`).dropDatabase(), `${name} dropDatabase aislada`);
     });
   }
   // La cuenta de mantenimiento tampoco es administradora.

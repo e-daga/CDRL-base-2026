@@ -212,7 +212,7 @@ const accounts = [
   ["MONGO_READER", "cdrl_mongo_reader", "cdrl_events_alerts_reader", [on("events", ["find"]), on("alerts", ["find"])]],
   ["MONGO_OPERATOR", "cdrl_mongo_operator", "cdrl_alert_operator", [
     on("alerts", ["find", "insert", "update"]),
-    on("alert_audit", ["find", "insert", "update", "createIndex"]),
+    on("alert_audit", ["find", "insert", "update"]),
     on("", ["listCollections"])
   ]],
   ["MONGO_AUDITOR", "cdrl_mongo_auditor", "cdrl_audit_reader", [on("alert_audit", ["find"])]]

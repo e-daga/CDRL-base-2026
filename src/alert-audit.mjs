@@ -96,8 +96,9 @@ const AUDIT_VALIDATOR = {
 };
 
 export class AuditPendingError extends Error {
-  constructor(operationId, message, cause) {
-    super(message, { cause });
+  constructor(operationId, message) {
+    // Raw driver errors may contain sensitive connection details; do not attach a cause.
+    super(message);
     this.name = "AuditPendingError";
     this.code = "AUDIT_PENDING";
     this.operationId = operationId;
@@ -113,9 +114,10 @@ export class AuditWriteError extends Error {
   }
 }
 
-export async function ensureAuditCollection(db) {
+export async function ensureAuditCollection(db, { initialize = true } = {}) {
   let collections = await db.listCollections({ name: AUDIT_COLLECTION }).toArray();
   if (collections.length === 0) {
+    if (!initialize) throw new Error("Falta preparar alert_audit mediante make setup.");
     try {
       await db.createCollection(AUDIT_COLLECTION, {
         validator: AUDIT_VALIDATOR,
@@ -140,6 +142,7 @@ export async function ensureAuditCollection(db) {
   }
 
   const collection = db.collection(AUDIT_COLLECTION);
+  if (!initialize) return collection;
   await collection.createIndex({ operation_id: 1 }, { unique: true, name: "uq_alert_audit_operation_id" });
   await collection.createIndex(
     { alert_id: 1, occurred_at: -1 },
@@ -222,7 +225,7 @@ export async function acknowledgeAlertWithAudit(alertId, { db, operationId, acto
   if (!db) throw new Error("Se requiere una base de datos MongoDB para auditar la alerta.");
   assertRequest(alertId, operationId, actor);
 
-  const audit = await ensureAuditCollection(db);
+  const audit = await ensureAuditCollection(db, { initialize: false });
   let record = await audit.findOne({ operation_id: operationId });
   if (record) {
     assertSameOperation(record, alertId, actor);

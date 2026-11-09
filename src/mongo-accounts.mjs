@@ -18,12 +18,12 @@ export const MONGO_ACCOUNTS = {
     privileges: [on("events", ["find"]), on("alerts", ["find"])]
   },
   // Operacion de alertas: abre y reconoce alertas y registra la auditoria del reconocimiento.
-  // listCollections y createIndex los pide ensureAuditCollection en cada reconocimiento.
+  // listCollections permite comprobar el validador; los indices solo se crean en setup.
   operator: {
     env: "MONGO_OPERATOR", defaultUser: "cdrl_mongo_operator", role: "cdrl_alert_operator",
     privileges: [
       on("alerts", ["find", "insert", "update"]),
-      on("alert_audit", ["find", "insert", "update", "createIndex"]),
+      on("alert_audit", ["find", "insert", "update"]),
       on("", ["listCollections"])
     ]
   },

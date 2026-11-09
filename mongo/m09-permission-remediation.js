@@ -8,6 +8,12 @@ const mode = process.env.M09_TEST_MODE;
 if (!user || !password || !role || !collection) {
   throw new Error("Faltan identificadores de la prueba temporal de permisos.");
 }
+// Even the administrative cleanup is restricted to one UUID-namespaced fixture.
+if (!/^m09_test_[a-f0-9]{32}$/.test(user) || role !== user || collection !== user) {
+  throw new Error("Destino temporal no permitido.");
+}
+if (!["setup", "revoke", "cleanup"].includes(mode)) throw new Error("Modo temporal no permitido.");
+if (mode !== "cleanup" && !/^.{16,}$/.test(password)) throw new Error("Secreto temporal invalido.");
 
 if (mode === "setup") {
   dbc.createRole({

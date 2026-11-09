@@ -29,7 +29,7 @@ Cada cuenta tiene un solo rol, definido solo sobre la base `cdrl` y sin herencia
 
 Ninguna cuenta de servicio puede **borrar** documentos ni colecciones. Ademas:
 
-- `operator` tiene `listCollections` en `cdrl` y `createIndex` en `alert_audit`, porque `acknowledgeAlertWithAudit` llama a `ensureAuditCollection` en cada reconocimiento.
+- `operator` conserva `listCollections` en `cdrl` para comprobar el validador antes de reconocer una alerta. La integracion retira `createIndex`: los indices se crean solo en setup y la prueba comprueba que el operador ya no puede crearlos.
 - (*) `operator` necesita `update` en `alert_audit` para pasar el registro de `pending` a `completed`. MongoDB no limita privilegios por campo; ver limites.
 
 La definicion esta en dos lugares que deben coincidir: `src/mongo-accounts.mjs` (la usan las pruebas y la aplicacion) y `mongo/init.js` (crea los roles). La prueba `[M09][boundary] cada cuenta tiene exactamente los privilegios declarados` compara lo que MongoDB reporta (`connectionStatus` con `showPrivileges`) contra `src/mongo-accounts.mjs`, asi que una diferencia falla.
@@ -40,11 +40,11 @@ La definicion esta en dos lugares que deben coincidir: `src/mongo-accounts.mjs` 
 - `.env.example` solo trae los nombres de usuario, con todas las contrasenas vacias.
 - `docker-compose.yml` pasa las variables al contenedor y `mongo/init.js` crea o actualiza roles y usuarios. Es repetible: `updateRole` reemplaza los privilegios, asi que repetir `init` deja exactamente los declarados y no borra datos.
 - Un `.env` anterior a M09 se completa solo: `make setup` agrega las 8 variables nuevas sin tocar las demas.
-- La aplicacion se conecta con `withMongo` (cuenta de mantenimiento, igual que antes) o con `withMongoAs("<cuenta>", trabajo)`. Nunca con `MONGO_USER`. No hay cadenas de conexion guardadas: la URI se arma en memoria a partir de las variables.
+- Las consultas normales de `run.mjs` usan `withMongoAs("reader", trabajo)` y la demo M09 usa cada cuenta segun su responsabilidad. `withMongo` sigue reservado en los experimentos y pruebas a preparacion, migracion y limpieza; no es la cuenta que demuestra los permisos de servicio. Nunca se usa root para CRUD de servicio. La URI se arma solo en memoria.
 
 ## Pruebas (`tests/m09-permisos-mongo.test.mjs`)
 
-Todas se conectan a MongoDB con la cuenta real. Un rechazo se da por bueno solo si el **servidor** responde `code: 13` y `codeName: "Unauthorized"`; no se simula en JavaScript. Despues de los intentos rechazados, la cuenta de mantenimiento lee `events`, `alerts` y `alert_audit` y compara con el estado anterior: **ningun intento cambio datos**. Los datos son sinteticos (`dev_m09_perm`, `source: synthetic-m09`, `actor: synthetic:m09-*`) y se borran al final.
+Todas se conectan a MongoDB con la cuenta real. Un rechazo se da por bueno solo si el **servidor** responde `code: 13` y `codeName: "Unauthorized"`; no se simula en JavaScript. Despues de los intentos rechazados, la cuenta de mantenimiento lee `events`, `alerts` y `alert_audit` y compara con el estado anterior: **ningun intento cambio datos**. Dispositivo, source y actor incluyen un UUID por ejecucion: la limpieza no elimina fixtures de otros procesos.
 
 - **normal:** `ingest` usa `createEvent`, `upsertEvent`, `updateEvent` y `readEvent`. `reader` usa Q1, `findEventsPage` y Q2. `operator` reconoce una alerta con `acknowledgeAlertWithAudit` y `auditor` lee el registro `completed`.
 - **boundary:** privilegios exactos de cada cuenta segun MongoDB; repetir `init.js` dos veces conserva conteos, roles y privilegios; los secretos vienen del entorno (`.env` sin versionar, `.env.example` sin contrasenas, un usuario y un secreto distintos por cuenta, la URI de la aplicacion no usa la cuenta root, ningun secreto escrito en `src/`, `scripts/` ni `tests/`).
@@ -81,8 +81,8 @@ await withMongoAs("operator", (db) => acknowledgeAlertWithAudit(alertId, { db, o
 ## Limites
 
 - **`operator` puede actualizar `alert_audit`.** El flujo de M06 cierra la auditoria con un `update` (`pending` -> `completed`), y MongoDB no permite restringir privilegios por campo. El validador limita la forma del documento, pero no impide que `operator` cambie, por ejemplo, el `actor` de un registro. Para evitarlo habria que cambiar la auditoria a solo insercion (un registro por estado) o pasarla por una funcion del servidor. Queda como correccion pendiente.
-- `cdrl_app` (mantenimiento) sigue con `readWrite` en toda la base, incluida la auditoria, porque la usan las migraciones de M07, los fixtures y la limpieza de pruebas. No es administradora, pero puede borrar registros. Los scripts generales (`run.mjs`, `verify.mjs`) siguen usandola: no se modificaron en esta parte.
-- `operator` tiene `createIndex` en `alert_audit` y `listCollections` en `cdrl` porque `ensureAuditCollection` se llama en cada reconocimiento. Moverlo solo al setup quitaria esos dos privilegios.
+- `cdrl_app` (mantenimiento) sigue con `readWrite` en toda la base, incluida auditoria, para migraciones y fixtures. No es administradora, pero puede borrar registros. En un despliegue real sus secretos deben quedar fuera del proceso de servicio. La entrega es un entorno de laboratorio que tambien ejecuta mantenimiento.
+- `operator` solo conserva `listCollections` para revisar el validador; `createIndex` se retiro y esta prohibicion se prueba.
 - No hay TLS en el entorno local de Docker. Para un despliegue externo hace falta TLS, como ya se documento para PostgreSQL en M03.
 - No se probo AWS ni rotacion de secretos de MongoDB. Para rotar uno: cambiar la variable y repetir `make setup` (`init.js` hace `updateUser` con el secreto nuevo).
-- No se modificaron `verify.mjs`, el workflow ni los scripts generales de entrega, y no se creo el tag.
+- La integracion final de verify, run, workflow y entrega se documenta en ADR-009.

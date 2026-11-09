@@ -1,0 +1,26 @@
+{
+  "assignmentId": "m09-nosql-security-audit",
+  "week": 10,
+  "repository": "https://github.com/e-daga/CDRL-base-2026",
+  "tag": "week-10-final",
+  "status": "implemented",
+  "commands": ["make setup", "make verify", "make run"],
+  "results": {
+    "machineReadableArtifact": "artifacts/m09-verify.json",
+    "experiment": "artifacts/m09-security.json",
+    "runtimeEvidence": "evidence/m09-nosql-security-audit-local.json",
+    "report": "docs/ADR-009-seguridad-nosql-auditoria.md"
+  },
+  "cases": {
+    "normal": "Four real service accounts and useful alert audit",
+    "boundaries": ["Effective privilege matrix", "Idempotent denials", "Repeated setup", "Invalid actor and reused operation id"],
+    "declaredFailure": "Real unauthorized reads/writes, audit tampering and injected audit completion failure",
+    "remediation": "Remove excessive permission from temporary role and verify denial plus preserved allowed operations"
+  },
+  "limitations": ["Application alert audit only, not all MongoDB accesses", "Operator can update audit; not immutable against compromised operator or administrators", "No MongoDB multi-document transaction", "Docker validated; AWS and MongoDB rotation not validated"],
+  "authorship": [
+    { "name": "Francesco Romero", "commits": ["6f086de", "96521cd", "ebeaa06", "8257184"], "contribution": "Roles, accounts, access tests and documentation" },
+    { "name": "Jonathan (Radh117)", "commit": "32d4aaf", "contribution": "Audit results and permission remediation" },
+    { "name": "Eddi Daga", "contribution": "Review, integration, regression tests, evidence and delivery" }
+  ]
+}

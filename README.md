@@ -1,6 +1,25 @@
-# CDRL-base-2026 - M08 paginacion y rendimiento (Semana 09)
+# CDRL-base-2026 - M09 seguridad NoSQL y auditoria (Semana 10)
 
-## Entrega actual M08
+## Entrega actual M09
+
+Ejecutar `make setup && make verify && make run`. Se mantienen todas las suites
+M01-M08. M09 verifica cuentas MongoDB por coleccion/operacion, rechazos reales,
+auditoria de alertas sin secretos y una remediacion de privilegios excesivos.
+Las consultas de run usan reader; los experimentos preparan y limpian fixtures
+con mantenimiento. No se usa root para operaciones de servicio.
+
+- [ADR: controles, evidencia y limites](docs/ADR-009-seguridad-nosql-auditoria.md).
+- [Matriz de permisos](docs/M09-permisos-mongo.md).
+- [Auditoria de alertas](docs/M06-auditoria.md).
+- [Manifiesto M09](evidence/m09-nosql-security-audit.json).
+
+Resultados: artifacts/m09-verify.json, artifacts/m09-security.json y evidencia
+ejecutada evidence/m09-nosql-security-audit-local.json. Tag: week-10-final.
+La auditoria cubre el flujo de alertas, no cualquier acceso directo a MongoDB;
+operator conserva update para reconciliar intenciones y no ofrece inmutabilidad.
+Ver ADR para errores, aislamiento, rotacion y limites de despliegue.
+
+## Entrega anterior M08
 
 Ejecutar `make setup && make verify && make run`. Se conservan todas las pruebas
 M01-M07. M08 agrega paginacion estable ante inserciones y un benchmark real de
