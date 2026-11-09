@@ -98,10 +98,31 @@ dbc.alerts.createIndex({ alert_id: 1 }, { unique: true, name: "uq_alerts_alert_i
 dbc.alerts.createIndex({ event_id: 1 }, { unique: true, name: "uq_alerts_event_id" });
 dbc.alerts.createIndex({ status: 1, device_id: 1, severity: 1 }, { name: "idx_alerts_status_device_severity" });
 dbc.alerts.createIndex({ status: 1, opened_at: -1 }, { name: "idx_alerts_status_opened" });
-const appUser = process.env.MONGO_APP_USER;
-const appPassword = process.env.MONGO_APP_PASSWORD;
-if (!appUser || !appPassword) throw new Error("Falta configurar cuenta MongoDB de aplicacion.");
-const userOptions = { pwd: appPassword, roles: [{ role: "readWrite", db: "cdrl" }] };
-if (dbc.getUser(appUser)) dbc.updateUser(appUser, userOptions);
-else dbc.createUser({ user: appUser, ...userOptions });
+const ensureUser = (user, pwd, roles) => {
+  if (!user || !pwd) throw new Error("Falta configurar la cuenta MongoDB " + (user || "sin nombre") + ".");
+  if (dbc.getUser(user)) dbc.updateUser(user, { pwd, roles });
+  else dbc.createUser({ user, pwd, roles });
+};
+// Cuenta de esquema, migraciones y fixtures (como migrator en PostgreSQL). No es administradora:
+// no gestiona usuarios ni roles. La cuenta root solo se usa aqui, dentro del contenedor.
+ensureUser(process.env.MONGO_APP_USER, process.env.MONGO_APP_PASSWORD, [{ role: "readWrite", db: "cdrl" }]);
+
+// M09: roles por coleccion y operacion. Mantener igual que src/mongo-accounts.mjs.
+const on = (collection, actions) => ({ resource: { db: "cdrl", collection: collection }, actions: actions });
+const accounts = [
+  ["MONGO_INGEST", "cdrl_mongo_ingest", "cdrl_events_ingest", [on("events", ["find", "insert", "update"])]],
+  ["MONGO_READER", "cdrl_mongo_reader", "cdrl_events_alerts_reader", [on("events", ["find"]), on("alerts", ["find"])]],
+  ["MONGO_OPERATOR", "cdrl_mongo_operator", "cdrl_alert_operator", [
+    on("alerts", ["find", "insert", "update"]),
+    on("alert_audit", ["find", "insert", "update", "createIndex"]),
+    on("", ["listCollections"])
+  ]],
+  ["MONGO_AUDITOR", "cdrl_mongo_auditor", "cdrl_audit_reader", [on("alert_audit", ["find"])]]
+];
+for (const [env, defaultUser, role, privileges] of accounts) {
+  // updateRole reemplaza los privilegios: repetir init deja exactamente los declarados.
+  if (dbc.getRole(role)) dbc.updateRole(role, { privileges: privileges, roles: [] });
+  else dbc.createRole({ role: role, privileges: privileges, roles: [] });
+  ensureUser(process.env[env + "_USER"] || defaultUser, process.env[env + "_PASSWORD"], [{ role: role, db: "cdrl" }]);
+}
 print("init OK");
