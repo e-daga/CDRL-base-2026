@@ -3,7 +3,7 @@ import { isDeepStrictEqual } from "node:util";
 import { createHash } from "node:crypto";
 import "./config.mjs";
 import { toEventView, toLegacyEventView, assertEventVersion } from "./event-versions.mjs";
-export { AuditPendingError, acknowledgeAlertWithAudit } from "./alert-audit.mjs";
+export { AuditPendingError, AuditWriteError, acknowledgeAlertWithAudit } from "./alert-audit.mjs";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DEVICE_RE = /^dev_[a-z0-9_]+$/;

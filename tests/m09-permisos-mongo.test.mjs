@@ -18,8 +18,12 @@ const DEVICE = "dev_m09_perm";
 const ACCOUNTS = Object.keys(MONGO_ACCOUNTS);
 
 const shell = 'exec mongosh --quiet -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin';
-const rootScript = (file) =>
-  execFileSync("docker", ["compose", "--profile", "mongo", "exec", "-T", "mongo", "sh", "-c", `${shell} ${file}`], { cwd: rootDir, encoding: "utf8" });
+const rootScript = (file, env = {}) =>
+  execFileSync("docker", [
+    "compose", "--profile", "mongo", "exec", "-T",
+    ...Object.entries(env).flatMap(([name, value]) => ["-e", `${name}=${value}`]),
+    "mongo", "sh", "-c", `${shell} ${file}`
+  ], { cwd: rootDir, encoding: "utf8" });
 
 const newEvent = (overrides = {}) => ({
   event_id: randomUUID(), device_id: DEVICE, event_type: "temperature_c",
@@ -109,6 +113,9 @@ test("[M09][normal] operator reconoce una alerta con auditoria y auditor la pued
     assert.equal(record.alert_id, alert.alert_id);
     assert.equal(record.audit_status, "completed");
     assert.equal(record.actor, "synthetic:m09-operator");
+    assert.deepEqual(record.resource, { type: "alert", id: alert.alert_id });
+    assert.equal(record.result, "success");
+    assert.equal(record.result_code, "alert_acknowledged");
     const stored = await withMongoAs("operator", (db) => db.collection("alerts").findOne({ alert_id: alert.alert_id }));
     assert.equal(stored.status, "acknowledged");
     assert.equal(stored.audit_operation_id, operationId);
@@ -144,6 +151,40 @@ test("[M09][boundary] repetir init conserva datos, roles y privilegios", async (
   for (const name of ACCOUNTS) {
     const status = await withMongoAs(name, (db) => db.command({ connectionStatus: 1, showPrivileges: true }));
     assert.deepEqual(privilegeSet(status.authInfo.authenticatedUserPrivileges), privilegeSet(MONGO_ACCOUNTS[name].privileges), name);
+  }
+});
+
+test("[M09][remediation] revocar permiso excesivo conserva las operaciones permitidas", async () => {
+  const suffix = randomUUID().replaceAll("-", "");
+  const user = `m09_test_${suffix}`;
+  const password = randomUUID();
+  const role = `m09_test_${suffix}`;
+  const collection = `m09_test_${suffix}`;
+  const env = {
+    M09_TEST_USER: user,
+    M09_TEST_PASSWORD: password,
+    M09_TEST_ROLE: role,
+    M09_TEST_COLLECTION: collection
+  };
+  const accountOptions = { user, password, authSource: "cdrl" };
+
+  try {
+    rootScript("/mongo/m09-permission-remediation.js", { ...env, M09_TEST_MODE: "setup" });
+    await withMongo(async (db) => {
+      await db.collection(collection).insertOne({ _id: "before-remediation" });
+      assert.equal((await db.collection(collection).deleteOne({ _id: "before-remediation" })).deletedCount, 1);
+    }, accountOptions);
+
+    rootScript("/mongo/m09-permission-remediation.js", { ...env, M09_TEST_MODE: "revoke" });
+    await withMongo(async (db) => {
+      await db.collection(collection).insertOne({ _id: "allowed-after-remediation" });
+      assert.equal((await db.collection(collection).findOne({ _id: "allowed-after-remediation" }))._id,
+        "allowed-after-remediation");
+      await denied(db.collection(collection).deleteOne({ _id: "allowed-after-remediation" }), "delete revocado");
+      assert.equal(await db.collection(collection).countDocuments({ _id: "allowed-after-remediation" }), 1);
+    }, accountOptions);
+  } finally {
+    rootScript("/mongo/m09-permission-remediation.js", { ...env, M09_TEST_MODE: "cleanup" });
   }
 });
 
@@ -224,8 +265,19 @@ test("[M09][declared failure] nadie fuera del flujo puede modificar ni borrar la
   try {
     const { operationId } = await seedAudited();
     const before = await withMongo(snapshot);
-    const forged = { operation_id: randomUUID(), alert_id: randomUUID(), action: "alert.acknowledged", occurred_at: new Date(),
-      actor: "synthetic:m09-forged", changes: { status: { from: "open", to: "acknowledged" }, acknowledged_at: new Date() }, audit_status: "completed" };
+    const forgedAlertId = randomUUID();
+    const forged = {
+      operation_id: randomUUID(),
+      alert_id: forgedAlertId,
+      resource: { type: "alert", id: forgedAlertId },
+      action: "alert.acknowledged",
+      occurred_at: new Date(),
+      actor: "synthetic:m09-forged",
+      result: "success",
+      result_code: "alert_acknowledged",
+      changes: { status: { from: "open", to: "acknowledged" }, acknowledged_at: new Date() },
+      audit_status: "completed"
+    };
     const tamper = {
       update: (db) => db.collection("alert_audit").updateOne({ operation_id: operationId }, { $set: { actor: "synthetic:m09-otro" } }),
       deleteOne: (db) => db.collection("alert_audit").deleteOne({ operation_id: operationId }),

@@ -48,11 +48,17 @@ Todas se conectan a MongoDB con la cuenta real. Un rechazo se da por bueno solo 
 
 - **normal:** `ingest` usa `createEvent`, `upsertEvent`, `updateEvent` y `readEvent`. `reader` usa Q1, `findEventsPage` y Q2. `operator` reconoce una alerta con `acknowledgeAlertWithAudit` y `auditor` lee el registro `completed`.
 - **boundary:** privilegios exactos de cada cuenta segun MongoDB; repetir `init.js` dos veces conserva conteos, roles y privilegios; los secretos vienen del entorno (`.env` sin versionar, `.env.example` sin contrasenas, un usuario y un secreto distintos por cuenta, la URI de la aplicacion no usa la cuenta root, ningun secreto escrito en `src/`, `scripts/` ni `tests/`).
+- **remediation:** `tests/m09-permisos-mongo.test.mjs` crea una cuenta, un rol y una coleccion temporales aislados. Primero demuestra que la cuenta puede borrar un documento por un permiso excesivo; luego retira solo `remove` y comprueba que MongoDB lo rechaza (codigo 13), mientras `find` e `insert` siguen funcionando. La prueba limpia la cuenta, el rol y la coleccion incluso si falla. No cambia ni amplía los privilegios de `cdrl_app` ni de las cuentas reales de servicio.
 - **declared failure:**
   - Lecturas rechazadas: `ingest` en alertas y auditoria, `reader` en auditoria, `operator` en eventos, `auditor` en eventos y alertas.
   - Escrituras rechazadas sin cambios: `reader` inserta, actualiza o borra; `ingest` borra eventos o inserta alertas; `operator` escribe eventos o borra alertas; `auditor` escribe.
   - Auditoria: `ingest`, `reader` y `auditor` no pueden actualizar, borrar, vaciar, eliminar ni falsificar un registro. `operator` no puede borrarlo, vaciar la coleccion ni eliminarla. El registro queda identico.
   - Administracion: ninguna cuenta (ni `cdrl_app`) puede crear usuarios, darse `readWrite`, listar usuarios ni borrar la base. Una contrasena equivocada no autentica (codigo 18).
+
+La auditoria de M06 escribe en `alert_audit` con los privilegios `operator`
+ya declarados; `src/mongo-accounts.mjs` y la matriz de permisos no se amplian
+para esta entrega. La auditoria desde la aplicación cubre solo las operaciones
+que pasan por el flujo instrumentado, no cualquier acceso directo a MongoDB.
 
 ## Para Jonathan: como conectarse
 

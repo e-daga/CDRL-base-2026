@@ -89,6 +89,104 @@ ensure("alerts", {
   ] }
 });
 
+const AUDIT_ACTOR = "^synthetic:[a-z0-9][a-z0-9._-]{0,63}$";
+const AUDIT = {
+  $jsonSchema: {
+    bsonType: "object",
+    additionalProperties: false,
+    required: ["operation_id", "alert_id", "action", "occurred_at", "actor", "audit_status"],
+    properties: {
+      _id: {},
+      operation_id: { bsonType: "string", pattern: UUID },
+      alert_id: { bsonType: "string", pattern: UUID },
+      resource: {
+        bsonType: "object",
+        additionalProperties: false,
+        required: ["type", "id"],
+        properties: {
+          type: { enum: ["alert"] },
+          id: { bsonType: "string", pattern: UUID }
+        }
+      },
+      action: { enum: ["alert.acknowledged"] },
+      occurred_at: { bsonType: "date" },
+      actor: { bsonType: "string", pattern: AUDIT_ACTOR },
+      result: { enum: ["success", "denied"] },
+      result_code: { enum: ["alert_acknowledged", "alert_not_found", "alert_state_conflict"] },
+      current_status: { enum: ["acknowledged", "resolved"] },
+      changes: {
+        bsonType: "object",
+        additionalProperties: false,
+        required: ["status", "acknowledged_at"],
+        properties: {
+          status: {
+            bsonType: "object",
+            additionalProperties: false,
+            required: ["from", "to"],
+            properties: { from: { enum: ["open"] }, to: { enum: ["acknowledged"] } }
+          },
+          acknowledged_at: { bsonType: "date" }
+        }
+      },
+      audit_status: { enum: ["pending", "completed"] }
+    },
+    anyOf: [
+      {
+        required: ["changes"],
+        not: {
+          anyOf: [
+            { required: ["resource"] }, { required: ["result"] },
+            { required: ["result_code"] }, { required: ["current_status"] }
+          ]
+        }
+      },
+      {
+        required: ["resource", "result", "result_code"],
+        anyOf: [
+          {
+            required: ["changes"],
+            properties: {
+              result: { enum: ["success"] },
+              result_code: { enum: ["alert_acknowledged"] }
+            }
+          },
+          {
+            not: { required: ["changes"] },
+            anyOf: [
+              {
+                properties: {
+                  result: { enum: ["denied"] },
+                  result_code: { enum: ["alert_not_found"] },
+                  audit_status: { enum: ["completed"] }
+                },
+                not: { required: ["current_status"] }
+              },
+              {
+                required: ["current_status"],
+                properties: {
+                  result: { enum: ["denied"] },
+                  result_code: { enum: ["alert_state_conflict"] },
+                  current_status: { enum: ["acknowledged", "resolved"] },
+                  audit_status: { enum: ["completed"] }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+};
+if (dbc.getCollectionNames().includes("alert_audit")) {
+  const result = dbc.runCommand({
+    collMod: "alert_audit",
+    validator: AUDIT,
+    validationLevel: "strict",
+    validationAction: "error"
+  });
+  if (result.ok !== 1) throw new Error("No se pudo actualizar el validador de alert_audit");
+}
+
 dbc.events.createIndex({ event_id: 1 }, { unique: true, name: "uq_events_event_id" });
 dbc.events.createIndex({ device_id: 1, observed_at: -1 }, { name: "idx_events_device_observed" });
 dbc.events.createIndex({ event_type: 1, observed_at: -1 }, { name: "idx_events_type_observed" });

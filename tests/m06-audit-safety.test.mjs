@@ -1,7 +1,13 @@
-import test from "node:test";
+import test, { before } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
+import { execFileSync } from "node:child_process";
+import { rootDir } from "../src/config.mjs";
 import { withMongo, createAlert, acknowledgeAlertWithAudit } from "../src/mongo.mjs";
+
+before(async () => {
+  execFileSync(process.execPath, ["scripts/mongo.mjs", "up"], { cwd: rootDir, stdio: "inherit" });
+});
 
 test("[M06][declared failure] misma fecha no permite atribuir otra operacion", async () => {
   await withMongo(async (db) => {
@@ -13,9 +19,17 @@ test("[M06][declared failure] misma fecha no permite atribuir otra operacion", a
         opened_at: new Date(Date.now() - 60000) }, { db });
       await acknowledgeAlertWithAudit(id, { db, operationId: first, actor });
       const { _id, ...record } = await db.collection("alert_audit").findOne({ operation_id: first });
-      await db.collection("alert_audit").insertOne({ ...record, operation_id: second, audit_status: "pending" });
-      await assert.rejects(acknowledgeAlertWithAudit(id, { db, operationId: second, actor }), { code: "AUDIT_PENDING" });
-      assert.equal((await db.collection("alert_audit").findOne({ operation_id: second })).audit_status, "pending");
+      await db.collection("alert_audit").insertOne({
+        ...record, operation_id: second, result: "success",
+        result_code: "alert_acknowledged", audit_status: "pending"
+      });
+      const denied = await acknowledgeAlertWithAudit(id, { db, operationId: second, actor });
+      assert.equal(denied.status, "conflict");
+      assert.equal(denied.result, "denied");
+      const denialRecord = await db.collection("alert_audit").findOne({ operation_id: second });
+      assert.equal(denialRecord.audit_status, "completed");
+      assert.equal(denialRecord.result_code, "alert_state_conflict");
+      assert.equal(Object.hasOwn(denialRecord, "changes"), false);
       assert.equal((await db.collection("alerts").findOne({ alert_id: id })).audit_operation_id, first);
       await assert.rejects(acknowledgeAlertWithAudit(id, { db, operationId: first, actor: "synthetic:other" }), /otra/);
     } finally {

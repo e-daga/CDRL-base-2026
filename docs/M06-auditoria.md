@@ -2,74 +2,74 @@
 
 ## Alcance
 
-`acknowledgeAlertWithAudit(alert_id, { db, operationId, actor })` ejecuta una
-transición concreta de `alerts.status: open` a `acknowledged`. `operationId`
-es un UUID estable que el llamador conserva en cada reintento; `actor` debe
-ser un identificador sintético como `synthetic:operator-01`. Una alerta que
-no existe devuelve `status: "not_found"`; una alerta cuyo estado ya no es
-`open` devuelve `status: "conflict"`.
+`acknowledgeAlertWithAudit(alert_id, { db, operationId, actor })` instrumenta
+una transición de `alerts.status: open` a `acknowledged`. Registra los
+reconocimientos exitosos y las denegaciones por alerta inexistente o estado
+incompatible. El actor debe ser sintético, por ejemplo
+`synthetic:operator-01`; `operationId` es un UUID estable para reintentos.
 
-No se modificó `mongo/init.js`: la colección `alert_audit` se crea desde la
-operación con validador estricto y se le crean sus índices. Así este cambio no
-requiere alterar el init compartido. El usuario de aplicación debe conservar
-el permiso `readWrite` en `cdrl`, que permite crear la colección e índices.
+La auditoría se genera desde esta aplicación y sólo cubre este flujo
+instrumentado. **No captura automáticamente** consultas ni escrituras hechas
+por acceso directo a MongoDB, por otros clientes o por rutas que no invoquen
+esta función. No se guardan contraseñas, tokens, cadenas de conexión,
+documentos completos ni errores crudos.
 
 ## Documento auditado
 
-La colección sólo acepta los campos autorizados:
+La colección `alert_audit` aplica un validador estricto y sólo admite estos
+campos:
 
 | Campo | Contenido |
 | --- | --- |
 | `operation_id` | UUID idempotente de la operación |
-| `alert_id` | Identificador de la alerta afectada |
-| `action` | `alert.acknowledged` |
-| `occurred_at` | Fecha BSON usada para el cambio |
 | `actor` | Identificador sintético `synthetic:<identificador>` |
-| `changes.status` | Transición `open` → `acknowledged` |
-| `changes.acknowledged_at` | Fecha escrita en la alerta |
-| `audit_status` | `pending` o `completed` |
+| `action` | `alert.acknowledged` |
+| `resource` | Tipo `alert` e identificador UUID del recurso |
+| `result` | `success` o `denied` |
+| `result_code` | `alert_acknowledged`, `alert_not_found` o `alert_state_conflict` |
+| `current_status` | Estado observado, sólo en una denegación por conflicto |
+| `occurred_at` | Fecha BSON de la operación |
+| `changes` | Sólo para éxito: estado `open` → `acknowledged` y su fecha |
+| `audit_status` | `pending` o `completed`, estado de persistencia/reconciliación |
 
-El validador rechaza propiedades adicionales, incluidos documentos fuente,
-payloads, variables de entorno, credenciales y cadenas de conexión. El índice
-único `uq_alert_audit_operation_id` impide duplicar registros por reintentos.
-`idx_alert_audit_alert_occurred` facilita consultar el historial de una
-alerta por fecha.
+`alert_id` se conserva junto a `resource` para compatibilidad con los registros
+M06 existentes. El validador también permite leer esos registros anteriores;
+los registros nuevos tienen `resource`, `result` y `result_code`. El índice
+único `uq_alert_audit_operation_id` evita duplicados por reintento.
 
-## Orden de escrituras y fallos
+## Persistencia y errores
 
 MongoDB standalone no hace atómicas escrituras en `alerts` y `alert_audit`;
-no se usan transacciones ni se afirma atomicidad entre colecciones. El flujo
-guarda primero una intención `pending` en `alert_audit`, actualiza la alerta
-con filtro condicional `status: "open"` y finalmente cambia la intención a
-`completed`.
+no se usan transacciones ni se afirma atomicidad entre colecciones. Para un
+éxito, el flujo inserta una intención `pending`, aplica el cambio condicional y
+marca el registro `completed`. Una denegación se inserta como `completed` y
+no cambia la alerta.
 
-- Si no se puede crear o insertar la intención, la alerta no se actualiza.
-- Si el cambio en la alerta se guarda, pero falla o queda sin confirmar la
-  confirmación de auditoría, la función lanza `AuditPendingError`
-  (`code: "AUDIT_PENDING"`) con el mismo `operationId`. No es un éxito
-  completo. La escritura final puede haber quedado aplicada pese a perderse
-  su respuesta; por eso el reintento consulta el estado real antes de decidir.
-- Reintentar con el mismo `operationId`, `alert_id` y actor reutiliza la fecha
-  y la intención guardadas. Si la alerta ya tiene ese estado y fecha, se
-  completa la auditoría sin volver a cambiarla. Si el estado no concuerda, la
-  función falla explícitamente y no atribuye el cambio a esa operación.
-- Un `operationId` ya usado con otro `alert_id` o actor es un conflicto y no
-  puede reutilizarse. El registro pendiente requiere intervención si un error
-  persistente o una operación concurrente impide reconciliarlo.
-- Tras completarse ambas escrituras, repetir la llamada devuelve
-  `status: "completed", replayed: true`; no crea otro registro.
+- Si falla la inserción de auditoría, la función lanza `AuditWriteError`
+  (`code: AUDIT_WRITE_FAILED`) y no devuelve un resultado de éxito o denegación
+  auditada. El mensaje no incluye el error crudo.
+- Si la alerta cambió, pero no se pudo completar la auditoría, se lanza
+  `AuditPendingError` (`code: AUDIT_PENDING`). No se informa un éxito completo;
+  se debe reintentar con el mismo `operationId`.
+- Si el estado cambió concurrentemente y el reconocimiento no se aplicó, se
+  confirma primero la denegación en auditoría. Si no se puede guardar esa
+  denegación, la función lanza `AuditPendingError` en vez de devolver `conflict`.
+- Repetir una operación completada devuelve su resultado previo sin duplicar
+  el registro. Un `operationId` asociado a otra alerta o actor se rechaza.
 
-El identificador de operación debe persistirse del lado del llamador hasta
-obtener el resultado final. Un error de red puede dejar incierto si MongoDB
-aplicó la última escritura; por eso se consulta y reconcilia al reintentar en
-vez de declarar éxito con base únicamente en una respuesta perdida.
+`mongo/init.js` actualiza el validador para admitir el formato nuevo y los
+registros M06 anteriores. La cuenta y privilegios de aplicación de M09 no se
+amplían.
 
 ## Pruebas
 
-`tests/m06-auditoria.test.mjs` ejecuta integración contra MongoDB real:
+`tests/m06-auditoria.test.mjs` y `tests/m06-audit-safety.test.mjs` cubren:
 
-- transición normal, campos permitidos, validador e índices;
-- reintento idempotente y unicidad del registro;
-- alerta inexistente sin cambio ni auditoría;
-- fallo controlado al finalizar auditoría: verifica alerta actualizada,
-  auditoría `pending`, error explícito y resolución al reintentar.
+- campos permitidos, actor sintético, fecha, recurso, resultado y ausencia de
+  datos sensibles;
+- registro de éxito y denegaciones por recurso inexistente o conflicto;
+- reintentos idempotentes, unicidad y validación estricta;
+- fallo simulado de escritura: no se devuelve un resultado auditado si no se
+  guardó el documento;
+- fallo al cerrar una intención: queda `pending`, se informa el error y se
+  reconcilia al reintentar.
