@@ -22,6 +22,15 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-}
       MONGO_APP_USER: ${MONGO_APP_USER:-cdrl_app}
       MONGO_APP_PASSWORD: ${MONGO_APP_PASSWORD:-}
+      # M09: cuentas por coleccion y operacion; init.js las crea con estos secretos.
+      MONGO_INGEST_USER: ${MONGO_INGEST_USER:-cdrl_mongo_ingest}
+      MONGO_INGEST_PASSWORD: ${MONGO_INGEST_PASSWORD:-}
+      MONGO_READER_USER: ${MONGO_READER_USER:-cdrl_mongo_reader}
+      MONGO_READER_PASSWORD: ${MONGO_READER_PASSWORD:-}
+      MONGO_OPERATOR_USER: ${MONGO_OPERATOR_USER:-cdrl_mongo_operator}
+      MONGO_OPERATOR_PASSWORD: ${MONGO_OPERATOR_PASSWORD:-}
+      MONGO_AUDITOR_USER: ${MONGO_AUDITOR_USER:-cdrl_mongo_auditor}
+      MONGO_AUDITOR_PASSWORD: ${MONGO_AUDITOR_PASSWORD:-}
     ports:
       - "127.0.0.1:${MONGO_PORT:-27017}:27017"
     volumes:

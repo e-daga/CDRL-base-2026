@@ -17,7 +17,14 @@ function ensureEnv() {
   if (!/^MONGO_USER=/m.test(text)) add.push("MONGO_USER=cdrl_mongo");
   if (!/^MONGO_PORT=/m.test(text)) add.push("MONGO_PORT=27017");
   if (!/^MONGO_APP_USER=/m.test(text)) add.push("MONGO_APP_USER=cdrl_app");
-  for (const name of ["MONGO_PASSWORD", "MONGO_APP_PASSWORD"]) {
+  // M09: una cuenta por coleccion y operacion, cada una con su propio secreto.
+  const accounts = ["INGEST", "READER", "OPERATOR", "AUDITOR"];
+  for (const account of accounts) {
+    if (!process.env[`MONGO_${account}_USER`] && !new RegExp(`^MONGO_${account}_USER=`, "m").test(text)) {
+      add.push(`MONGO_${account}_USER=cdrl_mongo_${account.toLowerCase()}`);
+    }
+  }
+  for (const name of ["MONGO_PASSWORD", "MONGO_APP_PASSWORD", ...accounts.map((account) => `MONGO_${account}_PASSWORD`)]) {
     const pattern = new RegExp(`^${name}=.*$`, "m");
     if (!process.env[name] && !text.match(pattern)?.[0].split("=")[1]?.trim()) {
       text = text.replace(pattern, "");
