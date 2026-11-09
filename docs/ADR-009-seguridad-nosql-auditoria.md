@@ -108,6 +108,21 @@ Se descarta usar readWrite para todas las operaciones de servicio: permitiria
 lecturas, escrituras y borrados que no corresponden. Se conservan permisos mas
 amplios solo en mantenimiento, que debe aislarse en un despliegue real.
 
+## Resultado de integracion
+
+La ejecucion [Actions 42553309973](https://github.com/e-daga/CDRL-base-2026/actions/runs/42553309973)
+del commit de247c79bb1f2deff1950869ed6d3f6f4205fcb1 aprobo setup, verify y run.
+187 pruebas: 16 M09 y 171 de los hitos anteriores, incluyendo las nuevas pruebas
+de auditoria que Jonathan agrego a M06. Cero fail, skipped y todo; el escaner no
+encontro secretos y su prueba de deteccion paso.
+
+La evidencia de verify contiene cuatro matrices efectivas, seis respuestas reales
+Unauthorized sin cambios de datos y tres registros auditados (un exito y dos
+denegaciones de negocio). La remediacion elimino un documento antes de revocar
+remove; despues de revocarlo el servidor nego delete con codigo 13 y conservo el
+documento, mientras insert/find siguieron permitidos. Limpieza temporal completada.
+Las ejecuciones posteriores generan sus propios IDs, fechas y SHA de evidencia.
+
 ## Reproduccion, evidencia y autoria
 
 make setup && make verify && make run conserva las pruebas previas. Verify exige

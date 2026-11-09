@@ -1,0 +1,231 @@
+{
+  "status": "passed",
+  "accounts": [
+    {
+      "account": "ingest",
+      "role": "cdrl_events_ingest",
+      "privileges": [
+        {
+          "resource": {
+            "db": "cdrl",
+            "collection": "events"
+          },
+          "actions": [
+            "find",
+            "insert",
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "account": "reader",
+      "role": "cdrl_events_alerts_reader",
+      "privileges": [
+        {
+          "resource": {
+            "db": "cdrl",
+            "collection": "events"
+          },
+          "actions": [
+            "find"
+          ]
+        },
+        {
+          "resource": {
+            "db": "cdrl",
+            "collection": "alerts"
+          },
+          "actions": [
+            "find"
+          ]
+        }
+      ]
+    },
+    {
+      "account": "operator",
+      "role": "cdrl_alert_operator",
+      "privileges": [
+        {
+          "resource": {
+            "db": "cdrl",
+            "collection": ""
+          },
+          "actions": [
+            "listCollections"
+          ]
+        },
+        {
+          "resource": {
+            "db": "cdrl",
+            "collection": "alert_audit"
+          },
+          "actions": [
+            "find",
+            "insert",
+            "update"
+          ]
+        },
+        {
+          "resource": {
+            "db": "cdrl",
+            "collection": "alerts"
+          },
+          "actions": [
+            "find",
+            "insert",
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "account": "auditor",
+      "role": "cdrl_audit_reader",
+      "privileges": [
+        {
+          "resource": {
+            "db": "cdrl",
+            "collection": "alert_audit"
+          },
+          "actions": [
+            "find"
+          ]
+        }
+      ]
+    }
+  ],
+  "allowed": {
+    "ingest": true,
+    "reader": true,
+    "operator": true,
+    "auditor": true
+  },
+  "deniedOperations": [
+    {
+      "actor": "synthetic:reader",
+      "action": "events.insert",
+      "resource": "events",
+      "result": "denied",
+      "serverCode": 13,
+      "occurred_at": "2026-11-09T02:54:32.915Z"
+    },
+    {
+      "actor": "synthetic:reader",
+      "action": "events.update",
+      "resource": "events",
+      "result": "denied",
+      "serverCode": 13,
+      "occurred_at": "2026-11-09T02:54:32.921Z"
+    },
+    {
+      "actor": "synthetic:ingest",
+      "action": "alerts.read",
+      "resource": "alerts",
+      "result": "denied",
+      "serverCode": 13,
+      "occurred_at": "2026-11-09T02:54:32.926Z"
+    },
+    {
+      "actor": "synthetic:auditor",
+      "action": "events.read",
+      "resource": "events",
+      "result": "denied",
+      "serverCode": 13,
+      "occurred_at": "2026-11-09T02:54:32.931Z"
+    },
+    {
+      "actor": "synthetic:reader",
+      "action": "audit.update",
+      "resource": "alert_audit",
+      "result": "denied",
+      "serverCode": 13,
+      "occurred_at": "2026-11-09T02:54:32.937Z"
+    },
+    {
+      "actor": "synthetic:operator",
+      "action": "audit.delete",
+      "resource": "alert_audit",
+      "result": "denied",
+      "serverCode": 13,
+      "occurred_at": "2026-11-09T02:54:32.942Z"
+    }
+  ],
+  "dataUnchangedAfterDenials": true,
+  "audit": {
+    "records": [
+      {
+        "operation_id": "18c83e2d-579b-484b-bc52-252b7996f878",
+        "alert_id": "8ed36fd8-8ee0-46af-82be-711053bb0705",
+        "resource": {
+          "type": "alert",
+          "id": "8ed36fd8-8ee0-46af-82be-711053bb0705"
+        },
+        "action": "alert.acknowledged",
+        "occurred_at": "2026-11-09T02:54:32.877Z",
+        "actor": "synthetic:m09-operator",
+        "result": "success",
+        "result_code": "alert_acknowledged",
+        "changes": {
+          "status": {
+            "from": "open",
+            "to": "acknowledged"
+          },
+          "acknowledged_at": "2026-11-09T02:54:32.877Z"
+        },
+        "audit_status": "completed"
+      },
+      {
+        "operation_id": "54fe20db-b67a-459e-a475-bc88fa3466b3",
+        "alert_id": "8ed36fd8-8ee0-46af-82be-711053bb0705",
+        "resource": {
+          "type": "alert",
+          "id": "8ed36fd8-8ee0-46af-82be-711053bb0705"
+        },
+        "action": "alert.acknowledged",
+        "occurred_at": "2026-11-09T02:54:32.900Z",
+        "actor": "synthetic:m09-operator",
+        "result": "denied",
+        "result_code": "alert_state_conflict",
+        "current_status": "acknowledged",
+        "audit_status": "completed"
+      },
+      {
+        "operation_id": "588f3e48-6301-4d3a-ba00-260957c8c0ca",
+        "alert_id": "23f10343-b499-420e-8a07-908e8d6bed66",
+        "resource": {
+          "type": "alert",
+          "id": "23f10343-b499-420e-8a07-908e8d6bed66"
+        },
+        "action": "alert.acknowledged",
+        "occurred_at": "2026-11-09T02:54:32.892Z",
+        "actor": "synthetic:m09-operator",
+        "result": "denied",
+        "result_code": "alert_not_found",
+        "audit_status": "completed"
+      }
+    ],
+    "replayedWithoutDuplicate": true,
+    "scope": "alert acknowledgment flow; denials here are not_found/state_conflict, not database authorization failures",
+    "authorizationProbes": "The separate deniedOperations evidence records real server responses; it is not a general database audit log."
+  },
+  "remediation": {
+    "status": "passed",
+    "collection": "m09_test_b5ce9f804ab042169d0eb094e46eacd0",
+    "scope": "temporary role, account and synthetic collection only",
+    "before": {
+      "deleted": 1,
+      "removeAllowed": true
+    },
+    "after": {
+      "deleteDeniedCode": 13,
+      "insertAllowed": true,
+      "findAllowed": true,
+      "retained": 1
+    },
+    "reconnectAfterRevocation": true,
+    "cleanupCompleted": true
+  },
+  "fixtureCleanupVerified": true,
+  "generatedAt": "2026-11-09T02:54:34.823Z"
+}

@@ -1,0 +1,1260 @@
+{
+  "assignmentId": "m09-nosql-security-audit",
+  "status": "passed",
+  "generatedAt": "2026-11-09T02:54:26.263Z",
+  "git": {
+    "commitSha": "de247c79bb1f2deff1950869ed6d3f6f4205fcb1",
+    "workingTreeStatus": "M artifacts/m05-queries.json\n M artifacts/m06-recovery.json\n M artifacts/m07-migration.json\n M artifacts/m08-benchmark.json\n?? artifacts/m09-security.json"
+  },
+  "commands": [
+    "make setup",
+    "make verify",
+    "make run"
+  ],
+  "database": {
+    "engine": "PostgreSQL",
+    "counts": {
+      "devices": 2,
+      "telemetry_events": 3,
+      "device_status": 2,
+      "telemetry_alerts": 1,
+      "migrations": 4
+    },
+    "migrations": [
+      {
+        "version": "001_create_telemetry_contract",
+        "checksum": "7964a96ed199bb2433dab27063e91b279aded60052b7f62d0fb568be8002cbad"
+      },
+      {
+        "version": "002_create_operational_model",
+        "checksum": "5ffb39f9578f24a1abe9e16d82c53d3b6d633b7adb9e2cb0cf97f6d96c78f80b"
+      },
+      {
+        "version": "003_create_roles_and_privileges",
+        "checksum": "a91f2f46ba03e0cd1cec601c60b8c9b32130c123888f47199280236189ed13dd"
+      },
+      {
+        "version": "004_enforce_role_ownership",
+        "checksum": "ff24b417c3ee59dc7210031cac9687289e25025691437ca4384e045a0a17c9fe"
+      }
+    ],
+    "owners": [
+      {
+        "tablename": "device_status",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "devices",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "schema_migrations",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "telemetry_alerts",
+        "tableowner": "role_migrator"
+      },
+      {
+        "tablename": "telemetry_events",
+        "tableowner": "role_migrator"
+      }
+    ]
+  },
+  "tests": {
+    "total": 187,
+    "passed": 187,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cases": [
+      {
+        "name": "[M04][normal] matriz real calcula ranking y volumen revisados a mano",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][boundary] mayor prioridad a escala cambia el candidato preferido",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][boundary] empate no se resuelve inventando un ganador",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][declared failure] rechaza familia omitida o duplicada",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][declared failure] rechaza volumen invalido",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][declared failure] rechaza fuentes ausentes y protocolos inseguros",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][declared failure] no etiqueta hipotesis como mediciones realizadas",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "[M04][normal] resultado conserva las veinte hipotesis y sus fuentes",
+        "status": "passed",
+        "file": "tests/m04-integration.test.mjs"
+      },
+      {
+        "name": "CRUD normal de eventos",
+        "status": "passed",
+        "file": "tests/m05-crud-consultas.test.mjs"
+      },
+      {
+        "name": "CRUD normal de alertas",
+        "status": "passed",
+        "file": "tests/m05-crud-consultas.test.mjs"
+      },
+      {
+        "name": "idempotencia de eventos: duplicado no crea otro y reutilizar id con datos distintos da conflicto explícito",
+        "status": "passed",
+        "file": "tests/m05-crud-consultas.test.mjs"
+      },
+      {
+        "name": "lecturas, borrados y actualizaciones sobre documentos inexistentes devuelven resultados explícitos",
+        "status": "passed",
+        "file": "tests/m05-crud-consultas.test.mjs"
+      },
+      {
+        "name": "cronograma de Q1 y Q2 con explain executionStats usan los índices esperados",
+        "status": "passed",
+        "file": "tests/m05-crud-consultas.test.mjs"
+      },
+      {
+        "name": "actualizaciones inválidas son rechazadas por validación del esquema",
+        "status": "passed",
+        "file": "tests/m05-crud-consultas.test.mjs"
+      },
+      {
+        "name": "[M05][normal] Q1 y las cuatro variantes Q2 ejecutan indices declarados",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M05][boundary] porcentaje 0 aceptado directamente",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M05][boundary] porcentaje 100 aceptado directamente",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M05][boundary] reintentos concurrentes y orden de claves no duplican",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M05][declared failure] actualizacion directa invalida no modifica el documento",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M05][declared failure] limites, fechas y filtros invalidos son rechazados",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M05][declared failure] un indice solo en rejectedPlans no cuenta",
+        "status": "passed",
+        "file": "tests/m05-integration.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] misma fecha no permite atribuir otra operacion",
+        "status": "passed",
+        "file": "tests/m06-audit-safety.test.mjs"
+      },
+      {
+        "name": "[M06][boundary] reintentos concurrentes guardan una sola auditoria",
+        "status": "passed",
+        "file": "tests/m06-audit-safety.test.mjs"
+      },
+      {
+        "name": "[M06][normal] reconoce alerta y registra sólo campos permitidos",
+        "status": "passed",
+        "file": "tests/m06-auditoria.test.mjs"
+      },
+      {
+        "name": "[M06][retry] el mismo operation_id no repite ni duplica la operación",
+        "status": "passed",
+        "file": "tests/m06-auditoria.test.mjs"
+      },
+      {
+        "name": "[M06][denied] alerta inexistente se registra como denegada sin cambio",
+        "status": "passed",
+        "file": "tests/m06-auditoria.test.mjs"
+      },
+      {
+        "name": "[M06][denied] estado no abierto se registra como conflicto",
+        "status": "passed",
+        "file": "tests/m06-auditoria.test.mjs"
+      },
+      {
+        "name": "[M06][audit write failure] no devuelve denegación si el registro no se guardó",
+        "status": "passed",
+        "file": "tests/m06-auditoria.test.mjs"
+      },
+      {
+        "name": "[M06][controlled failure] deja auditoría pendiente y la completa al reintentar",
+        "status": "passed",
+        "file": "tests/m06-auditoria.test.mjs"
+      },
+      {
+        "name": "[M06][normal] la consulta por dispositivo lee v1 y v2 con la misma forma",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][normal] el validador acepta un v1 nuevo y un v2 nuevo",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][boundary] los documentos de M05 se leen como v1 sin reescribirse",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][boundary] la vista no muta el documento original",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: schema_version desconocida (3)",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: schema_version como texto",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: schema_version 1 explicita",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: v2 sin firmware_version",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: v2 con firmware_version mal formado",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: v1 con firmware_version",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: v2 incompleto (sin device_id)",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] events rechaza: v2 con campo no declarado",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] las reglas de version tambien fallan en la aplicacion",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] subir un v1 a una version invalida no cambia el documento",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][boundary] init repetido sobre el volumen existente conserva datos y reglas",
+        "status": "passed",
+        "file": "tests/m06-evolucion-documental.test.mjs"
+      },
+      {
+        "name": "[M06][normal] recupera un fixture completo y mide el resultado",
+        "status": "passed",
+        "file": "tests/m06-recovery.test.mjs"
+      },
+      {
+        "name": "[M06][boundary] repetir restauracion no duplica el fixture",
+        "status": "passed",
+        "file": "tests/m06-recovery.test.mjs"
+      },
+      {
+        "name": "[M06][boundary] fixture ausente no produce respaldo vacio",
+        "status": "passed",
+        "file": "tests/m06-recovery.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] respaldo corrupto o destino ajeno no modifica datos",
+        "status": "passed",
+        "file": "tests/m06-recovery.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] error al persistir respaldo impide borrar el fixture",
+        "status": "passed",
+        "file": "tests/m06-recovery.test.mjs"
+      },
+      {
+        "name": "[M06][declared failure] datos ajenos en coleccion aislada bloquean experimento",
+        "status": "passed",
+        "file": "tests/m06-recovery.test.mjs"
+      },
+      {
+        "name": "[M07][normal] el consumidor anterior recibe lo mismo antes, durante, despues y tras revertir",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][normal] el consumidor M06 conserva firmware_version y firmware_status en todas las fases",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][boundary] durante la migracion conviven v1 pendientes, v2 desconocidos y v2 reportados",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][boundary] repetir la migracion no cambia nada y no toca los v2 reportados",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][boundary] el CRUD lee y actualiza un evento migrado sin perder la marca de desconocido",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: null sin firmware_status",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: null sin migrated_from",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: null con firmware_status reported",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: firmware conocido marcado unknown",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: firmware conocido con migrated_from",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: migrated_from distinto de 1",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: firmware_status inventado",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: firmware como texto vacio",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: v1 con firmware_status",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] events rechaza: v1 con migrated_from",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] la vista legada no oculta una version desconocida",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] una migracion que deja un estado invalido se rechaza y el documento queda igual",
+        "status": "passed",
+        "file": "tests/m07-compatibilidad.test.mjs"
+      },
+      {
+        "name": "[M07][normal] migracion real conserva consumidor antes durante despues y rollback",
+        "status": "passed",
+        "file": "tests/m07-integration.test.mjs"
+      },
+      {
+        "name": "[M07][boundary] alcance vacio de datos no cambia documentos ni inventa trabajo",
+        "status": "passed",
+        "file": "tests/m07-integration.test.mjs"
+      },
+      {
+        "name": "[M07][boundary] rollback repetido no oculta conflictos pendientes",
+        "status": "passed",
+        "file": "tests/m07-integration.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] recupera escritura aplicada antes de guardar estado del diario",
+        "status": "passed",
+        "file": "tests/m07-integration.test.mjs"
+      },
+      {
+        "name": "[M07][declared failure] requiere run-id y diario separado sin escribir",
+        "status": "passed",
+        "file": "tests/m07-integration.test.mjs"
+      },
+      {
+        "name": "[M07 migration] inspección declara alcance, pendientes y lotes sin escribir",
+        "status": "passed",
+        "file": "tests/m07-migracion.test.mjs"
+      },
+      {
+        "name": "[M07 migration] reanuda después de interrupción y la segunda ejecución no modifica nada",
+        "status": "passed",
+        "file": "tests/m07-migracion.test.mjs"
+      },
+      {
+        "name": "[M07 migration] rollback revierte solo sus cambios y reporta modificaciones posteriores",
+        "status": "passed",
+        "file": "tests/m07-migracion.test.mjs"
+      },
+      {
+        "name": "[M07 migration] una escritura concurrente falla la comparación y no se sobrescribe",
+        "status": "passed",
+        "file": "tests/m07-migracion.test.mjs"
+      },
+      {
+        "name": "[M07 migration] dos corridas concurrentes no reclaman el mismo cambio ni se revierten entre sí",
+        "status": "passed",
+        "file": "tests/m07-migracion.test.mjs"
+      },
+      {
+        "name": "[M08][normal] evidencia coherente se acepta aunque la variante optimizada tarde mas",
+        "status": "passed",
+        "file": "tests/m08-integration.test.mjs"
+      },
+      {
+        "name": "[M08][normal] percentiles tipo 7 se calculan de las muestras sin mutarlas",
+        "status": "passed",
+        "file": "tests/m08-integration.test.mjs"
+      },
+      {
+        "name": "[M08][boundary] una muestra, empates y extremos de percentil",
+        "status": "passed",
+        "file": "tests/m08-integration.test.mjs"
+      },
+      {
+        "name": "[M08][boundary] no se calculan estadisticas sobre muestras vacias o invalidas",
+        "status": "passed",
+        "file": "tests/m08-integration.test.mjs"
+      },
+      {
+        "name": "[M08][declared failure] se rechazan evidencia incompleta, resultados distintos y percentiles falsos",
+        "status": "passed",
+        "file": "tests/m08-integration.test.mjs"
+      },
+      {
+        "name": "[M08][normal] el recorrido por cursor entrega todo en orden estable, sin repetir ni perder",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M08][normal] la pagina con cursor usa el indice declarado y no ordena en memoria",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M08][boundary] eventos con la misma fecha se desempatan por event_id aunque crucen paginas",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M08][boundary] coleccion vacia y dispositivo sin eventos devuelven una pagina vacia y final",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M08][boundary] la ultima pagina exacta no deja una pagina vacia extra",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M08][boundary] insertar entre paginas no repite ni pierde los eventos originales",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M08][declared failure] un cursor invalido se rechaza con un error claro",
+        "status": "passed",
+        "file": "tests/m08-paginacion.test.mjs"
+      },
+      {
+        "name": "[M09][normal] evidencia real integra permisos, auditoria y remediacion sin dejar fixtures",
+        "status": "passed",
+        "file": "tests/m09-integration.test.mjs"
+      },
+      {
+        "name": "[M09][boundary] denegacion por recurso inexistente es idempotente con la cuenta operator",
+        "status": "passed",
+        "file": "tests/m09-integration.test.mjs"
+      },
+      {
+        "name": "[M09][boundary] actor mal formado y operation_id ajeno no alteran auditoria",
+        "status": "passed",
+        "file": "tests/m09-integration.test.mjs"
+      },
+      {
+        "name": "[M09][declared failure] error al cerrar auditoria no filtra causa ni informa exito, y permite recuperar",
+        "status": "passed",
+        "file": "tests/m09-integration.test.mjs"
+      },
+      {
+        "name": "[M09][declared failure] reader no puede usar el flujo de operador para escalar permisos",
+        "status": "passed",
+        "file": "tests/m09-integration.test.mjs"
+      },
+      {
+        "name": "[M09][normal] ingest crea, lee y actualiza eventos con el CRUD existente",
+        "status": "passed",
+        "file": "tests/m09-permisos-mongo.test.mjs"
+      },
+      {
+        "name": "[M09][normal] reader consulta eventos y alertas con Q1, la paginacion y Q2",
+        "status": "passed",
+        "file": "tests/m09-permisos-mongo.test.mjs"
+      },
+      {
+        "name": "[M09][normal] operator reconoce una alerta con auditoria y auditor la puede leer",
+        "status": "passed",
+        "file": "tests/m09-permisos-mongo.test.mjs"
+      },
+      {
+        "name": "[M09][boundary] cada cuenta tiene exactamente los privilegios declarados y ninguno administrativo",
+        "status": "passed",
+        "file": "tests/m09-permisos-mongo.test.mjs"
+      },
+      {
+        "name": "[M09][boundary] repetir init conserva datos, roles y privilegios",
+        "status": "passed",
+        "file": "tests/m09-permisos-mongo.test.mjs"
+      },
+      {
+        "name": "[M09][remediation] revocar permiso excesivo conserva las operaciones permitidas",
+        "status": "passed",
+        "file": "tests/m09-permisos-mongo.test.mjs"
+      },
+      {
+        "name": "[M09][boundary] los secretos vienen del entorno, son distintos y no estan en el repositorio",
+        "status": "passed",
+        "file": "tests/m09-permisos-mongo.test.mjs"
+      },
+      {
+        "name": "[M09][declared failure] lecturas fuera de su coleccion se rechazan",
+        "status": "passed",
+        "file": "tests/m09-permisos-mongo.test.mjs"
+      },
+      {
+        "name": "[M09][declared failure] escrituras sin permiso se rechazan y no cambian datos",
+        "status": "passed",
+        "file": "tests/m09-permisos-mongo.test.mjs"
+      },
+      {
+        "name": "[M09][declared failure] nadie fuera del flujo puede modificar ni borrar la auditoria",
+        "status": "passed",
+        "file": "tests/m09-permisos-mongo.test.mjs"
+      },
+      {
+        "name": "[M09][declared failure] las cuentas no pueden administrar usuarios, roles ni la base",
+        "status": "passed",
+        "file": "tests/m09-permisos-mongo.test.mjs"
+      },
+      {
+        "name": "control: documentos validos si se aceptan",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: sin device_id",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: device_id con formato invalido",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: event_type no permitido",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: severity no permitida",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: payload no es objeto",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: metric_value como texto",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: campo no declarado",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: battery_pct > 100",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: humidity_pct < 0",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "events rechaza: observed_at en el futuro (> 5 min)",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "alerts rechaza: status no permitido",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "alerts rechaza: alert_type no permitido",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "alerts rechaza: severity no permitida",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "alerts rechaza: acknowledged sin acknowledged_at",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "alerts rechaza: resolved sin resolved_at",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "alerts rechaza: resolved_at anterior a opened_at",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "indice unico: event_id duplicado",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "indice unico: alert_id duplicado",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "indices esperados existen",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "seed repetido no duplica",
+        "status": "passed",
+        "file": "tests/mongo-validation.test.mjs"
+      },
+      {
+        "name": "[M04] caso normal calcula puntajes esperados sobre 100",
+        "status": "passed",
+        "file": "tests/nosql-decision.test.mjs"
+      },
+      {
+        "name": "[M04] alternativas con mismo resultado comparten puesto y se reportan como empate",
+        "status": "passed",
+        "file": "tests/nosql-decision.test.mjs"
+      },
+      {
+        "name": "[M04] cambiar puntuacion de criterio con peso cero no cambia resultado",
+        "status": "passed",
+        "file": "tests/nosql-decision.test.mjs"
+      },
+      {
+        "name": "[M04] fallo declarado cuando los pesos no suman 100",
+        "status": "passed",
+        "file": "tests/nosql-decision.test.mjs"
+      },
+      {
+        "name": "[M04] rechaza puntuaciones fuera del rango de 1 a 5",
+        "status": "passed",
+        "file": "tests/nosql-decision.test.mjs"
+      },
+      {
+        "name": "[M04] rechaza justificaciones ausentes o vacias",
+        "status": "passed",
+        "file": "tests/nosql-decision.test.mjs"
+      },
+      {
+        "name": "normal case: parameterized telemetry query returns device events",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "empty case: unknown device returns empty parameterized results",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "boundary case: telemetry limit returns at most one row",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "boundary case: device status accepts maintenance with battery 0",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "declared failure: device status rejects battery above 100",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "declared failure: resolved alert requires acknowledgement",
+        "status": "passed",
+        "file": "tests/operational-model.test.mjs"
+      },
+      {
+        "name": "[M03][normal] migrator authenticates with its own non-admin account",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] writer authenticates with its own non-admin account",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] reader authenticates with its own non-admin account",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] operator authenticates with its own non-admin account",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] writer inserts devices and telemetry",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] reader queries all four application tables",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][boundary] writer upserts device status with battery 0",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][boundary] writer upserts device status with battery 100",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][boundary] reader can query an empty result",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] operator opens acknowledges and resolves an alert",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] migrator creates alters and drops tables, including existing objects",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][boundary] future migrator tables inherit read-only access",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot read telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot insert telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot read telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot update raw telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot manage alerts (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot update device status (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot update device status (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot delete telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot delete devices (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot delete alerts (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot create application tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot alter existing tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot truncate telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot read migration metadata (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot escalate to migrator (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot create login roles (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] writer cannot create temporary tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot create application tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot alter existing tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot truncate telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot read migration metadata (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot escalate to migrator (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot create login roles (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] reader cannot create temporary tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot create application tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot alter existing tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot truncate telemetry (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot read migration metadata (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot escalate to migrator (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot create login roles (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][declared failure][denied] operator cannot create temporary tables (42501)",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][normal] complete effective table permission matrix matches the declaration",
+        "status": "passed",
+        "file": "tests/roles-access.test.mjs"
+      },
+      {
+        "name": "[M03][rotation] new credential works, old login and existing session are revoked",
+        "status": "passed",
+        "file": "tests/secret-rotation.test.mjs"
+      },
+      {
+        "name": "normal case: accepts a temperature telemetry event",
+        "status": "passed",
+        "file": "tests/telemetry-contract.test.mjs"
+      },
+      {
+        "name": "boundary case: accepts battery_pct lower bound 0",
+        "status": "passed",
+        "file": "tests/telemetry-contract.test.mjs"
+      },
+      {
+        "name": "boundary case: accepts humidity_pct upper bound 100",
+        "status": "passed",
+        "file": "tests/telemetry-contract.test.mjs"
+      },
+      {
+        "name": "declared failure: rejects battery_pct above 100",
+        "status": "passed",
+        "file": "tests/telemetry-contract.test.mjs"
+      }
+    ]
+  },
+  "m09Tests": 16,
+  "securityAudit": {
+    "status": "passed",
+    "accounts": [
+      {
+        "account": "ingest",
+        "role": "cdrl_events_ingest",
+        "privileges": [
+          {
+            "resource": {
+              "db": "cdrl",
+              "collection": "events"
+            },
+            "actions": [
+              "find",
+              "insert",
+              "update"
+            ]
+          }
+        ]
+      },
+      {
+        "account": "reader",
+        "role": "cdrl_events_alerts_reader",
+        "privileges": [
+          {
+            "resource": {
+              "db": "cdrl",
+              "collection": "events"
+            },
+            "actions": [
+              "find"
+            ]
+          },
+          {
+            "resource": {
+              "db": "cdrl",
+              "collection": "alerts"
+            },
+            "actions": [
+              "find"
+            ]
+          }
+        ]
+      },
+      {
+        "account": "operator",
+        "role": "cdrl_alert_operator",
+        "privileges": [
+          {
+            "resource": {
+              "db": "cdrl",
+              "collection": "alert_audit"
+            },
+            "actions": [
+              "find",
+              "insert",
+              "update"
+            ]
+          },
+          {
+            "resource": {
+              "db": "cdrl",
+              "collection": ""
+            },
+            "actions": [
+              "listCollections"
+            ]
+          },
+          {
+            "resource": {
+              "db": "cdrl",
+              "collection": "alerts"
+            },
+            "actions": [
+              "find",
+              "insert",
+              "update"
+            ]
+          }
+        ]
+      },
+      {
+        "account": "auditor",
+        "role": "cdrl_audit_reader",
+        "privileges": [
+          {
+            "resource": {
+              "db": "cdrl",
+              "collection": "alert_audit"
+            },
+            "actions": [
+              "find"
+            ]
+          }
+        ]
+      }
+    ],
+    "allowed": {
+      "ingest": true,
+      "reader": true,
+      "operator": true,
+      "auditor": true
+    },
+    "deniedOperations": [
+      {
+        "actor": "synthetic:reader",
+        "action": "events.insert",
+        "resource": "events",
+        "result": "denied",
+        "serverCode": 13,
+        "occurred_at": "2026-11-09T02:54:16.618Z"
+      },
+      {
+        "actor": "synthetic:reader",
+        "action": "events.update",
+        "resource": "events",
+        "result": "denied",
+        "serverCode": 13,
+        "occurred_at": "2026-11-09T02:54:16.624Z"
+      },
+      {
+        "actor": "synthetic:ingest",
+        "action": "alerts.read",
+        "resource": "alerts",
+        "result": "denied",
+        "serverCode": 13,
+        "occurred_at": "2026-11-09T02:54:16.631Z"
+      },
+      {
+        "actor": "synthetic:auditor",
+        "action": "events.read",
+        "resource": "events",
+        "result": "denied",
+        "serverCode": 13,
+        "occurred_at": "2026-11-09T02:54:16.637Z"
+      },
+      {
+        "actor": "synthetic:reader",
+        "action": "audit.update",
+        "resource": "alert_audit",
+        "result": "denied",
+        "serverCode": 13,
+        "occurred_at": "2026-11-09T02:54:16.644Z"
+      },
+      {
+        "actor": "synthetic:operator",
+        "action": "audit.delete",
+        "resource": "alert_audit",
+        "result": "denied",
+        "serverCode": 13,
+        "occurred_at": "2026-11-09T02:54:16.650Z"
+      }
+    ],
+    "dataUnchangedAfterDenials": true,
+    "audit": {
+      "records": [
+        {
+          "operation_id": "68faef70-8a7f-4772-a37f-93db4ad167d0",
+          "alert_id": "1af983a2-b940-484c-8e14-0f1eea11894f",
+          "resource": {
+            "type": "alert",
+            "id": "1af983a2-b940-484c-8e14-0f1eea11894f"
+          },
+          "action": "alert.acknowledged",
+          "occurred_at": "2026-11-09T02:54:16.562Z",
+          "actor": "synthetic:m09-operator",
+          "result": "success",
+          "result_code": "alert_acknowledged",
+          "changes": {
+            "status": {
+              "from": "open",
+              "to": "acknowledged"
+            },
+            "acknowledged_at": "2026-11-09T02:54:16.562Z"
+          },
+          "audit_status": "completed"
+        },
+        {
+          "operation_id": "8304fed9-ef73-48fd-8640-1da98612e256",
+          "alert_id": "1af983a2-b940-484c-8e14-0f1eea11894f",
+          "resource": {
+            "type": "alert",
+            "id": "1af983a2-b940-484c-8e14-0f1eea11894f"
+          },
+          "action": "alert.acknowledged",
+          "occurred_at": "2026-11-09T02:54:16.596Z",
+          "actor": "synthetic:m09-operator",
+          "result": "denied",
+          "result_code": "alert_state_conflict",
+          "current_status": "acknowledged",
+          "audit_status": "completed"
+        },
+        {
+          "operation_id": "c20bf1da-cc4f-4532-a264-9958f288290e",
+          "alert_id": "751c9381-4e66-4892-add9-8c7263eccc1a",
+          "resource": {
+            "type": "alert",
+            "id": "751c9381-4e66-4892-add9-8c7263eccc1a"
+          },
+          "action": "alert.acknowledged",
+          "occurred_at": "2026-11-09T02:54:16.585Z",
+          "actor": "synthetic:m09-operator",
+          "result": "denied",
+          "result_code": "alert_not_found",
+          "audit_status": "completed"
+        }
+      ],
+      "replayedWithoutDuplicate": true,
+      "scope": "alert acknowledgment flow; denials here are not_found/state_conflict, not database authorization failures",
+      "authorizationProbes": "The separate deniedOperations evidence records real server responses; it is not a general database audit log."
+    },
+    "remediation": {
+      "status": "passed",
+      "collection": "m09_test_d9346d8379914f909672c76162b62bc8",
+      "scope": "temporary role, account and synthetic collection only",
+      "before": {
+        "deleted": 1,
+        "removeAllowed": true
+      },
+      "after": {
+        "deleteDeniedCode": 13,
+        "insertAllowed": true,
+        "findAllowed": true,
+        "retained": 1
+      },
+      "reconnectAfterRevocation": true,
+      "cleanupCompleted": true
+    },
+    "fixtureCleanupVerified": true,
+    "generatedAt": "2026-11-09T02:54:18.569Z"
+  },
+  "secrets": {
+    "status": "passed",
+    "tool": "gitleaks",
+    "version": "8.30.1",
+    "image": "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f",
+    "scope": [
+      "all Git refs and complete reachable history",
+      "tracked and non-ignored new files"
+    ],
+    "commitsScanned": 55,
+    "filesScanned": 139,
+    "findings": [],
+    "detectionSelfTest": "passed",
+    "limitations": "Pattern-based scanning cannot guarantee absence of every possible secret."
+  },
+  "environment": {
+    "mode": "local",
+    "awsValidated": false,
+    "note": "Docker Compose es el entorno validado. AWS requiere un Learner Lab habilitado y autorizacion del entorno."
+  }
+}
