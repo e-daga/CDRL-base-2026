@@ -14,7 +14,9 @@ con mantenimiento. No se usa root para operaciones de servicio.
 - [Manifiesto M09](evidence/m09-nosql-security-audit.json).
 
 Resultados: artifacts/m09-verify.json, artifacts/m09-security.json y evidencia
-ejecutada evidence/m09-nosql-security-audit-local.json. Tag: week-10-final.
+ejecutada evidence/m09-nosql-security-audit-local.json. Tag de entrega: week-10-final-v2.
+El tag week-10-final se conserva como version anterior; v2 corrige las fechas
+del fixture de la demo sin cambiar ni desactivar el validador temporal.
 La auditoria cubre el flujo de alertas, no cualquier acceso directo a MongoDB;
 operator conserva update para reconciliar intenciones y no ofrece inmutabilidad.
 Ver ADR para errores, aislamiento, rotacion y limites de despliegue.

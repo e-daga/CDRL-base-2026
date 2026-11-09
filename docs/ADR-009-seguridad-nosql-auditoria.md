@@ -108,7 +108,26 @@ Se descarta usar readWrite para todas las operaciones de servicio: permitiria
 lecturas, escrituras y borrados que no corresponden. Se conservan permisos mas
 amplios solo en mantenimiento, que debe aislarse en un despliegue real.
 
-## Resultado de integracion
+## Correccion de reproducibilidad v2
+
+Durante la prueba local tardia, el evento de la demo con Date.now() fue rechazado
+con codigo 121 por la expresion temporal heredada de M05. Se comprobo en dos
+colecciones temporales: tras esperar, un validador con $$NOW rechazo un documento
+que otro validador recien creado acepto, con el mismo reloj de cliente/servidor.
+Es una limitacion observada del validador temporal en este entorno MongoDB 7,
+no un error de permisos y no un secreto o error de auditoria.
+
+La demo M09 ahora usa las fechas sinteticas fijas del 2 de noviembre de 2026,
+igual que los fixtures de permisos. Se agrega una regresion con un limite temporal
+anterior: el fixture fijo se acepta y un evento reciente se rechaza. No se retira,
+amplia ni desactiva el validador, y se mantienen las pruebas de fechas futuras.
+La ingesta de datos reales recientes sobre un validador persistente de M05 requiere
+revisar esa limitacion antes de un despliegue; no se afirma resolverla en M09.
+
+El tag inicial week-10-final queda intacto. La entrega corregida usa
+week-10-final-v2, un tag semanal nuevo, sin force push ni reemplazo de historia.
+
+## Resultado de integracion inicial
 
 La ejecucion [Actions 42553309973](https://github.com/e-daga/CDRL-base-2026/actions/runs/42553309973)
 del commit de247c79bb1f2deff1950869ed6d3f6f4205fcb1 aprobo setup, verify y run.
@@ -134,7 +153,7 @@ sin reemplazar la evidencia de verify. En fallo los resultados M09 quedan failed
 Manifiesto: evidence/m09-nosql-security-audit.json. Evidencia ejecutada:
 evidence/m09-nosql-security-audit-local.json. Los reportes versionados identifican
 el commit probado; la evidencia descargable del SHA final evita referencias a un
-SHA dentro de su propio commit. Tag semanal: week-10-final. No reemplazar tags.
+SHA dentro de su propio commit. Tag semanal de entrega: week-10-final-v2. No reemplazar tags.
 
 Francesco: 6f086de, 96521cd, ebeaa06, 8257184, roles, secretos, pruebas y matriz.
 Jonathan (Radh117): 32d4aaf, resultados auditados y remediacion de permisos.

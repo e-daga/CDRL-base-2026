@@ -6,17 +6,21 @@ import { remediateTemporaryPermission } from "./m09-remediation.mjs";
 
 const normalizePrivileges = (items) => items.flatMap((p) => p.actions.map((a) => `${p.resource.db}:${p.resource.collection}:${a}`)).sort();
 
+export const m09FixtureEvent = (eventId, device) => ({
+  event_id: eventId, device_id: device, event_type: "temperature_c",
+  observed_at: new Date("2026-11-02T08:00:00Z"), ingested_at: new Date("2026-11-02T08:00:02Z"),
+  metric_value: 20, unit: "C", severity: "info", source: "synthetic-m09-report", payload: {}
+});
+
 export async function collectM09() {
   const eventId = randomUUID(), alertId = randomUUID(), missingId = randomUUID();
   const operationIds = [randomUUID(), randomUUID(), randomUUID()];
   const device = `dev_m09_${randomUUID().replaceAll("-", "")}`;
   const actor = "synthetic:m09-operator";
-  const event = { event_id: eventId, device_id: device, event_type: "temperature_c",
-    observed_at: new Date(Date.now() - 60000), ingested_at: new Date(), metric_value: 20,
-    unit: "C", severity: "info", source: "synthetic-m09-report", payload: {} };
+  const event = m09FixtureEvent(eventId, device);
   const alert = { alert_id: alertId, event_id: eventId, device_id: device,
     alert_type: "threshold", status: "open", severity: "warning",
-    opened_at: new Date(Date.now() - 60000), acknowledged_at: null, resolved_at: null };
+    opened_at: new Date("2026-11-02T08:01:00Z"), acknowledged_at: null, resolved_at: null };
   let report;
   try {
     const accounts = [];
@@ -73,7 +77,7 @@ export async function collectM09() {
       assert.equal(record.audit_status, "completed");
       assert.ok(["success", "denied"].includes(record.result));
     }
-    report = { status: "passed", accounts, allowed: { ingest: true, reader: true, operator: true, auditor: true },
+    report = { status: "passed", accounts, fixtureObservedAt: page.items[0].observed_at.toISOString(), allowed: { ingest: true, reader: true, operator: true, auditor: true },
       deniedOperations: denials, dataUnchangedAfterDenials: true,
       audit: { records: auditRecords, replayedWithoutDuplicate: replay.replayed,
         scope: "alert acknowledgment flow; denials here are not_found/state_conflict, not database authorization failures",

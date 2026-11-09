@@ -73,7 +73,7 @@ try {
   assert.equal(evidence08.tag, "week-09-final");
   const evidence09 = JSON.parse(fs.readFileSync(path.join(rootDir, "evidence/m09-nosql-security-audit.json"), "utf8"));
   assert.equal(evidence09.assignmentId, "m09-nosql-security-audit");
-  assert.equal(evidence09.tag, "week-10-final");
+  assert.equal(evidence09.tag, "week-10-final-v2");
 
   stage = "setup";
   run("scripts/setup.mjs");

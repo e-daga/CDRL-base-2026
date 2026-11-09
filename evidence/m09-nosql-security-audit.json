@@ -2,7 +2,7 @@
   "assignmentId": "m09-nosql-security-audit",
   "week": 10,
   "repository": "https://github.com/e-daga/CDRL-base-2026",
-  "tag": "week-10-final",
+  "tag": "week-10-final-v2",
   "status": "implemented",
   "commands": ["make setup", "make verify", "make run"],
   "results": {

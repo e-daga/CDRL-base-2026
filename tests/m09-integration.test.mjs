@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { withMongo, acknowledgeAlertWithAudit } from "../src/mongo.mjs";
 import { withMongoAs } from "../src/mongo-accounts.mjs";
-import { collectM09 } from "../src/m09-report.mjs";
+import { collectM09, m09FixtureEvent } from "../src/m09-report.mjs";
 
 const fixture = async (work) => {
   const alertId = randomUUID(), operationId = randomUUID();
@@ -32,6 +32,27 @@ test("[M09][normal] evidencia real integra permisos, auditoria y remediacion sin
   assert.equal(report.remediation.after.retained, 1);
   assert.equal(report.remediation.cleanupCompleted, true);
   assert.equal(report.fixtureCleanupVerified, true);
+  assert.equal(report.fixtureObservedAt, "2026-11-02T08:00:00.000Z");
+});
+
+test("[M09][boundary] fixture reproducible funciona con un limite temporal anterior sin quitar validacion", async () => {
+  await withMongo(async (db) => {
+    const name = `m09_dated_${randomUUID().replaceAll("-", "")}`;
+    const info = await db.listCollections({ name: "events" }).next();
+    // Model an older temporal boundary without changing the real events validator.
+    await db.createCollection(name, { validator: { $and: [info.options.validator,
+      { $expr: { $lte: ["$observed_at", new Date("2026-11-03T00:00:00Z")] } }
+    ] }, validationLevel: "strict", validationAction: "error" });
+    try {
+      const doc = m09FixtureEvent(randomUUID(), "dev_m09_dated");
+      await db.collection(name).insertOne(doc);
+      assert.equal((await db.collection(name).findOne({ event_id: doc.event_id })).observed_at.toISOString(), "2026-11-02T08:00:00.000Z");
+      const fresh = m09FixtureEvent(randomUUID(), "dev_m09_dated");
+      fresh.observed_at = new Date();
+      await assert.rejects(db.collection(name).insertOne(fresh), { code: 121 });
+      assert.equal(await db.collection(name).countDocuments(), 1);
+    } finally { await db.collection(name).drop(); }
+  });
 });
 
 test("[M09][boundary] denegacion por recurso inexistente es idempotente con la cuenta operator", async () => {
