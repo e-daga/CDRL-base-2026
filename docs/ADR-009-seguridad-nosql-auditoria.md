@@ -127,7 +127,16 @@ revisar esa limitacion antes de un despliegue; no se afirma resolverla en M09.
 El tag inicial week-10-final queda intacto. La entrega corregida usa
 week-10-final-v2, un tag semanal nuevo, sin force push ni reemplazo de historia.
 
-## Resultado de integracion inicial
+## Resultado corregido v2
+
+[Actions 42555887924](https://github.com/e-daga/CDRL-base-2026/actions/runs/42555887924)
+aprobo setup, verify y run del commit d1bfedf5ec478334aeec24e88d1174b7045a64b6:
+188 pruebas, incluidas 17 M09; cero fail, skipped y todo, y cero hallazgos del
+escaner. La nueva regresion temporal paso y el fixture releido por reader conserva
+observed_at = 2026-11-02T08:00:00.000Z. Se vuelven a ejecutar los permisos, auditoria
+y remediacion reales. Esta es la evidencia de codigo usada para cerrar v2.
+
+## Resultado de integracion inicial (historico)
 
 La ejecucion [Actions 42553309973](https://github.com/e-daga/CDRL-base-2026/actions/runs/42553309973)
 del commit de247c79bb1f2deff1950869ed6d3f6f4205fcb1 aprobo setup, verify y run.

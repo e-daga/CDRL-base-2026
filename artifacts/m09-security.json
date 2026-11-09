@@ -49,15 +49,6 @@
         {
           "resource": {
             "db": "cdrl",
-            "collection": ""
-          },
-          "actions": [
-            "listCollections"
-          ]
-        },
-        {
-          "resource": {
-            "db": "cdrl",
             "collection": "alert_audit"
           },
           "actions": [
@@ -75,6 +66,15 @@
             "find",
             "insert",
             "update"
+          ]
+        },
+        {
+          "resource": {
+            "db": "cdrl",
+            "collection": ""
+          },
+          "actions": [
+            "listCollections"
           ]
         }
       ]
@@ -95,6 +95,7 @@
       ]
     }
   ],
+  "fixtureObservedAt": "2026-11-02T08:00:00.000Z",
   "allowed": {
     "ingest": true,
     "reader": true,
@@ -108,7 +109,7 @@
       "resource": "events",
       "result": "denied",
       "serverCode": 13,
-      "occurred_at": "2026-11-09T02:54:32.915Z"
+      "occurred_at": "2026-11-09T03:22:27.753Z"
     },
     {
       "actor": "synthetic:reader",
@@ -116,7 +117,7 @@
       "resource": "events",
       "result": "denied",
       "serverCode": 13,
-      "occurred_at": "2026-11-09T02:54:32.921Z"
+      "occurred_at": "2026-11-09T03:22:27.758Z"
     },
     {
       "actor": "synthetic:ingest",
@@ -124,7 +125,7 @@
       "resource": "alerts",
       "result": "denied",
       "serverCode": 13,
-      "occurred_at": "2026-11-09T02:54:32.926Z"
+      "occurred_at": "2026-11-09T03:22:27.762Z"
     },
     {
       "actor": "synthetic:auditor",
@@ -132,7 +133,7 @@
       "resource": "events",
       "result": "denied",
       "serverCode": 13,
-      "occurred_at": "2026-11-09T02:54:32.931Z"
+      "occurred_at": "2026-11-09T03:22:27.767Z"
     },
     {
       "actor": "synthetic:reader",
@@ -140,7 +141,7 @@
       "resource": "alert_audit",
       "result": "denied",
       "serverCode": 13,
-      "occurred_at": "2026-11-09T02:54:32.937Z"
+      "occurred_at": "2026-11-09T03:22:27.773Z"
     },
     {
       "actor": "synthetic:operator",
@@ -148,21 +149,36 @@
       "resource": "alert_audit",
       "result": "denied",
       "serverCode": 13,
-      "occurred_at": "2026-11-09T02:54:32.942Z"
+      "occurred_at": "2026-11-09T03:22:27.777Z"
     }
   ],
   "dataUnchangedAfterDenials": true,
   "audit": {
     "records": [
       {
-        "operation_id": "18c83e2d-579b-484b-bc52-252b7996f878",
-        "alert_id": "8ed36fd8-8ee0-46af-82be-711053bb0705",
+        "operation_id": "2a765192-e45c-4c39-ad62-9c125cf34b3e",
+        "alert_id": "53583535-7b43-4bb8-9701-c35a2b4872c2",
         "resource": {
           "type": "alert",
-          "id": "8ed36fd8-8ee0-46af-82be-711053bb0705"
+          "id": "53583535-7b43-4bb8-9701-c35a2b4872c2"
         },
         "action": "alert.acknowledged",
-        "occurred_at": "2026-11-09T02:54:32.877Z",
+        "occurred_at": "2026-11-09T03:22:27.738Z",
+        "actor": "synthetic:m09-operator",
+        "result": "denied",
+        "result_code": "alert_state_conflict",
+        "current_status": "acknowledged",
+        "audit_status": "completed"
+      },
+      {
+        "operation_id": "4f3a5f7e-5cc9-4279-851f-c8ac6ab5838e",
+        "alert_id": "53583535-7b43-4bb8-9701-c35a2b4872c2",
+        "resource": {
+          "type": "alert",
+          "id": "53583535-7b43-4bb8-9701-c35a2b4872c2"
+        },
+        "action": "alert.acknowledged",
+        "occurred_at": "2026-11-09T03:22:27.715Z",
         "actor": "synthetic:m09-operator",
         "result": "success",
         "result_code": "alert_acknowledged",
@@ -171,34 +187,19 @@
             "from": "open",
             "to": "acknowledged"
           },
-          "acknowledged_at": "2026-11-09T02:54:32.877Z"
+          "acknowledged_at": "2026-11-09T03:22:27.715Z"
         },
         "audit_status": "completed"
       },
       {
-        "operation_id": "54fe20db-b67a-459e-a475-bc88fa3466b3",
-        "alert_id": "8ed36fd8-8ee0-46af-82be-711053bb0705",
+        "operation_id": "93c75d7b-7e89-4f9c-9b7e-72796cf01d6d",
+        "alert_id": "20086941-2bf2-4a1b-bc8f-7a0f504373cf",
         "resource": {
           "type": "alert",
-          "id": "8ed36fd8-8ee0-46af-82be-711053bb0705"
+          "id": "20086941-2bf2-4a1b-bc8f-7a0f504373cf"
         },
         "action": "alert.acknowledged",
-        "occurred_at": "2026-11-09T02:54:32.900Z",
-        "actor": "synthetic:m09-operator",
-        "result": "denied",
-        "result_code": "alert_state_conflict",
-        "current_status": "acknowledged",
-        "audit_status": "completed"
-      },
-      {
-        "operation_id": "588f3e48-6301-4d3a-ba00-260957c8c0ca",
-        "alert_id": "23f10343-b499-420e-8a07-908e8d6bed66",
-        "resource": {
-          "type": "alert",
-          "id": "23f10343-b499-420e-8a07-908e8d6bed66"
-        },
-        "action": "alert.acknowledged",
-        "occurred_at": "2026-11-09T02:54:32.892Z",
+        "occurred_at": "2026-11-09T03:22:27.731Z",
         "actor": "synthetic:m09-operator",
         "result": "denied",
         "result_code": "alert_not_found",
@@ -211,7 +212,7 @@
   },
   "remediation": {
     "status": "passed",
-    "collection": "m09_test_b5ce9f804ab042169d0eb094e46eacd0",
+    "collection": "m09_test_264d4055231b4f2388a8060c763af702",
     "scope": "temporary role, account and synthetic collection only",
     "before": {
       "deleted": 1,
@@ -227,5 +228,5 @@
     "cleanupCompleted": true
   },
   "fixtureCleanupVerified": true,
-  "generatedAt": "2026-11-09T02:54:34.823Z"
+  "generatedAt": "2026-11-09T03:22:29.322Z"
 }

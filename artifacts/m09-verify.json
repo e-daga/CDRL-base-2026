@@ -1,10 +1,10 @@
 {
   "assignmentId": "m09-nosql-security-audit",
   "status": "passed",
-  "generatedAt": "2026-11-09T02:54:26.263Z",
+  "generatedAt": "2026-11-09T03:22:22.629Z",
   "git": {
-    "commitSha": "de247c79bb1f2deff1950869ed6d3f6f4205fcb1",
-    "workingTreeStatus": "M artifacts/m05-queries.json\n M artifacts/m06-recovery.json\n M artifacts/m07-migration.json\n M artifacts/m08-benchmark.json\n?? artifacts/m09-security.json"
+    "commitSha": "d1bfedf5ec478334aeec24e88d1174b7045a64b6",
+    "workingTreeStatus": "M artifacts/m05-queries.json\n M artifacts/m06-recovery.json\n M artifacts/m07-migration.json\n M artifacts/m08-benchmark.json\n M artifacts/m09-security.json"
   },
   "commands": [
     "make setup",
@@ -62,8 +62,8 @@
     ]
   },
   "tests": {
-    "total": 187,
-    "passed": 187,
+    "total": 188,
+    "passed": 188,
     "failed": 0,
     "skipped": 0,
     "todo": 0,
@@ -515,6 +515,11 @@
       },
       {
         "name": "[M09][normal] evidencia real integra permisos, auditoria y remediacion sin dejar fixtures",
+        "status": "passed",
+        "file": "tests/m09-integration.test.mjs"
+      },
+      {
+        "name": "[M09][boundary] fixture reproducible funciona con un limite temporal anterior sin quitar validacion",
         "status": "passed",
         "file": "tests/m09-integration.test.mjs"
       },
@@ -1005,7 +1010,7 @@
       }
     ]
   },
-  "m09Tests": 16,
+  "m09Tests": 17,
   "securityAudit": {
     "status": "passed",
     "accounts": [
@@ -1103,6 +1108,7 @@
         ]
       }
     ],
+    "fixtureObservedAt": "2026-11-02T08:00:00.000Z",
     "allowed": {
       "ingest": true,
       "reader": true,
@@ -1116,7 +1122,7 @@
         "resource": "events",
         "result": "denied",
         "serverCode": 13,
-        "occurred_at": "2026-11-09T02:54:16.618Z"
+        "occurred_at": "2026-11-09T03:22:13.434Z"
       },
       {
         "actor": "synthetic:reader",
@@ -1124,7 +1130,7 @@
         "resource": "events",
         "result": "denied",
         "serverCode": 13,
-        "occurred_at": "2026-11-09T02:54:16.624Z"
+        "occurred_at": "2026-11-09T03:22:13.440Z"
       },
       {
         "actor": "synthetic:ingest",
@@ -1132,7 +1138,7 @@
         "resource": "alerts",
         "result": "denied",
         "serverCode": 13,
-        "occurred_at": "2026-11-09T02:54:16.631Z"
+        "occurred_at": "2026-11-09T03:22:13.446Z"
       },
       {
         "actor": "synthetic:auditor",
@@ -1140,7 +1146,7 @@
         "resource": "events",
         "result": "denied",
         "serverCode": 13,
-        "occurred_at": "2026-11-09T02:54:16.637Z"
+        "occurred_at": "2026-11-09T03:22:13.452Z"
       },
       {
         "actor": "synthetic:reader",
@@ -1148,7 +1154,7 @@
         "resource": "alert_audit",
         "result": "denied",
         "serverCode": 13,
-        "occurred_at": "2026-11-09T02:54:16.644Z"
+        "occurred_at": "2026-11-09T03:22:13.459Z"
       },
       {
         "actor": "synthetic:operator",
@@ -1156,21 +1162,35 @@
         "resource": "alert_audit",
         "result": "denied",
         "serverCode": 13,
-        "occurred_at": "2026-11-09T02:54:16.650Z"
+        "occurred_at": "2026-11-09T03:22:13.466Z"
       }
     ],
     "dataUnchangedAfterDenials": true,
     "audit": {
       "records": [
         {
-          "operation_id": "68faef70-8a7f-4772-a37f-93db4ad167d0",
-          "alert_id": "1af983a2-b940-484c-8e14-0f1eea11894f",
+          "operation_id": "85672658-755f-4e4e-b418-f630366e48e2",
+          "alert_id": "387948c2-ece1-47f1-b066-327cb054c775",
           "resource": {
             "type": "alert",
-            "id": "1af983a2-b940-484c-8e14-0f1eea11894f"
+            "id": "387948c2-ece1-47f1-b066-327cb054c775"
           },
           "action": "alert.acknowledged",
-          "occurred_at": "2026-11-09T02:54:16.562Z",
+          "occurred_at": "2026-11-09T03:22:13.402Z",
+          "actor": "synthetic:m09-operator",
+          "result": "denied",
+          "result_code": "alert_not_found",
+          "audit_status": "completed"
+        },
+        {
+          "operation_id": "9d59aaa8-f7a4-4b9a-bc18-55b3b343db09",
+          "alert_id": "cb94d0eb-e079-4b31-8639-8a5d858d5723",
+          "resource": {
+            "type": "alert",
+            "id": "cb94d0eb-e079-4b31-8639-8a5d858d5723"
+          },
+          "action": "alert.acknowledged",
+          "occurred_at": "2026-11-09T03:22:13.379Z",
           "actor": "synthetic:m09-operator",
           "result": "success",
           "result_code": "alert_acknowledged",
@@ -1179,37 +1199,23 @@
               "from": "open",
               "to": "acknowledged"
             },
-            "acknowledged_at": "2026-11-09T02:54:16.562Z"
+            "acknowledged_at": "2026-11-09T03:22:13.379Z"
           },
           "audit_status": "completed"
         },
         {
-          "operation_id": "8304fed9-ef73-48fd-8640-1da98612e256",
-          "alert_id": "1af983a2-b940-484c-8e14-0f1eea11894f",
+          "operation_id": "e9a570c6-eb7d-4718-b42f-9b786665d985",
+          "alert_id": "cb94d0eb-e079-4b31-8639-8a5d858d5723",
           "resource": {
             "type": "alert",
-            "id": "1af983a2-b940-484c-8e14-0f1eea11894f"
+            "id": "cb94d0eb-e079-4b31-8639-8a5d858d5723"
           },
           "action": "alert.acknowledged",
-          "occurred_at": "2026-11-09T02:54:16.596Z",
+          "occurred_at": "2026-11-09T03:22:13.413Z",
           "actor": "synthetic:m09-operator",
           "result": "denied",
           "result_code": "alert_state_conflict",
           "current_status": "acknowledged",
-          "audit_status": "completed"
-        },
-        {
-          "operation_id": "c20bf1da-cc4f-4532-a264-9958f288290e",
-          "alert_id": "751c9381-4e66-4892-add9-8c7263eccc1a",
-          "resource": {
-            "type": "alert",
-            "id": "751c9381-4e66-4892-add9-8c7263eccc1a"
-          },
-          "action": "alert.acknowledged",
-          "occurred_at": "2026-11-09T02:54:16.585Z",
-          "actor": "synthetic:m09-operator",
-          "result": "denied",
-          "result_code": "alert_not_found",
           "audit_status": "completed"
         }
       ],
@@ -1219,7 +1225,7 @@
     },
     "remediation": {
       "status": "passed",
-      "collection": "m09_test_d9346d8379914f909672c76162b62bc8",
+      "collection": "m09_test_522c680612ba4a6a8df191b3585fb673",
       "scope": "temporary role, account and synthetic collection only",
       "before": {
         "deleted": 1,
@@ -1235,7 +1241,7 @@
       "cleanupCompleted": true
     },
     "fixtureCleanupVerified": true,
-    "generatedAt": "2026-11-09T02:54:18.569Z"
+    "generatedAt": "2026-11-09T03:22:15.012Z"
   },
   "secrets": {
     "status": "passed",
@@ -1246,8 +1252,8 @@
       "all Git refs and complete reachable history",
       "tracked and non-ignored new files"
     ],
-    "commitsScanned": 55,
-    "filesScanned": 139,
+    "commitsScanned": 57,
+    "filesScanned": 140,
     "findings": [],
     "detectionSelfTest": "passed",
     "limitations": "Pattern-based scanning cannot guarantee absence of every possible secret."
