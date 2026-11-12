@@ -1,0 +1,62 @@
+{
+  "assignment": "Actividad Semana 11-0",
+  "status": "passed",
+  "sourceCommit": "1f6bbac11d764d0da3c960dac819c743de172a5e",
+  "generatedAt": "2026-11-12T21:03:27.522Z",
+  "command": "make verify",
+  "tests": {
+    "total": 194,
+    "passed": 194,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "httpTests": [
+    {
+      "name": "[HTTP] GET health y HEAD usan MongoDB real con reader",
+      "status": "passed",
+      "file": "tests/http-api.test.mjs"
+    },
+    {
+      "name": "[HTTP] consultas reales, detalle y paginacion",
+      "status": "passed",
+      "file": "tests/http-api.test.mjs"
+    },
+    {
+      "name": "[HTTP] limites 1 y 100; consulta vacia es 200, identificador ausente es 404",
+      "status": "passed",
+      "file": "tests/http-api.test.mjs"
+    },
+    {
+      "name": "[HTTP] parametros invalidos o ambiguos devuelven 400 antes de consultar",
+      "status": "passed",
+      "file": "tests/http-api.test.mjs"
+    },
+    {
+      "name": "[HTTP] rechaza escrituras y distingue ruta inexistente",
+      "status": "passed",
+      "file": "tests/http-api.test.mjs"
+    },
+    {
+      "name": "[HTTP] fallos controlados 503 y 500 no filtran detalles internos",
+      "status": "passed",
+      "file": "tests/http-api.test.mjs"
+    }
+  ],
+  "httpExchanges": 18,
+  "secrets": {
+    "status": "passed",
+    "tool": "gitleaks",
+    "version": "8.30.1",
+    "image": "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f",
+    "scope": [
+      "all Git refs and complete reachable history",
+      "tracked and non-ignored new files"
+    ],
+    "commitsScanned": 59,
+    "filesScanned": 147,
+    "findings": [],
+    "detectionSelfTest": "passed",
+    "limitations": "Pattern-based scanning cannot guarantee absence of every possible secret."
+  }
+}

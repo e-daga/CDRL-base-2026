@@ -4,6 +4,7 @@
 
 API local de consulta: `npm run serve:http`. Pruebas: `npm run test:http`.
 [Endpoints, metodos, codigos y reproduccion](docs/Semana11-HTTP.md).
+[Reporte PDF con las 18 capturas](docs/Semana11-HTTP.pdf).
 Se incorpora en esta actividad; M09 no tenia servidor HTTP. Solo escucha en
 127.0.0.1 y usa la cuenta MongoDB reader, sin modificar los tags anteriores.
 

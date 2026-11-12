@@ -1,0 +1,350 @@
+{
+  "assignment": "Actividad Semana 11-0",
+  "sourceCommit": "1f6bbac11d764d0da3c960dac819c743de172a5e",
+  "capturedAt": "2026-11-12T20:48:47.424Z",
+  "cases": [
+    {
+      "id": "health",
+      "mode": "MongoDB real / reader",
+      "method": "GET",
+      "url": "http://127.0.0.1:63758/health",
+      "status": 200,
+      "statusText": "OK",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "57",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:46 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"status\":\"ok\",\"database\":\"reachable\",\"mode\":\"read-only\"}",
+      "capturedAt": "2026-11-12T20:48:46.319Z"
+    },
+    {
+      "id": "events",
+      "mode": "MongoDB real / reader",
+      "method": "GET",
+      "url": "http://127.0.0.1:63758/api/events?deviceId=dev_sensor_01&limit=1",
+      "status": 200,
+      "statusText": "OK",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "392",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:46 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"items\":[{\"event_id\":\"a1b2c3d4-0006-4000-8000-000000000006\",\"device_id\":\"dev_sensor_01\",\"event_type\":\"battery_pct\",\"observed_at\":\"2026-09-22T12:00:00.000Z\",\"metric_value\":100,\"unit\":\"%\",\"severity\":\"info\"}],\"next_cursor\":\"eyJ2IjoxLCJhdCI6IjIwMjYtMDktMjJUMTI6MDA6MDAuMDAwWiIsImlkIjoiYTFiMmMzZDQtMDAwNi00MDAwLTgwMDAtMDAwMDAwMDAwMDA2IiwicSI6IjEyekxWWW1CaTBJbEZZYzgifQ\",\"has_more\":true,\"limit\":1}",
+      "capturedAt": "2026-11-12T20:48:46.493Z"
+    },
+    {
+      "id": "event",
+      "mode": "MongoDB real / reader",
+      "method": "GET",
+      "url": "http://127.0.0.1:63758/api/events/a1b2c3d4-0006-4000-8000-000000000006",
+      "status": 200,
+      "statusText": "OK",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "195",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:46 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"event_id\":\"a1b2c3d4-0006-4000-8000-000000000006\",\"device_id\":\"dev_sensor_01\",\"event_type\":\"battery_pct\",\"observed_at\":\"2026-09-22T12:00:00.000Z\",\"metric_value\":100,\"unit\":\"%\",\"severity\":\"info\"}",
+      "capturedAt": "2026-11-12T20:48:46.575Z"
+    },
+    {
+      "id": "alerts",
+      "mode": "MongoDB real / reader",
+      "method": "GET",
+      "url": "http://127.0.0.1:63758/api/alerts?limit=1",
+      "status": 200,
+      "statusText": "OK",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "255",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:46 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"items\":[{\"alert_id\":\"b1b2c3d4-0003-4000-8000-000000000003\",\"event_id\":\"a1b2c3d4-0005-4000-8000-000000000005\",\"device_id\":\"dev_sensor_03\",\"alert_type\":\"connectivity\",\"severity\":\"warning\",\"status\":\"open\",\"opened_at\":\"2026-09-22T07:16:00.000Z\"}],\"limit\":1}",
+      "capturedAt": "2026-11-12T20:48:46.661Z"
+    },
+    {
+      "id": "health-head",
+      "mode": "MongoDB real / reader",
+      "method": "HEAD",
+      "url": "http://127.0.0.1:63758/health",
+      "status": 200,
+      "statusText": "OK",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "close",
+        "content-length": "57",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:46 GMT",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "",
+      "capturedAt": "2026-11-12T20:48:46.743Z"
+    },
+    {
+      "id": "health-post",
+      "mode": "MongoDB real / reader",
+      "method": "POST",
+      "url": "http://127.0.0.1:63758/health",
+      "status": 405,
+      "statusText": "Method Not Allowed",
+      "headers": {
+        "allow": "GET, HEAD",
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "30",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:46 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"error\":\"method_not_allowed\"}",
+      "capturedAt": "2026-11-12T20:48:46.751Z"
+    },
+    {
+      "id": "events-head",
+      "mode": "MongoDB real / reader",
+      "method": "HEAD",
+      "url": "http://127.0.0.1:63758/api/events?deviceId=dev_sensor_01&limit=1",
+      "status": 200,
+      "statusText": "OK",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "close",
+        "content-length": "392",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:46 GMT",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "",
+      "capturedAt": "2026-11-12T20:48:46.854Z"
+    },
+    {
+      "id": "events-post",
+      "mode": "MongoDB real / reader",
+      "method": "POST",
+      "url": "http://127.0.0.1:63758/api/events?deviceId=dev_sensor_01&limit=1",
+      "status": 405,
+      "statusText": "Method Not Allowed",
+      "headers": {
+        "allow": "GET, HEAD",
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "30",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:46 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"error\":\"method_not_allowed\"}",
+      "capturedAt": "2026-11-12T20:48:46.861Z"
+    },
+    {
+      "id": "event-head",
+      "mode": "MongoDB real / reader",
+      "method": "HEAD",
+      "url": "http://127.0.0.1:63758/api/events/a1b2c3d4-0006-4000-8000-000000000006",
+      "status": 200,
+      "statusText": "OK",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "close",
+        "content-length": "195",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:46 GMT",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "",
+      "capturedAt": "2026-11-12T20:48:46.965Z"
+    },
+    {
+      "id": "event-post",
+      "mode": "MongoDB real / reader",
+      "method": "POST",
+      "url": "http://127.0.0.1:63758/api/events/a1b2c3d4-0006-4000-8000-000000000006",
+      "status": 405,
+      "statusText": "Method Not Allowed",
+      "headers": {
+        "allow": "GET, HEAD",
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "30",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:46 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"error\":\"method_not_allowed\"}",
+      "capturedAt": "2026-11-12T20:48:46.973Z"
+    },
+    {
+      "id": "alerts-head",
+      "mode": "MongoDB real / reader",
+      "method": "HEAD",
+      "url": "http://127.0.0.1:63758/api/alerts?limit=1",
+      "status": 200,
+      "statusText": "OK",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "close",
+        "content-length": "255",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:47 GMT",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "",
+      "capturedAt": "2026-11-12T20:48:47.046Z"
+    },
+    {
+      "id": "alerts-post",
+      "mode": "MongoDB real / reader",
+      "method": "POST",
+      "url": "http://127.0.0.1:63758/api/alerts?limit=1",
+      "status": 405,
+      "statusText": "Method Not Allowed",
+      "headers": {
+        "allow": "GET, HEAD",
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "30",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:47 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"error\":\"method_not_allowed\"}",
+      "capturedAt": "2026-11-12T20:48:47.053Z"
+    },
+    {
+      "id": "invalid",
+      "mode": "MongoDB real / reader",
+      "method": "GET",
+      "url": "http://127.0.0.1:63758/api/events?deviceId=dev_sensor_01&limit=0",
+      "status": 400,
+      "statusText": "Bad Request",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "30",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:47 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"error\":\"invalid_parameters\"}",
+      "capturedAt": "2026-11-12T20:48:47.064Z"
+    },
+    {
+      "id": "absent",
+      "mode": "MongoDB real / reader",
+      "method": "GET",
+      "url": "http://127.0.0.1:63758/api/events/00000000-0000-0000-0000-000000000000",
+      "status": 404,
+      "statusText": "Not Found",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "27",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:47 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"error\":\"event_not_found\"}",
+      "capturedAt": "2026-11-12T20:48:47.136Z"
+    },
+    {
+      "id": "unknown",
+      "mode": "MongoDB real / reader",
+      "method": "GET",
+      "url": "http://127.0.0.1:63758/not-a-route",
+      "status": 404,
+      "statusText": "Not Found",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "27",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:47 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"error\":\"route_not_found\"}",
+      "capturedAt": "2026-11-12T20:48:47.145Z"
+    },
+    {
+      "id": "empty",
+      "mode": "MongoDB real / reader",
+      "method": "GET",
+      "url": "http://127.0.0.1:63758/api/events?deviceId=dev_http_no_records&limit=1",
+      "status": 200,
+      "statusText": "OK",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "58",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:47 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"items\":[],\"next_cursor\":null,\"has_more\":false,\"limit\":1}",
+      "capturedAt": "2026-11-12T20:48:47.220Z"
+    },
+    {
+      "id": "unavailable",
+      "mode": "Fallo inyectado en prueba aislada; no se detuvo MongoDB",
+      "method": "GET",
+      "url": "http://127.0.0.1:63785/health",
+      "status": 503,
+      "statusText": "Service Unavailable",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "32",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:47 GMT",
+        "keep-alive": "timeout=5",
+        "retry-after": "5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"error\":\"database_unavailable\"}",
+      "capturedAt": "2026-11-12T20:48:47.238Z"
+    },
+    {
+      "id": "internal",
+      "mode": "Fallo inyectado en prueba aislada; no se detuvo MongoDB",
+      "method": "GET",
+      "url": "http://127.0.0.1:63787/health",
+      "status": 500,
+      "statusText": "Internal Server Error",
+      "headers": {
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-length": "26",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 12 Nov 2026 20:48:47 GMT",
+        "keep-alive": "timeout=5",
+        "x-content-type-options": "nosniff"
+      },
+      "body": "{\"error\":\"internal_error\"}",
+      "capturedAt": "2026-11-12T20:48:47.251Z"
+    }
+  ]
+}
