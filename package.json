@@ -5,6 +5,8 @@
   "type": "module",
   "description": "CDRL M01-M03: telemetria, modelo operativo y roles con privilegios minimos.",
   "scripts": {
+    "serve:http": "node scripts/serve-http.mjs",
+    "test:http": "node --test tests/http-api.test.mjs",
     "setup:db": "node scripts/setup.mjs",
     "test": "node scripts/test.mjs",
     "verify": "node scripts/verify.mjs",

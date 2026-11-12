@@ -1,5 +1,12 @@
 # CDRL-base-2026 - M09 seguridad NoSQL y auditoria (Semana 10)
 
+## Actividad Semana 11-0: HTTP
+
+API local de consulta: `npm run serve:http`. Pruebas: `npm run test:http`.
+[Endpoints, metodos, codigos y reproduccion](docs/Semana11-HTTP.md).
+Se incorpora en esta actividad; M09 no tenia servidor HTTP. Solo escucha en
+127.0.0.1 y usa la cuenta MongoDB reader, sin modificar los tags anteriores.
+
 ## Entrega actual M09
 
 Ejecutar `make setup && make verify && make run`. Se mantienen todas las suites
