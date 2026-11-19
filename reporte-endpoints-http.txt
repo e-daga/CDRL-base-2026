@@ -1,0 +1,33 @@
+Reporte de endpoints HTTP y métodos observados
+
+Repositorio: CDRL-base-2026
+Fecha: 2026-11-12
+
+Resumen ejecutivo
+- No se detectaron endpoints HTTP implementados en este repositorio.
+- No hay servidor web (Express/Fastify/Koa/etc.) ni rutas REST/API.
+- No se encontraron llamadas HTTP client (`fetch`, `axios`, `http.request`, `https.request`) ni definiciones de `app.get/post/put/delete`.
+- La base del proyecto es de datos/DB: MongoDB y PostgreSQL, con scripts de carga, validación, migración y auditoría.
+
+Metodología
+Se realizó una búsqueda de patrones como:
+- `express|fastify|koa|app.get|app.post|router.get|res.status|req.method|fetch\(|axios|http.request|https.request`
+- `localhost|/api|/v1|/health|/events|/alerts`
+Las búsquedas arrojaron resultados de URLs externas/documentación, pero no definiciones de endpoints HTTP del sistema.
+
+Resultado
+Se concluye que el repositorio no expone endpoints HTTP ni registra métodos HTTP ni códigos HTTP reales dentro de la aplicación.
+
+Tabla de endpoints HTTP detectados
+| Endpoint | Método HTTP | Código HTTP | Observación |
+| --- | --- | --- | --- |
+| Ninguno | N/A | N/A | No se encontraron rutas HTTP ni endpoints implementados en la aplicación. |
+
+Evidencia relevante
+- package.json: dependencias principales = `mongodb` y `pg`; no framework web/REST.
+- src/mongo.mjs: se usa `MongoClient` para conectarse a MongoDB.
+- src/db.mjs: se usa `pg.Client` para conectarse a PostgreSQL.
+- README.md: describe una entrega de infraestructura de datos y validación, no un backend HTTP.
+
+Conclusión
+Este repositorio no es un servicio REST/HTTP; es un laboratorio/ejemplo de integración de bases de datos, validación y auditoría. Por tanto, no hay endpoints HTTP ni códigos de respuesta HTTP que documentar en la aplicación.

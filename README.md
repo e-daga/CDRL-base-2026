@@ -1,5 +1,9 @@
 # CDRL-base-2026 - M09 seguridad NoSQL y auditoria (Semana 10)
 
+## Actividad M11: timeout y reintentos
+
+[Ejecucion, backoff, timeout y metricas](docs/M11-ejecucion.md).
+
 ## Actividad Semana 11-0: HTTP
 
 API local de consulta: `npm run serve:http`. Pruebas: `npm run test:http`.

@@ -39,9 +39,17 @@ test("[M11][metrics] failed operation exhausts retries and is recorded once as f
     metrics.runOperation("write_alert", async () => {
       calls += 1;
       time.advance(10);
-      throw new TypeError("fallo simulado");
+      const error = new Error("fallo temporal");
+      error.code = "ECONNRESET";
+      throw error;
     }, { maxAttempts: 3, delayMs: 100, sleep: time.sleep }),
-    { name: "TypeError" }
+    (error) => {
+      assert.equal(error.name, "RetryExhaustedError");
+      assert.equal(error.attempts, 3);
+      assert.equal(error.maxAttempts, 3);
+      assert.equal(error.cause.code, "ECONNRESET");
+      return true;
+    }
   );
 
   assert.equal(calls, 3);
@@ -50,48 +58,92 @@ test("[M11][metrics] failed operation exhausts retries and is recorded once as f
   assert.equal(summary.attempts.total, 3);
   assert.equal(summary.by_operation[0].status, "failed");
   assert.equal(summary.by_operation[0].attempts, 3);
-  assert.equal(summary.by_operation[0].error_type, "TypeError");
+  assert.equal(summary.by_operation[0].error_type, "Error");
   assert.ok(summary.latency_ms.total >= 3 * 10, "la latencia debe incluir el trabajo de cada intento");
 });
 
-test("[M11][metrics] operation that recovers on the third attempt counts as one success with three attempts", async () => {
+test("[M11][metrics] temporary failure recovers on the last allowed attempt with exponential backoff", async () => {
   const time = fakeTime();
   const metrics = createMetricsRecorder({ now: time.now });
   const delayMs = 50;
+  const waits = [];
   await metrics.runOperation("sync_device", async (attempt) => {
     time.advance(5);
-    if (attempt < 3) throw new Error("fallo transitorio");
+    if (attempt < 3) {
+      const error = new Error("fallo transitorio");
+      error.code = "ECONNRESET";
+      throw error;
+    }
     return attempt;
-  }, { maxAttempts: 5, delayMs, sleep: time.sleep });
+  }, {
+    maxAttempts: 3,
+    delayMs,
+    sleep: async (ms) => { waits.push(ms); await time.sleep(ms); }
+  });
 
   const summary = metrics.summarize();
   assert.deepEqual(summary.operations, { total: 1, successful: 1, failed: 0, retried: 1 });
   assert.equal(summary.attempts.total, 3);
   assert.equal(summary.by_operation[0].attempts, 3);
-  // Latencia total = 3 intentos de trabajo + las esperas entre intentos.
-  const waits = delayMs * 1 + delayMs * 2;
-  assert.equal(summary.latency_ms.total, 3 * 5 + waits);
-  assert.ok(summary.latency_ms.total > waits, "la latencia contempla las esperas");
+  assert.deepEqual(waits, [delayMs, delayMs * 2]);
+  assert.equal(summary.latency_ms.total, 3 * 5 + waits.reduce((sum, ms) => sum + ms, 0));
 });
 
-test("[M11][metrics] non-retryable errors stop immediately and are recorded as failed", async () => {
+test("[M11][metrics] timeout aborts the signal and never starts an overlapping retry", async () => {
   const metrics = createMetricsRecorder();
   let calls = 0;
-  await assert.rejects(metrics.runOperation("bad_input", async () => {
-    calls += 1;
-    throw new RangeError("entrada invalida");
-  }, { maxAttempts: 4, shouldRetry: () => false }));
+  let signal;
+  let finishOperation;
+  const stillRunning = new Promise((resolve) => { finishOperation = resolve; });
+  await assert.rejects(
+    metrics.runOperation("slow_write", async (_attempt, context) => {
+      calls += 1;
+      signal = context.signal;
+      return stillRunning;
+    }, { timeoutMs: 5, maxAttempts: 4, delayMs: 1 }),
+    (error) => {
+      assert.equal(error.name, "OperationTimeoutError");
+      assert.equal(error.attempt, 1);
+      return true;
+    }
+  );
 
   assert.equal(calls, 1);
+  assert.equal(signal.aborted, true);
+  assert.equal(signal.reason.name, "OperationTimeoutError");
   const summary = metrics.summarize();
   assert.equal(summary.by_operation[0].attempts, 1);
   assert.equal(summary.operations.failed, 1);
+  finishOperation("late completion");
+  await Promise.resolve();
+  assert.equal(calls, 1, "una operacion que termina tarde no debe lanzar otro intento");
+});
+
+test("[M11][metrics] validation, permission and content-conflict errors are never retried", async () => {
+  const permanentErrors = [
+    new TypeError("entrada invalida"),
+    Object.assign(new Error("permiso denegado"), { code: 13 }),
+    Object.assign(new Error("conflicto de contenido"), { status: 409 }),
+    Object.assign(new Error("documento invalido"), { code: 121 })
+  ];
+
+  for (const [index, permanentError] of permanentErrors.entries()) {
+    const metrics = createMetricsRecorder();
+    let calls = 0;
+    await assert.rejects(metrics.runOperation(`permanent_${index}`, async () => {
+      calls += 1;
+      throw permanentError;
+    }, { maxAttempts: 4, shouldRetry: () => true }));
+
+    assert.equal(calls, 1);
+    assert.equal(metrics.summarize().by_operation[0].attempts, 1);
+  }
 });
 
 test("[M11][metrics] real clock records a valid latency without asserting an exact duration", async () => {
   const metrics = createMetricsRecorder();
   await metrics.runOperation("real_clock", async (attempt) => {
-    if (attempt < 2) throw new Error("fallo transitorio");
+    if (attempt < 2) throw Object.assign(new Error("fallo transitorio"), { transient: true });
     return true;
   }, { maxAttempts: 2, delayMs: 1 });
 
@@ -107,11 +159,11 @@ test("[M11][metrics] summary aggregates several operations and is JSON-serializa
   await metrics.runOperation("ok_op", async () => { time.advance(20); });
   await metrics.runOperation("retry_op", async (attempt) => {
     time.advance(10);
-    if (attempt === 1) throw new Error("x");
+    if (attempt === 1) throw Object.assign(new Error("x"), { transient: true });
   }, { delayMs: 30, sleep: time.sleep });
   await assert.rejects(metrics.runOperation("fail_op", async () => {
     time.advance(10);
-    throw new Error("x");
+    throw Object.assign(new Error("x"), { transient: true });
   }, { maxAttempts: 2, sleep: time.sleep }));
 
   const summary = metrics.summarize();
@@ -147,5 +199,7 @@ test("[M11][metrics] invalid names and options are rejected", async () => {
   await assert.rejects(metrics.runOperation("op", "no-funcion"), { name: "TypeError" });
   await assert.rejects(metrics.runOperation("op", ok, { maxAttempts: 0 }), { name: "RangeError" });
   await assert.rejects(metrics.runOperation("op", ok, { delayMs: -1 }), { name: "RangeError" });
+  await assert.rejects(metrics.runOperation("op", ok, { timeoutMs: -1 }), { name: "RangeError" });
+  await assert.rejects(metrics.runOperation("op", ok, { backoffFactor: 0.5 }), { name: "RangeError" });
   assert.equal(metrics.summarize().operations.total, 0);
 });
